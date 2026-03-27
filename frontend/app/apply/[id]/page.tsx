@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useLayoutEffect, useCallback } from "react";
 import { berlinListings } from "@/lib/data";
 import { readTextStream } from "@/lib/read-text-stream";
 import Link from "next/link";
@@ -128,14 +128,20 @@ export default function ApplyPage(_props: ApplyPageProps) {
     const [isUploading, setIsUploading] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    useEffect(() => {
+    // useLayoutEffect so listing switch applies draft/reset before persist effect runs (avoids writing previous listing into new key).
+    useLayoutEffect(() => {
         const loaded = loadDraft(listing.id);
+        setUploadedDocIds({});
+        setIsUploading(null);
         if (loaded) {
             setProfile(loaded.profile);
             setUploadedDocs(loaded.uploadedDocs);
             setCoverLetter(loaded.coverLetter);
             setCommitted(cloneBundle(loaded.profile, loaded.uploadedDocs, loaded.coverLetter));
         } else {
+            setProfile({ ...initialProfile });
+            setUploadedDocs([]);
+            setCoverLetter("");
             setCommitted(cloneBundle(initialProfile, [], ""));
         }
         setHydrated(true);
@@ -144,7 +150,8 @@ export default function ApplyPage(_props: ApplyPageProps) {
     useEffect(() => {
         if (!hydrated) return;
         persistDraft(listing.id, cloneBundle(profile, uploadedDocs, coverLetter));
-    }, [profile, uploadedDocs, coverLetter, listing.id, hydrated]);
+        // Do not list listing.id: when it changes, this must run only after layout effect resets form state (deps: profile, …), not with stale data.
+    }, [profile, uploadedDocs, coverLetter, hydrated]);
 
     const dirty = useMemo(() => {
         return (
