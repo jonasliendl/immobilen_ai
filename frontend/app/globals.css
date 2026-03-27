@@ -1,53 +1,97 @@
 @import "tailwindcss";
 
+/*
+  Design system: stitch_aimmobilie_landing_page (DESIGN.md + code.html)
+  Lucid Intelligence — tonal layering, no harsh layout borders, Inter typography.
+*/
+
+:root {
+  --background: #f9f9ff;
+  --foreground: #101c2e;
+  --hero-dark: #0f1b2d;
+  --muted-text: #64748b;
+}
+
 @theme inline {
-  /* ── Design System: Tonal Architecture ── */
+  /* Core palette (aligned with code.html Tailwind extend) */
+  --color-background: #f9f9ff;
+  --color-on-background: #101c2e;
+  --color-surface: #f9f9ff;
+  --color-surface-bright: #f9f9ff;
+  --color-surface-dim: #cfdaf3;
+  --color-surface-variant: #d7e3fc;
+  --color-surface-container: #e7eeff;
+  --color-surface-container-low: #f0f3ff;
+  --color-surface-container-high: #dee8ff;
+  --color-surface-container-highest: #d7e3fc;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-tint: #006c4f;
 
-  /* Primary – Mint Green */
-  --color-primary: #3ECFA0;
-  --color-primary-hover: #32b68c;
-  --color-primary-container: #006C4F;
+  --color-on-surface: #101c2e;
+  --color-on-surface-variant: #3c4a43;
+  --color-inverse-surface: #253144;
+  --color-inverse-on-surface: #ecf1ff;
+
+  --color-primary: #006c4f;
   --color-on-primary: #ffffff;
+  --color-primary-container: #3ecfa0;
+  --color-on-primary-container: #00543d;
+  --color-primary-fixed: #71fac8;
+  --color-primary-fixed-dim: #50ddad;
+  --color-on-primary-fixed: #002116;
+  --color-on-primary-fixed-variant: #00513b;
+  --color-inverse-primary: #50ddad;
+  --color-primary-hover: #00543d;
 
-  /* Secondary – Sky Blue */
-  --color-secondary: #5BA8FF;
-  --color-secondary-fixed: #D3E4FF;
-  --color-on-secondary-container: #003B6A;
+  --color-secondary: #0060a9;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #59a6fd;
+  --color-secondary-fixed: #d3e4ff;
+  --color-secondary-fixed-dim: #a2c9ff;
+  --color-on-secondary-container: #003b6a;
+  --color-on-secondary-fixed: #001c38;
+  --color-on-secondary-fixed-variant: #004881;
 
-  /* Tertiary – Soft Rose */
-  --color-tertiary: #FF7EB3;
-  --color-tertiary-fixed: #FFE0EB;
+  --color-tertiary: #a33467;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #ff9ac0;
+  --color-tertiary-fixed: #ffd9e4;
+  --color-tertiary-fixed-dim: #ffb0cc;
+  --color-on-tertiary-container: #871d51;
+  --color-on-tertiary-fixed: #3e0020;
+  --color-on-tertiary-fixed-variant: #841a4f;
 
-  /* Surfaces */
-  --color-surface: #F9F9FF;
-  --color-surface-low: #F0F3FF;
-  --color-surface-high: #DEE8FF;
-  --color-surface-card: #FFFFFF;
-  --color-surface-bright: #F8FBFF;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
 
-  /* Text / On-surface */
-  --color-on-background: #101C2E;
-  --color-on-surface: #101C2E;
-  --color-muted: #64748B;
-  --color-outline-variant: rgba(100, 116, 139, 0.2);
+  --color-outline: #6c7a73;
+  --color-outline-variant: #bbcac1;
 
-  /* Semantic */
+  --color-hero-dark: var(--hero-dark);
+
+  /* Aliases for listings / dashboard (main branch utilities) */
+  --color-muted: #64748b;
+  --color-surface-low: #f0f3ff;
+  --color-surface-high: #dee8ff;
+  --color-surface-card: #ffffff;
   --color-success: #1f7a5b;
   --color-warning: #c9972f;
   --color-danger: #cb4d3e;
 
-  /* Shadows */
-  --shadow-ambient: 0px 24px 48px rgba(15, 27, 45, 0.07);
-  --shadow-card: 0px 8px 24px rgba(15, 27, 45, 0.04);
-
-  /* Fonts */
-  --font-sans: "Inter", var(--font-inter), system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  /* Border radius */
+  --radius-card: 1.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
   --radius-xl: 1.5rem;
+
+  --shadow-floating: 0 20px 40px -15px rgb(0 0 0 / 0.1),
+    0 10px 20px -10px rgb(0 0 0 / 0.05);
+  --shadow-ambient: 0 24px 48px rgb(15 27 45 / 0.07);
+  --shadow-card: 0px 8px 24px rgba(15, 27, 45, 0.04);
 }
 
 body {
@@ -58,12 +102,78 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Ghost-border utility ── */
+/* Stitch reference: glass panels, texture overlays, brand gradient */
+.glass-box {
+  background: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgb(255 255 255 / 0.1);
+}
+
+.cube-texture {
+  background-image: url(https://lh3.googleusercontent.com/aida/ADBb0ugDXpyXWo9hlo7wub4fBAtRxRxRHg0WuNSrzuoCUOatXjGaCLX4MGLp6222t8uUE95h9sPk5DqDPdGRjAJOsgsEY5LHgoR02MI9Ae5mNE0ZM1SkFS-2aQIYct5f17Zh-d1hwvn-Jfr-shZZO3dmnT5S6x5W-NUsGvqQipW_orsZ1-0kGk0Rcty4I86KEy0BVlNTh0mr_yEGmGNJu7PoC15aJtYlpc5hpzQ4MS3ZczgNv7NbB6h3HGwC_dTBE_Q7yxjwsUwagU0BXw);
+  background-size: 600px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.cube-texture-dark {
+  background-image: url(https://lh3.googleusercontent.com/aida/ADBb0ugDXpyXWo9hlo7wub4fBAtRxRxRHg0WuNSrzuoCUOatXjGaCLX4MGLp6222t8uUE95h9sPk5DqDPdGRjAJOsgsEY5LHgoR02MI9Ae5mNE0ZM1SkFS-2aQIYct5f17Zh-d1hwvn-Jfr-shZZO3dmnT5S6x5W-NUsGvqQipW_orsZ1-0kGk0Rcty4I86KEy0BVlNTh0mr_yEGmGNJu7PoC15aJtYlpc5hpzQ4MS3ZczgNv7NbB6h3HGwC_dTBE_Q7yxjwsUwagU0BXw);
+  background-size: 600px;
+  background-repeat: repeat;
+  mix-blend-mode: soft-light;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.brand-gradient {
+  background: linear-gradient(180deg, #ff4d4d 0%, #3ecfa0 100%);
+}
+
+.problem-solution-flow {
+  background: linear-gradient(
+    180deg,
+    #ff6b6b 0%,
+    #ff4d4d 28%,
+    #ff7a72 45%,
+    #7ddeb8 52%,
+    #52d4b8 68%,
+    #3ecfa0 86%,
+    #34c399 100%
+  );
+}
+
+.text-shadow-sm {
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+}
+
+.btn-primary-gradient {
+  background: linear-gradient(180deg, #3ecfa0 0%, #006c4f 100%);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 24;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Ghost-border + dashboard utilities (main) */
 .ghost-border {
   box-shadow: inset 0 0 0 1px var(--color-outline-variant);
 }
 
-/* ── Ambient glow blobs ── */
 .blob-mint {
   background: rgba(62, 207, 160, 0.18);
   border-radius: 9999px;
@@ -85,9 +195,8 @@ body {
   pointer-events: none;
 }
 
-/* ── Primary button gradient ── */
 .btn-primary {
-  background: linear-gradient(180deg, #3ECFA0 0%, #006C4F 100%);
+  background: linear-gradient(180deg, #3ecfa0 0%, #006c4f 100%);
   color: white;
   border-radius: var(--radius-md);
   height: 48px;
@@ -101,7 +210,6 @@ body {
   box-shadow: var(--shadow-ambient);
 }
 
-/* ── Secondary (ghost) button ── */
 .btn-secondary {
   background: transparent;
   color: var(--color-on-background);
@@ -117,7 +225,6 @@ body {
   background: rgba(91, 168, 255, 0.06);
 }
 
-/* ── Input fields: design-system style ── */
 .ds-input {
   background: var(--color-surface-low);
   border: none;
@@ -137,7 +244,6 @@ body {
   color: var(--color-muted);
 }
 
-/* ── AI insight chip ── */
 .chip-ai {
   background: var(--color-secondary-fixed);
   color: var(--color-on-secondary-container);
@@ -147,7 +253,6 @@ body {
   font-weight: 500;
 }
 
-/* ── Card surface: tonal layering ── */
 .ds-card {
   background: var(--color-surface-card);
   border-radius: var(--radius-xl);
@@ -159,21 +264,18 @@ body {
   box-shadow: var(--shadow-ambient);
 }
 
-/* ── Section surface ── */
 .ds-section {
   background: var(--color-surface-low);
   border-radius: var(--radius-xl);
   padding: 2rem;
 }
 
-/* ── Glassmorphism nav ── */
 .glass-nav {
   background: rgba(249, 249, 255, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
-/* ── Typography helpers ── */
 .text-display {
   font-size: 3.5rem;
   font-weight: 700;
