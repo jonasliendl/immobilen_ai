@@ -244,6 +244,30 @@ export type CreateApplicationResponse = {
     application: Application;
 };
 
+export type CreateDocumentRequest = {
+    tenantId: string;
+    type: DocumentType;
+    fileName: string;
+};
+
+export type CreateDocumentResponse = {
+    document: StoredDocument;
+};
+
+export type DocumentsResponse = {
+    count: number;
+    documents: StoredDocument[];
+};
+
+export type CreateDocumentBundleRequest = {
+    tenantId: string;
+    documentIds: string[];
+};
+
+export type CreateDocumentBundleResponse = {
+    bundle: DocumentBundle;
+};
+
 export type DocumentBundlesResponse = {
     count: number;
     bundles: DocumentBundle[];
