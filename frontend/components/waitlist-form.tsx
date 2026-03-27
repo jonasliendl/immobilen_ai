@@ -29,9 +29,8 @@ export function WaitlistForm() {
                 setError(data.error ?? "Something went wrong.");
                 return;
             }
-            if (data.success) {
-                setSuccess(true);
-            }
+            // Any 2xx from this route means joined; don't rely on body shape alone.
+            setSuccess(true);
         } catch {
             setError("Network error. Try again.");
         } finally {

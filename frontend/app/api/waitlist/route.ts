@@ -26,7 +26,5 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Invalid email" }, { status: 400 });
     }
 
-    console.log("[waitlist]", email);
-
     return NextResponse.json({ success: true });
 }
