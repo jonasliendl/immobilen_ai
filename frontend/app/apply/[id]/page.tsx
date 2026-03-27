@@ -688,7 +688,7 @@ function InputField({
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="mt-1 w-full rounded-xl border border-black/20 px-3 py-2.5"
+                className="mt-1 w-full ds-input"
             />
         </div>
     );
@@ -704,7 +704,7 @@ function ReviewCard({
     children: React.ReactNode;
 }) {
     return (
-        <div className={`rounded-xl border p-4 ${completed ? "border-green-200 bg-green-50" : "border-black/10"}`}>
+        <div className={`rounded-xl p-4 ${completed ? "border border-green-200 bg-green-50" : "bg-surface-low"}`}>
             <div className="mb-2 flex items-center justify-between">
                 <span className="font-medium">{title}</span>
                 {completed ? (
