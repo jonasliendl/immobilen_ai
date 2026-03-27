@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+<<<<<<< Updated upstream
+=======
+
+enum ScraperJobStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+model Listing {
+  id              String   @id @default(cuid())
+  source          String
+  sourceListingId String
+  title           String
+  priceAmount     Decimal?
+  priceCurrency   String?
+  address         String?
+  city            String?
+  country         String?
+  areaM2          Decimal?
+  rooms           Decimal?
+  listingUrl      String
+  imageUrls       String[]
+  rawData         Json
+  isValid         Boolean  @default(true)
+  firstSeenAt     DateTime @default(now())
+  lastSeenAt      DateTime @updatedAt
+
+  @@unique([source, sourceListingId])
+}
+
+model ScraperJob {
+  id                String           @id @default(cuid())
+  sourceId          String
+  status            ScraperJobStatus
+  startedAt         DateTime         @default(now())
+  finishedAt        DateTime?
+  listingsProcessed Int              @default(0)
+  listingsUpserted  Int              @default(0)
+  errorMessage      String?
+}
+>>>>>>> Stashed changes

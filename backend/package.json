@@ -9,23 +9,47 @@
     "start": "node dist/server.js",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:db": "docker compose -f docker-compose.db.yml up -d",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio"
+  },
+  "prisma": {
+    "schema": "src/database/schema.prisma"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=21.0.0"
+  },
   "dependencies": {
+    "@fastify/schedule": "^6.0.0",
+    "@prisma/adapter-pg": "^7.6.0",
+    "@prisma/client": "^7.6.0",
+    "cheerio": "^1.2.0",
     "dotenv": "^17.3.1",
-    "fastify": "^5.8.4"
+    "fastify": "^5.8.4",
+    "pg": "^8.20.0",
+    "playwright": "^1.58.2",
+    "toad-scheduler": "^3.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^25.5.0",
+    "@types/pg": "^8.20.0",
     "eslint": "^10.1.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-n": "^17.24.0",
     "eslint-plugin-security": "^4.0.0",
     "eslint-plugin-unicorn": "^63.0.0",
+    "prettier": "^3.8.1",
+    "prisma": "^7.6.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2",
     "typescript-eslint": "^8.57.2"

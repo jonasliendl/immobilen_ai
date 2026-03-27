@@ -1,9 +1,10 @@
 // @ts-check
-import js from '@eslint/js'
-import tseslint from 'typescript-eslint'
-import pluginN from 'eslint-plugin-n'
-import pluginSecurity from 'eslint-plugin-security'
-import pluginUnicorn from 'eslint-plugin-unicorn'
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import pluginN from 'eslint-plugin-n';
+import pluginSecurity from 'eslint-plugin-security';
+import pluginUnicorn from 'eslint-plugin-unicorn';
+import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default tseslint.config(
   // ── Base ──────────────────────────────────────────────────────────────────
@@ -58,16 +59,13 @@ export default tseslint.config(
       '@typescript-eslint/promise-function-async': 'error',
       '@typescript-eslint/prefer-nullish-coalescing': 'error',
       '@typescript-eslint/prefer-optional-chain': 'error',
-      '@typescript-eslint/strict-boolean-expressions': [
-        'error',
-        { allowNullableObject: true },
-      ],
+      '@typescript-eslint/strict-boolean-expressions': ['error', { allowNullableObject: true }],
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
 
       // General quality
       'no-console': 'warn',
       'no-debugger': 'error',
-      'eqeqeq': ['error', 'always'],
+      eqeqeq: ['error', 'always'],
       'no-var': 'error',
       'prefer-const': 'error',
       'prefer-template': 'error',
@@ -83,8 +81,8 @@ export default tseslint.config(
 
       // Unicorn – selectively disable rules that conflict with TS patterns
       'unicorn/prevent-abbreviations': 'off', // too noisy for common names like req/res/err
-      'unicorn/no-null': 'off',               // TypeScript ecosystem uses null widely
-      'unicorn/prefer-module': 'off',         // project is CommonJS
+      'unicorn/no-null': 'off', // TypeScript ecosystem uses null widely
+      'unicorn/prefer-module': 'off', // project is CommonJS
     },
   },
 
@@ -92,4 +90,7 @@ export default tseslint.config(
   {
     ignores: ['dist/**', 'node_modules/**'],
   },
-)
+
+  // ── Prettier – must be last to disable any conflicting formatting rules ───
+  eslintConfigPrettier,
+);
