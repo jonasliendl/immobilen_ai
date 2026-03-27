@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { FeaturePageIntro } from "@/components/feature-page-intro";
 import { berlinListings, districtRentBenchmarkPerM2 } from "@/lib/data";
 import { calculatePriceAssessment } from "@/lib/scoring";
 import { NeighborhoodMapResponse } from "@/lib/types";
@@ -99,26 +100,34 @@ export default function IntelligencePage() {
 
     return (
         <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-8 md:px-8">
-            {/* Header */}
-            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold">🧠 Market Intelligence</h1>
-                        <p className="mt-1 text-sm text-black/70">
-                            AI-powered insights to help you find and secure your home faster
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
-                        <ViewButton active={viewMode === "overview"} onClick={() => setViewMode("overview")}>
-                            Overview
-                        </ViewButton>
-                        <ViewButton active={viewMode === "districts"} onClick={() => setViewMode("districts")}>
-                            Districts
-                        </ViewButton>
-                        <ViewButton active={viewMode === "predictions"} onClick={() => setViewMode("predictions")}>
-                            Predictions
-                        </ViewButton>
-                    </div>
+            <FeaturePageIntro
+                eyebrow="Market Intelligence"
+                title="See rent pressure before you apply"
+                description="This dashboard turns Berlin listing and benchmark data into charts, district tables, and a live map overlay. Use it to check whether a flat is above typical neighbourhood rent, spot trends, and prioritise Genossenschaft or affordable pockets — then jump back to Search with clearer targets."
+                howItWorks={[
+                    "Pick a time window (7d–1y) to frame how aggressive the market feels.",
+                    "Scan district stats and mock insight cards for directional signals (demo data today).",
+                    "Use the map (client-only Leaflet) with overlays from /api/neighborhoods/map for spatial context.",
+                    "Filter by district when you want the map and stats to focus on one borough.",
+                ]}
+            />
+            <section className="flex flex-col justify-between gap-4 rounded-2xl bg-surface-container-low px-6 py-4 shadow-sm sm:flex-row sm:items-center">
+                <div>
+                    <p className="font-mono text-xs uppercase tracking-wider text-primary">Live view</p>
+                    <p className="font-sans text-sm text-on-surface/80">
+                        Map + metrics update when you change district or range below.
+                    </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <ViewButton active={viewMode === "overview"} onClick={() => setViewMode("overview")}>
+                        Overview
+                    </ViewButton>
+                    <ViewButton active={viewMode === "districts"} onClick={() => setViewMode("districts")}>
+                        Districts
+                    </ViewButton>
+                    <ViewButton active={viewMode === "predictions"} onClick={() => setViewMode("predictions")}>
+                        Predictions
+                    </ViewButton>
                 </div>
             </section>
 

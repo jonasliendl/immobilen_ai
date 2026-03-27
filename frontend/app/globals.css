@@ -1,23 +1,158 @@
 @import "tailwindcss";
 
+/*
+  Design system: stitch_aimmobilie_landing_page (DESIGN.md + code.html)
+  Lucid Intelligence — tonal layering, no harsh layout borders, Inter typography.
+*/
+
 :root {
-  --background: #f4f2ec;
-  --foreground: #191710;
+  --background: #f9f9ff;
+  --foreground: #101c2e;
+  --hero-dark: #0f1b2d;
+  --muted-text: #64748b;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Core palette (aligned with code.html Tailwind extend) */
+  --color-background: #f9f9ff;
+  --color-on-background: #101c2e;
+  --color-surface: #f9f9ff;
+  --color-surface-bright: #f9f9ff;
+  --color-surface-dim: #cfdaf3;
+  --color-surface-variant: #d7e3fc;
+  --color-surface-container: #e7eeff;
+  --color-surface-container-low: #f0f3ff;
+  --color-surface-container-high: #dee8ff;
+  --color-surface-container-highest: #d7e3fc;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-tint: #006c4f;
+
+  --color-on-surface: #101c2e;
+  --color-on-surface-variant: #3c4a43;
+  --color-inverse-surface: #253144;
+  --color-inverse-on-surface: #ecf1ff;
+
+  --color-primary: #006c4f;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #3ecfa0;
+  --color-on-primary-container: #00543d;
+  --color-primary-fixed: #71fac8;
+  --color-primary-fixed-dim: #50ddad;
+  --color-on-primary-fixed: #002116;
+  --color-on-primary-fixed-variant: #00513b;
+  --color-inverse-primary: #50ddad;
+
+  --color-secondary: #0060a9;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #59a6fd;
+  --color-secondary-fixed: #d3e4ff;
+  --color-secondary-fixed-dim: #a2c9ff;
+  --color-on-secondary-container: #003b6a;
+  --color-on-secondary-fixed: #001c38;
+  --color-on-secondary-fixed-variant: #004881;
+
+  --color-tertiary: #a33467;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #ff9ac0;
+  --color-tertiary-fixed: #ffd9e4;
+  --color-tertiary-fixed-dim: #ffb0cc;
+  --color-on-tertiary-container: #871d51;
+  --color-on-tertiary-fixed: #3e0020;
+  --color-on-tertiary-fixed-variant: #841a4f;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --color-outline: #6c7a73;
+  --color-outline-variant: #bbcac1;
+
+  --color-hero-dark: var(--hero-dark);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-card: 1.5rem;
+
+  --shadow-floating: 0 20px 40px -15px rgb(0 0 0 / 0.1),
+    0 10px 20px -10px rgb(0 0 0 / 0.05);
+  --shadow-ambient: 0 24px 48px rgb(15 27 45 / 0.07);
 }
 
 body {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 10% 15%, rgba(201, 176, 122, 0.35), transparent 35%),
-    radial-gradient(circle at 90% 10%, rgba(96, 147, 172, 0.2), transparent 40%),
-    var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), "Avenir Next", "Segoe UI", sans-serif;
+}
+
+/* Stitch reference: glass panels, texture overlays, brand gradient */
+.glass-box {
+  background: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgb(255 255 255 / 0.1);
+}
+
+.cube-texture {
+  background-image: url(https://lh3.googleusercontent.com/aida/ADBb0ugDXpyXWo9hlo7wub4fBAtRxRxRHg0WuNSrzuoCUOatXjGaCLX4MGLp6222t8uUE95h9sPk5DqDPdGRjAJOsgsEY5LHgoR02MI9Ae5mNE0ZM1SkFS-2aQIYct5f17Zh-d1hwvn-Jfr-shZZO3dmnT5S6x5W-NUsGvqQipW_orsZ1-0kGk0Rcty4I86KEy0BVlNTh0mr_yEGmGNJu7PoC15aJtYlpc5hpzQ4MS3ZczgNv7NbB6h3HGwC_dTBE_Q7yxjwsUwagU0BXw);
+  background-size: 600px;
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.cube-texture-dark {
+  background-image: url(https://lh3.googleusercontent.com/aida/ADBb0ugDXpyXWo9hlo7wub4fBAtRxRxRHg0WuNSrzuoCUOatXjGaCLX4MGLp6222t8uUE95h9sPk5DqDPdGRjAJOsgsEY5LHgoR02MI9Ae5mNE0ZM1SkFS-2aQIYct5f17Zh-d1hwvn-Jfr-shZZO3dmnT5S6x5W-NUsGvqQipW_orsZ1-0kGk0Rcty4I86KEy0BVlNTh0mr_yEGmGNJu7PoC15aJtYlpc5hpzQ4MS3ZczgNv7NbB6h3HGwC_dTBE_Q7yxjwsUwagU0BXw);
+  background-size: 600px;
+  background-repeat: repeat;
+  mix-blend-mode: soft-light;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.brand-gradient {
+  background: linear-gradient(180deg, #ff4d4d 0%, #3ecfa0 100%);
+}
+
+/*
+  Landing: problem → solution band — matches Stitch (stitch_aimmobilie_landing_page)
+  brand-gradient: #FF4D4D → #3ECFA0 — vibrant coral to mint, no heavy burgundy/forest.
+*/
+.problem-solution-flow {
+  background: linear-gradient(
+    180deg,
+    #ff6b6b 0%,
+    #ff4d4d 28%,
+    #ff7a72 45%,
+    #7ddeb8 52%,
+    #52d4b8 68%,
+    #3ecfa0 86%,
+    #34c399 100%
+  );
+}
+
+.text-shadow-sm {
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+}
+
+/* Primary CTA: subtle vertical gradient (DESIGN.md §4) */
+.btn-primary-gradient {
+  background: linear-gradient(180deg, #3ecfa0 0%, #006c4f 100%);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 24;
+}
+
+/* Scroll reveal (landing) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }

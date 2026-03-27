@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { FeaturePageIntro } from "@/components/feature-page-intro";
 import { Listing } from "@/lib/types";
 import { berlinListings, districtRentBenchmarkPerM2 } from "@/lib/data";
 
@@ -119,20 +120,22 @@ export default function SearchPage() {
 
     return (
         <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-8 md:px-8">
-            {/* Header */}
-            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold">Search Apartments</h1>
-                        <p className="mt-1 text-sm text-black/70">
-                            Find your perfect home in Berlin with AI-powered recommendations
-                        </p>
-                    </div>
-                    <div className="text-right">
-                        <p className="text-2xl font-bold">{filteredListings.length}</p>
-                        <p className="text-xs text-black/60">listings found</p>
-                    </div>
-                </div>
+            <FeaturePageIntro
+                eyebrow="Search"
+                title="Find Berlin flats in one place"
+                description="This page is your unified listing browser. Lucid Intelligence aggregates signals from multiple Berlin sources (including Genossenschaft-friendly filters), applies Mietpreisbremse-style checks where data allows, and lets you slice by district, rent, size, rooms, commute, and vibe — so cooperative members and budget hunters see the cheapest legal options first."
+                howItWorks={[
+                    "Set filters on the left: district, price band, square metres, rooms, source (e.g. Genossenschaft), commute cap, and vibe tags.",
+                    "We rank and filter the in-app Berlin dataset instantly; each card links to detail and apply flows.",
+                    "Switch sort order (price, size, newest) to stress-test affordability against your shareholder or personal budget.",
+                    "Shortlist favourites and continue in Application Tracker or Chat if you need wording or eligibility help.",
+                ]}
+            />
+            <section className="flex flex-col justify-between gap-4 rounded-2xl bg-surface-container-low px-6 py-4 shadow-sm sm:flex-row sm:items-center">
+                <p className="font-sans text-sm text-on-surface/80">
+                    <span className="font-mono text-2xl font-bold text-primary">{filteredListings.length}</span> listings
+                    match your current filters.
+                </p>
             </section>
 
             {/* Filters */}

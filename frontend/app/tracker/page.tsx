@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { FeaturePageIntro } from "@/components/feature-page-intro";
 
 type ApplicationStatus = "draft" | "submitted" | "viewed" | "shortlisted" | "rejected" | "viewing" | "offered" | "signed";
 
@@ -126,22 +127,25 @@ export default function TrackerPage() {
 
     return (
         <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-8 md:px-8">
-            {/* Header */}
-            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold">Application Tracker</h1>
-                        <p className="mt-1 text-sm text-black/70">
-                            Track all your rental applications in one place
-                        </p>
-                    </div>
-                    <Link
-                        href="/search"
-                        className="rounded-xl bg-black px-4 py-2 font-medium text-white transition hover:bg-black/80"
-                    >
-                        + New Application
-                    </Link>
-                </div>
+            <FeaturePageIntro
+                eyebrow="Application Tracker"
+                title="Every application, one secure timeline"
+                description="Upload SCHUFA, payslips, and landlord documents once. The tracker keeps statuses, landlord replies, and viewing dates in one place. An LLM can help polish cover letters and summaries from the same profile data — without scattering PDFs across email."
+                howItWorks={[
+                    "Demo data below shows how boards and cards will look once your applications sync in.",
+                    "Each row tracks submitted → viewed → shortlisted → viewing → offer, with notes and landlord messages.",
+                    "Link back to Search to add more flats; use Chat to rehearse questions before a viewing.",
+                    "Future releases will attach your encrypted document vault directly to each application packet.",
+                ]}
+            />
+            <section className="flex flex-col justify-between gap-4 rounded-2xl bg-surface-container-low px-6 py-4 shadow-sm sm:flex-row sm:items-center">
+                <h2 className="font-sans text-lg font-bold text-on-background">Your pipeline</h2>
+                <Link
+                    href="/search"
+                    className="rounded-xl bg-primary px-4 py-2 text-center font-medium text-on-primary transition hover:bg-primary/90"
+                >
+                    + New Application
+                </Link>
             </section>
 
             {/* Stats Cards */}

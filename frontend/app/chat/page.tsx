@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { FeaturePageIntro } from "@/components/feature-page-intro";
 
 type Message = {
     id: string;
@@ -140,13 +141,13 @@ export default function ChatPage() {
     }
 
     return (
-        <div className="flex h-full">
-            {/* Sidebar */}
+        <div className="flex h-[calc(100dvh-5rem)] min-h-0 w-full max-w-full flex-col overflow-hidden md:flex-row">
+            {/* Mobile: drawer under nav. Desktop: column in row with main. */}
             <aside
-                className={`fixed inset-y-0 left-0 z-40 w-72 transform border-r border-black/10 bg-white transition-transform md:relative md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+                className={`fixed bottom-0 left-0 top-20 z-40 flex w-72 shrink-0 flex-col border-r border-black/10 bg-white shadow-lg transition-transform md:relative md:top-auto md:z-auto md:h-full md:translate-x-0 md:shadow-none ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
                     }`}
             >
-                <div className="flex h-full flex-col">
+                <div className="flex min-h-0 flex-1 flex-col">
                     <div className="border-b border-black/10 p-4">
                         <button
                             onClick={startNewConversation}
@@ -207,10 +208,9 @@ export default function ChatPage() {
                 </div>
             </aside>
 
-            {/* Main Chat Area */}
-            <main className="flex flex-1 flex-col">
-                {/* Chat Header */}
-                <header className="flex items-center justify-between border-b border-black/10 bg-white p-4">
+            {/* Main: full width on mobile (sidebar is overlay); shares row on md+ */}
+            <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-white">
+                <header className="flex shrink-0 items-center justify-between border-b border-black/10 bg-white p-4">
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -225,10 +225,20 @@ export default function ChatPage() {
                     </div>
                 </header>
 
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto">
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                     {messages.length === 0 ? (
-                        <div className="mx-auto flex max-w-3xl flex-col items-center justify-center gap-8 px-4 py-12">
+                        <div className="mx-auto flex max-w-3xl flex-col gap-10 px-4 py-8">
+                            <FeaturePageIntro
+                                eyebrow="AI Assistant"
+                                title="Ask anything before you apply"
+                                description="This chat connects to the Ai.mmobilie AI stack (Ollama with Hugging Face fallback). Use it to sanity-check Genossenschaft rules, decode contract clauses, rehearse landlord questions, or understand SCHUFA impact — without leaving the platform."
+                                howItWorks={[
+                                    "Type a question or tap a quick action to seed the conversation.",
+                                    "The model answers with Berlin rental context; verify critical legal points with a professional.",
+                                    "Use threads alongside Search and Tracker: copy insights into your application notes.",
+                                    "Nothing you send here replaces regulated legal advice — it accelerates your research.",
+                                ]}
+                            />
                             <div className="text-center">
                                 <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-black text-4xl text-white">
                                     🤖
@@ -346,8 +356,7 @@ export default function ChatPage() {
                     )}
                 </div>
 
-                {/* Input Area */}
-                <div className="border-t border-black/10 bg-white p-4">
+                <div className="shrink-0 border-t border-black/10 bg-white p-4">
                     <div className="mx-auto flex max-w-3xl gap-3">
                         <input
                             type="text"
