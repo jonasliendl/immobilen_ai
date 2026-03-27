@@ -22,6 +22,9 @@ export function assessPrice(listing: Listing): PriceAssessment {
     };
 }
 
+// Alias for backwards compatibility
+export const calculatePriceAssessment = assessPrice;
+
 export function calculateTenantScore(
     tenant: TenantProfile,
     listing: Listing,
