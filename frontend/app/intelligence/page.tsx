@@ -39,8 +39,66 @@ export default function IntelligencePage() {
     const [selectedDistrict, setSelectedDistrict] = useState<string>("");
     const [mapOverlay, setMapOverlay] = useState<NeighborhoodMapResponse | null>(null);
     const [mapLoading, setMapLoading] = useState(true);
+    const [predictions, setPredictions] = useState<
+        { title: string; prediction: string; confidence: number; tags: string[]; isPositive?: boolean }[]
+    >([]);
+    const [predictionsLoading, setPredictionsLoading] = useState(false);
+    const [predictionsProvider, setPredictionsProvider] = useState<string>("");
 
     const trends = mockTrends[timeRange];
+
+    useEffect(() => {
+        if (viewMode !== "predictions") return;
+        let active = true;
+
+        async function loadPredictions() {
+            setPredictionsLoading(true);
+            try {
+                const res = await fetch(`/api/intelligence/predictions?timeRange=${timeRange}`);
+                if (!res.ok) throw new Error("fetch failed");
+                const data = (await res.json()) as {
+                    predictions: typeof predictions;
+                    provider: string;
+                };
+                if (!active) return;
+                setPredictions(data.predictions);
+                setPredictionsProvider(data.provider);
+            } catch {
+                if (!active) return;
+                setPredictions([
+                    {
+                        title: "Best Districts Next Month",
+                        prediction:
+                            "Based on current listing volume, Friedrichshain and Wedding show increasing supply with stable prices.",
+                        confidence: 68,
+                        tags: ["Friedrichshain", "Wedding"],
+                        isPositive: true,
+                    },
+                    {
+                        title: "Price Forecast",
+                        prediction:
+                            "Average rents expected to rise 2-3% in Q2 2026 due to seasonal demand.",
+                        confidence: 60,
+                        tags: ["Berlin-wide", "Q2 2026"],
+                    },
+                    {
+                        title: "Genossenschaft Opportunities",
+                        prediction:
+                            "Multiple co-ops typically open spring application rounds. Complete documents improve your position.",
+                        confidence: 72,
+                        tags: ["Genossenschaft", "Spring Cycle"],
+                        isPositive: true,
+                    },
+                ]);
+                setPredictionsProvider("fallback");
+            } finally {
+                if (active) setPredictionsLoading(false);
+            }
+        }
+
+        void loadPredictions();
+        return () => { active = false; };
+    }, [viewMode, timeRange]);
 
     useEffect(() => {
         let active = true;
@@ -355,28 +413,34 @@ export default function IntelligencePage() {
                 <>
                     {/* AI Predictions */}
                     <section className="ds-card p-6">
-                        <h2 className="text-title mb-4 text-on-background">🔮 AI Predictions</h2>
-                        <div className="space-y-4">
-                            <PredictionCard
-                                title="Best Districts Next Month"
-                                prediction="Based on current trends, Friedrichshain and Wedding show increasing supply with stable prices."
-                                confidence={78}
-                                tags={["Friedrichshain", "Wedding"]}
-                            />
-                            <PredictionCard
-                                title="Price Forecast"
-                                prediction="Average rents expected to rise 2-3% in Q2 2026 due to seasonal demand increase."
-                                confidence={65}
-                                tags={["Berlin-wide", "Q2 2026"]}
-                            />
-                            <PredictionCard
-                                title="Genossenschaft Opportunities"
-                                prediction="3 co-ops expected to open applications in April. Your profile matches 2 of them."
-                                confidence={82}
-                                tags={["Genossenschaft", "High Match"]}
-                                isPositive
-                            />
+                        <div className="mb-4 flex items-center justify-between">
+                            <h2 className="text-title text-on-background">AI Predictions</h2>
+                            {predictionsProvider && (
+                                <span className="rounded-full bg-surface-low px-3 py-1 text-xs font-medium text-muted">
+                                    Source: {predictionsProvider}
+                                </span>
+                            )}
                         </div>
+                        {predictionsLoading ? (
+                            <div className="space-y-4">
+                                {[1, 2, 3].map((i) => (
+                                    <div key={i} className="h-28 animate-pulse rounded-xl bg-surface-low" />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {predictions.map((pred, i) => (
+                                    <PredictionCard
+                                        key={i}
+                                        title={pred.title}
+                                        prediction={pred.prediction}
+                                        confidence={pred.confidence}
+                                        tags={pred.tags}
+                                        isPositive={pred.isPositive}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </section>
 
                     {/* Success Probability Calculator */}
