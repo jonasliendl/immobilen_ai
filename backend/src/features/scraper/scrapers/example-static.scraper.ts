@@ -42,12 +42,25 @@ export class ExampleStaticScraper extends BaseStaticScraper {
     const url = typeof raw.rawData.url === 'string' ? raw.rawData.url : '';
     const city = typeof raw.rawData.city === 'string' ? raw.rawData.city : null;
 
+    const coldRentAmount = priceStr === null ? null : Number(priceStr);
+
     return {
       source: this.sourceId,
       sourceListingId: raw.sourceListingId,
       title,
-      priceAmount: priceStr === null ? null : Number(priceStr),
-      priceCurrency: priceStr === null ? null : 'EUR',
+      coldRentAmount,
+      warmRentAmount: null,
+      priceCurrency: coldRentAmount === null ? null : 'EUR',
+      freeFrom: null,
+      insertedAt: null,
+      isWBSRequired: null,
+      floor: null,
+      maxFloor: null,
+      yearOfConstruction: null,
+      heatingType: null,
+      energyType: null,
+      energyEfficiencyClass: null,
+      energyConsumptionKWhPerYear: null,
       address: null,
       city,
       country: 'DE',
@@ -55,6 +68,7 @@ export class ExampleStaticScraper extends BaseStaticScraper {
       rooms: null,
       listingUrl: url,
       imageUrls: [],
+      features: [],
       rawData: raw.rawData,
     };
   }

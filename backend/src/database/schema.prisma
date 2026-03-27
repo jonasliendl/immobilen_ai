@@ -13,23 +13,35 @@ enum ScraperJobStatus {
 }
 
 model Listing {
-  id              String   @id @default(cuid())
-  source          String
-  sourceListingId String
-  title           String
-  priceAmount     Decimal?
-  priceCurrency   String?
-  address         String?
-  city            String?
-  country         String?
-  areaM2          Decimal?
-  rooms           Decimal?
-  listingUrl      String
-  imageUrls       String[]
-  rawData         Json
-  isValid         Boolean  @default(true)
-  firstSeenAt     DateTime @default(now())
-  lastSeenAt      DateTime @updatedAt
+  id                          String    @id @default(cuid())
+  source                      String
+  sourceListingId             String
+  title                       String
+  coldRentAmount              Decimal?
+  warmRentAmount              Decimal?
+  priceCurrency               String?
+  freeFrom                    DateTime?
+  insertedAt                  DateTime?
+  isWBSRequired               Boolean?
+  floor                       Int?
+  maxFloor                    Int?
+  yearOfConstruction          Int?
+  heatingType                 String?
+  energyType                  String?
+  energyEfficiencyClass       String?
+  energyConsumptionKWhPerYear Decimal?
+  address                     String?
+  city                        String?
+  country                     String?
+  areaM2                      Decimal?
+  rooms                       Decimal?
+  listingUrl                  String
+  imageUrls                   String[]
+  features                    String[]
+  rawData                     Json
+  isValid                     Boolean   @default(true)
+  firstSeenAt                 DateTime  @default(now())
+  lastSeenAt                  DateTime  @updatedAt
 
   @@unique([source, sourceListingId])
 }
