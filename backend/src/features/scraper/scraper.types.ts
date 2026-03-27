@@ -10,12 +10,41 @@ export interface RawScrapedListing {
   readonly rawData: Record<string, unknown>;
 }
 
+export enum HeatingType {
+  CENTRAL = 'Central',
+  DISTRICT = 'District',
+  ELECTRIC = 'Electric',
+  GAS = 'Gas',
+  OIL = 'Oil',
+  OTHER = 'Other',
+}
+
+export enum EnergyType {
+  FERNWÄRME = 'Fernwärme',
+  STROM = 'Strom',
+  GAS = 'Gas',
+  OEL = 'Öl',
+  SOLAR = 'Solar',
+  ANDERE = 'Andere',
+}
+
 export interface StandardListing {
   readonly source: string;
   readonly sourceListingId: string;
   readonly title: string;
-  readonly priceAmount: number | null;
+  readonly warmRentAmount: number | null;
+  readonly coldRentAmount: number | null;
   readonly priceCurrency: string | null;
+  readonly freeFrom: Date | null;
+  readonly insertedAt: Date | null;
+  readonly isWBSRequired: boolean | null;
+  readonly floor: number | null;
+  readonly maxFloor: number | null;
+  readonly yearOfConstruction: number | null;
+  readonly heatingType: HeatingType | null;
+  readonly energyType: EnergyType | null;
+  readonly energyEfficiencyClass: string | null;
+  readonly energyConsumptionKWhPerYear: number | null;
   readonly address: string | null;
   readonly city: string | null;
   readonly country: string | null;
@@ -23,6 +52,7 @@ export interface StandardListing {
   readonly rooms: number | null;
   readonly listingUrl: string;
   readonly imageUrls: string[];
+  readonly features: string[];
   readonly rawData: Record<string, unknown>;
 }
 
