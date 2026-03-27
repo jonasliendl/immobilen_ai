@@ -1,4 +1,40 @@
-import { Listing, TenantProfile } from "@/lib/types";
+import { Landlord, Listing, TenantProfile } from "@/lib/types";
+
+export const berlinLandlords: Landlord[] = [
+    {
+        id: "ld-1001",
+        name: "UrbanHaus GmbH",
+        type: "company",
+        email: "kontakt@urbanhaus.example",
+        website: "https://urbanhaus.example",
+    },
+    {
+        id: "ld-1002",
+        name: "Brix Property",
+        type: "company",
+        email: "hello@brix-property.example",
+        website: "https://brix-property.example",
+    },
+    {
+        id: "ld-1003",
+        name: "R. Fischer",
+        type: "private",
+    },
+    {
+        id: "ld-2001",
+        name: "Berliner Heim eG",
+        type: "genossenschaft",
+        email: "service@berliner-heim.example",
+        website: "https://berliner-heim.example",
+    },
+    {
+        id: "ld-2002",
+        name: "NordWohn eG",
+        type: "genossenschaft",
+        email: "kontakt@nordwohn.example",
+        website: "https://nordwohn.example",
+    },
+];
 
 export const berlinListings: Listing[] = [
     {
@@ -10,6 +46,7 @@ export const berlinListings: Listing[] = [
         sizeM2: 54,
         rooms: 2,
         source: "immobilienscout24",
+        landlordId: "ld-1001",
         landlordName: "UrbanHaus GmbH",
         commuteMinutesToCenter: 18,
         noiseScore: 34,
@@ -24,6 +61,7 @@ export const berlinListings: Listing[] = [
         sizeM2: 79,
         rooms: 3,
         source: "immowelt",
+        landlordId: "ld-1002",
         landlordName: "Brix Property",
         commuteMinutesToCenter: 22,
         noiseScore: 49,
@@ -38,6 +76,7 @@ export const berlinListings: Listing[] = [
         sizeM2: 31,
         rooms: 1,
         source: "kleinanzeigen",
+        landlordId: "ld-1003",
         landlordName: "R. Fischer",
         commuteMinutesToCenter: 16,
         noiseScore: 57,
@@ -52,6 +91,7 @@ export const berlinListings: Listing[] = [
         sizeM2: 58,
         rooms: 2,
         source: "genossenschaft",
+        landlordId: "ld-2001",
         genossenschaftName: "Berliner Heim eG",
         landlordName: "Berliner Heim eG",
         commuteMinutesToCenter: 26,
@@ -67,6 +107,7 @@ export const berlinListings: Listing[] = [
         sizeM2: 84,
         rooms: 3,
         source: "genossenschaft",
+        landlordId: "ld-2002",
         genossenschaftName: "NordWohn eG",
         landlordName: "NordWohn eG",
         commuteMinutesToCenter: 24,
@@ -84,6 +125,7 @@ export const districtRentBenchmarkPerM2: Record<string, number> = {
 };
 
 export const demoTenant: TenantProfile = {
+    id: "tn-1001",
     name: "Alex Meyer",
     email: "alex@example.com",
     monthlyNetIncomeEur: 3600,

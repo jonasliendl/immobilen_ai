@@ -4,6 +4,7 @@ import {
     estimateSuccessProbability,
     matchGenossenschaft,
 } from "@/lib/scoring";
+import { TenantScoreResponse } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -26,11 +27,13 @@ export async function GET(request: NextRequest) {
     const success = estimateSuccessProbability(tenantScore, listing);
     const genossenschaftMatch = matchGenossenschaft(demoTenant, listing);
 
-    return NextResponse.json({
+    const payload: TenantScoreResponse = {
         tenant: demoTenant,
         listing,
         tenantScore,
         success,
         genossenschaftMatch,
-    });
+    };
+
+    return NextResponse.json(payload);
 }

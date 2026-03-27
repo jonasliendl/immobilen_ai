@@ -1,7 +1,8 @@
+import { ChatRequest, ChatResponse } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-    const body = (await request.json()) as { message?: string };
+    const body = (await request.json()) as Partial<ChatRequest>;
     const message = (body.message ?? "").trim();
 
     if (!message) {
@@ -27,8 +28,10 @@ export async function POST(request: NextRequest) {
             "I compare listing rent against district benchmarks in EUR per m2 and flag overpricing risk with a confidence score.";
     }
 
-    return NextResponse.json({
+    const payload: ChatResponse = {
         reply,
         timestamp: new Date().toISOString(),
-    });
+    };
+
+    return NextResponse.json(payload);
 }
