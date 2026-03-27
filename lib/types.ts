@@ -195,6 +195,21 @@ export type TenantScoreResponse = {
 
 export type CoverLetterRequest = {
     listingId: string;
+    profile?: {
+        name?: string;
+        email?: string;
+        phone?: string;
+        occupation?: string;
+        monthlyNetIncome?: string;
+        householdSize?: string;
+        hasPets?: boolean;
+        petsDescription?: string;
+        hasSchufa?: boolean;
+        employmentDuration?: string;
+        moveInDate?: string;
+        previousAddress?: string;
+        message?: string;
+    };
 };
 
 export type CoverLetterResponse = {
@@ -210,6 +225,7 @@ export type ChatRequest = {
 
 export type ChatResponse = {
     reply: string;
+    provider?: "ollama" | "huggingface" | "fallback";
     timestamp: string;
 };
 
@@ -237,6 +253,46 @@ export type DocumentBundlesResponse = {
 export type NeighborhoodMetricsResponse = {
     count: number;
     neighborhoods: NeighborhoodMetrics[];
+};
+
+export type GeoJsonGeometry = {
+    type: "Polygon" | "MultiPolygon" | "LineString";
+    coordinates: number[][][] | number[][][][] | number[][];
+};
+
+export type NeighborhoodOverlayArea = {
+    type: "Feature";
+    geometry: GeoJsonGeometry;
+    properties: {
+        district: string;
+        lorName: string;
+        source: "berlin-open-data" | "fallback";
+        avgNoiseScore: number;
+        commuteMinutesToCenter: number;
+        safetyScore: number;
+        greenSpaceScore: number;
+        schoolAccessScore: number;
+        foodAndCultureScore: number;
+        vibeTags: string[];
+        developmentAlertCount: number;
+    };
+};
+
+export type NeighborhoodCommuteCorridor = {
+    type: "Feature";
+    geometry: GeoJsonGeometry;
+    properties: {
+        district: string;
+        source: "berlin-open-data" | "fallback";
+        commuteMinutesToCenter: number;
+    };
+};
+
+export type NeighborhoodMapResponse = {
+    generatedAtIso: string;
+    source: "berlin-open-data" | "fallback";
+    areas: NeighborhoodOverlayArea[];
+    commuteCorridors: NeighborhoodCommuteCorridor[];
 };
 
 export type ChatbotSessionsResponse = {

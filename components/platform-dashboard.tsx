@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
     Application,
     ChatbotSession,
@@ -13,6 +14,7 @@ import {
     StoredDocument,
     TenantScoreResponse,
 } from "@/lib/types";
+import { readTextStream } from "@/lib/read-text-stream";
 
 type ListingWithAssessment = ListingsResponse["listings"][number];
 
@@ -37,6 +39,7 @@ export function PlatformDashboard() {
     const [chatSessions, setChatSessions] = useState<ChatbotSession[]>([]);
     const [rejections, setRejections] = useState<RejectionAnalysis[]>([]);
     const [submitMessage, setSubmitMessage] = useState("");
+    const [isGeneratingLetter, setIsGeneratingLetter] = useState(false);
 
     const selectedListing = useMemo(
         () => listings.find((item) => item.id === selectedId) ?? null,
@@ -71,14 +74,27 @@ export function PlatformDashboard() {
     async function generateLetter() {
         if (!selectedId) return;
 
+        setIsGeneratingLetter(true);
+        setCoverLetter("");
+
         const response = await fetch("/api/tenant/cover-letter", {
             method: "POST",
             headers: { "content-type": "application/json" },
             body: JSON.stringify({ listingId: selectedId }),
         });
 
-        const data = (await response.json()) as CoverLetterResponse;
-        setCoverLetter(data.letter);
+        if (!response.ok) {
+            setCoverLetter("Unable to generate a cover letter right now.");
+            setIsGeneratingLetter(false);
+            return;
+        }
+
+        let nextValue = "";
+        await readTextStream(response, (chunk) => {
+            nextValue += chunk;
+            setCoverLetter(nextValue);
+        });
+        setIsGeneratingLetter(false);
     }
 
     async function askChatbot() {
@@ -342,10 +358,10 @@ export function PlatformDashboard() {
                     <h2 className="text-lg font-semibold">AI Cover Letter</h2>
                     <button
                         onClick={generateLetter}
-                        disabled={!selectedId}
+                        disabled={!selectedId || isGeneratingLetter}
                         className="mt-3 rounded-xl bg-black px-4 py-2 text-white"
                     >
-                        Generate Letter
+                        {isGeneratingLetter ? "Generating with Ollama..." : "Generate Letter"}
                     </button>
                     <textarea
                         value={coverLetter}
@@ -362,6 +378,14 @@ export function PlatformDashboard() {
                     </button>
                     {submitMessage && (
                         <p className="mt-2 text-sm text-black/70">{submitMessage}</p>
+                    )}
+                    {selectedId && (
+                        <Link
+                            href={`/intelligence/${selectedId}`}
+                            className="mt-3 inline-flex items-center text-sm font-medium underline"
+                        >
+                            Open full neighborhood map and intelligence
+                        </Link>
                     )}
                 </div>
 

@@ -1,9 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { berlinListings, districtRentBenchmarkPerM2 } from "@/lib/data";
 import { calculatePriceAssessment } from "@/lib/scoring";
+import { NeighborhoodMapResponse } from "@/lib/types";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+const BerlinNeighborhoodMap = dynamic(
+    () => import("@/components/berlin-neighborhood-map").then((mod) => mod.BerlinNeighborhoodMap),
+    {
+        ssr: false,
+        loading: () => <div className="h-[360px] animate-pulse rounded-2xl bg-black/5" />,
+    },
+);
 
 interface ListingIntelligencePageProps {
     params: Promise<{ id: string }>;
@@ -28,6 +38,7 @@ const defaultProfile: TenantProfile = {
 
 export default function ListingIntelligencePage({ params, searchParams }: ListingIntelligencePageProps) {
     const [profile] = useState<TenantProfile>(defaultProfile);
+    const [mapOverlay, setMapOverlay] = useState<NeighborhoodMapResponse | null>(null);
 
     const resolvedParams = useMemo(() => ({ id: "l-1001" }), []);
     const resolvedSearchParams = useMemo(() => ({ listingId: "" }), []);
@@ -92,16 +103,15 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
                 note: profile.employmentMonths > 24
                     ? "Excellent - over 2 years stable employment"
                     : profile.employmentMonths > 12
-                    ? "Good - over 1 year employed"
-                    : "Consider finding a co-signer",
+                        ? "Good - over 1 year employed"
+                        : "Consider finding a co-signer",
             },
             {
                 name: "Affordability",
                 score: rentToIncomeRatio < 0.3 ? 90 : rentToIncomeRatio < 0.35 ? 70 : 40,
                 weight: 25,
-                note: `${(rentToIncomeRatio * 100).toFixed(0)}% of income - ${
-                    rentToIncomeRatio < 0.3 ? "Healthy ratio" : rentToIncomeRatio < 0.35 ? "Acceptable" : "May be challenging"
-                }`,
+                note: `${(rentToIncomeRatio * 100).toFixed(0)}% of income - ${rentToIncomeRatio < 0.3 ? "Healthy ratio" : rentToIncomeRatio < 0.35 ? "Acceptable" : "May be challenging"
+                    }`,
             },
             {
                 name: "Document Completeness",
@@ -119,13 +129,12 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
                 name: "Market Competition",
                 score: listing.district === "Prenzlauer Berg" ? 50 : listing.district === "Lichtenberg" ? 80 : 65,
                 weight: 15,
-                note: `${listing.district} - ${
-                    listing.district === "Prenzlauer Berg"
+                note: `${listing.district} - ${listing.district === "Prenzlauer Berg"
                         ? "High competition area"
                         : listing.district === "Lichtenberg"
-                        ? "Moderate competition"
-                        : "Average competition"
-                }`,
+                            ? "Moderate competition"
+                            : "Average competition"
+                    }`,
             },
         ];
         return items;
@@ -192,6 +201,25 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
         };
     }, [listing, successProbability]);
 
+    useEffect(() => {
+        let active = true;
+
+        async function loadOverlay() {
+            const response = await fetch(`/api/neighborhoods/map?district=${encodeURIComponent(listing.district)}`);
+            if (!response.ok) return;
+
+            const data = (await response.json()) as NeighborhoodMapResponse;
+            if (!active) return;
+            setMapOverlay(data);
+        }
+
+        void loadOverlay();
+
+        return () => {
+            active = false;
+        };
+    }, [listing.district]);
+
     return (
         <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-8 md:px-8">
             {/* Breadcrumb */}
@@ -248,13 +276,12 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
                                     fill="none"
                                     strokeDasharray={440}
                                     strokeDashoffset={440 - (440 * successProbability) / 100}
-                                    className={`${
-                                        successProbability >= 70
+                                    className={`${successProbability >= 70
                                             ? "text-green-500"
                                             : successProbability >= 50
-                                            ? "text-yellow-500"
-                                            : "text-red-500"
-                                    } transition-all`}
+                                                ? "text-yellow-500"
+                                                : "text-red-500"
+                                        } transition-all`}
                                 />
                             </svg>
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -295,13 +322,12 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
                                 </div>
                                 <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-black/10">
                                     <div
-                                        className={`h-full ${
-                                            item.score >= 80
+                                        className={`h-full ${item.score >= 80
                                                 ? "bg-green-500"
                                                 : item.score >= 60
-                                                ? "bg-yellow-500"
-                                                : "bg-red-500"
-                                        }`}
+                                                    ? "bg-yellow-500"
+                                                    : "bg-red-500"
+                                            }`}
                                         style={{ width: `${item.score}%` }}
                                     />
                                 </div>
@@ -350,19 +376,42 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
                     {recommendations.map((rec, index) => (
                         <div
                             key={index}
-                            className={`rounded-xl border p-4 ${
-                                rec.type === "warning"
+                            className={`rounded-xl border p-4 ${rec.type === "warning"
                                     ? "border-yellow-200 bg-yellow-50"
                                     : rec.type === "success"
-                                    ? "border-green-200 bg-green-50"
-                                    : "border-blue-200 bg-blue-50"
-                            }`}
+                                        ? "border-green-200 bg-green-50"
+                                        : "border-blue-200 bg-blue-50"
+                                }`}
                         >
                             <p className="font-semibold">{rec.title}</p>
                             <p className="mt-1 text-sm text-black/70">{rec.description}</p>
                         </div>
                     ))}
                 </div>
+            </section>
+
+            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
+                <div className="mb-4 flex items-start justify-between gap-4">
+                    <div>
+                        <h2 className="text-lg font-semibold">Neighborhood Map Overlay</h2>
+                        <p className="mt-1 text-sm text-black/60">
+                            Noise intensity is color-coded across the district overlay and the dashed corridor approximates the commute into central Berlin.
+                        </p>
+                    </div>
+                    <span className="rounded-full bg-black/5 px-3 py-1 text-xs font-medium text-black/70">
+                        {listing.district}
+                    </span>
+                </div>
+
+                {mapOverlay ? (
+                    <BerlinNeighborhoodMap
+                        overlay={mapOverlay}
+                        selectedDistrict={listing.district}
+                        heightClassName="h-[360px]"
+                    />
+                ) : (
+                    <div className="h-[360px] animate-pulse rounded-2xl bg-black/5" />
+                )}
             </section>
 
             {/* Tips to Improve Chances */}

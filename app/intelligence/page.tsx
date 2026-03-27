@@ -1,9 +1,19 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { berlinListings, districtRentBenchmarkPerM2 } from "@/lib/data";
 import { calculatePriceAssessment } from "@/lib/scoring";
+import { NeighborhoodMapResponse } from "@/lib/types";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+const BerlinNeighborhoodMap = dynamic(
+    () => import("@/components/berlin-neighborhood-map").then((mod) => mod.BerlinNeighborhoodMap),
+    {
+        ssr: false,
+        loading: () => <div className="h-[420px] animate-pulse rounded-2xl bg-black/5" />,
+    },
+);
 
 type TimeRange = "7d" | "30d" | "90d" | "1y";
 type ViewMode = "overview" | "districts" | "predictions";
@@ -27,8 +37,38 @@ export default function IntelligencePage() {
     const [timeRange, setTimeRange] = useState<TimeRange>("30d");
     const [viewMode, setViewMode] = useState<ViewMode>("overview");
     const [selectedDistrict, setSelectedDistrict] = useState<string>("");
+    const [mapOverlay, setMapOverlay] = useState<NeighborhoodMapResponse | null>(null);
+    const [mapLoading, setMapLoading] = useState(true);
 
     const trends = mockTrends[timeRange];
+
+    useEffect(() => {
+        let active = true;
+
+        async function loadOverlay() {
+            setMapLoading(true);
+            const params = new URLSearchParams();
+            if (selectedDistrict) params.set("district", selectedDistrict);
+
+            const response = await fetch(`/api/neighborhoods/map?${params.toString()}`);
+            if (!response.ok) {
+                if (active) setMapLoading(false);
+                return;
+            }
+
+            const data = (await response.json()) as NeighborhoodMapResponse;
+            if (!active) return;
+
+            setMapOverlay(data);
+            setMapLoading(false);
+        }
+
+        void loadOverlay();
+
+        return () => {
+            active = false;
+        };
+    }, [selectedDistrict]);
 
     const marketInsights = useMemo(() => [
         {
@@ -89,11 +129,10 @@ export default function IntelligencePage() {
                         <button
                             key={range}
                             onClick={() => setTimeRange(range)}
-                            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
-                                timeRange === range
+                            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${timeRange === range
                                     ? "bg-black text-white"
                                     : "border border-black/20 bg-white hover:bg-black/5"
-                            }`}
+                                }`}
                         >
                             {range === "7d" ? "Last 7 days" : range === "30d" ? "Last 30 days" : range === "90d" ? "Last 90 days" : "Last year"}
                         </button>
@@ -141,13 +180,12 @@ export default function IntelligencePage() {
                     {marketInsights.map((insight, index) => (
                         <div
                             key={index}
-                            className={`rounded-xl border p-4 ${
-                                insight.severity === "warning"
+                            className={`rounded-xl border p-4 ${insight.severity === "warning"
                                     ? "border-yellow-200 bg-yellow-50"
                                     : insight.severity === "success"
-                                    ? "border-green-200 bg-green-50"
-                                    : "border-blue-200 bg-blue-50"
-                            }`}
+                                        ? "border-green-200 bg-green-50"
+                                        : "border-blue-200 bg-blue-50"
+                                }`}
                         >
                             <div className="flex items-start gap-3">
                                 <span className="text-2xl">{insight.icon}</span>
@@ -159,6 +197,37 @@ export default function IntelligencePage() {
                         </div>
                     ))}
                 </div>
+            </section>
+
+            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
+                <div className="mb-4 flex items-start justify-between gap-4">
+                    <div>
+                        <h2 className="text-lg font-semibold">Berlin Noise & Commute Overlay</h2>
+                        <p className="mt-1 text-sm text-black/60">
+                            OpenStreetMap tiles with LOR-compatible overlay data. When no official GeoJSON URL is configured,
+                            the app falls back to lightweight district geometries so the experience stays available.
+                        </p>
+                    </div>
+                    <span className="rounded-full bg-black/5 px-3 py-1 text-xs font-medium text-black/70">
+                        Source: {mapOverlay?.source ?? "loading"}
+                    </span>
+                </div>
+
+                {mapLoading && <div className="h-[420px] animate-pulse rounded-2xl bg-black/5" />}
+                {!mapLoading && mapOverlay && (
+                    <>
+                        <BerlinNeighborhoodMap
+                            overlay={mapOverlay}
+                            selectedDistrict={selectedDistrict || undefined}
+                        />
+                        <div className="mt-4 flex flex-wrap gap-2 text-xs text-black/60">
+                            <span className="rounded-full bg-green-100 px-3 py-1 text-green-800">Low noise</span>
+                            <span className="rounded-full bg-yellow-100 px-3 py-1 text-yellow-800">Medium noise</span>
+                            <span className="rounded-full bg-red-100 px-3 py-1 text-red-800">High noise</span>
+                            <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-800">Dashed lines = commute corridors</span>
+                        </div>
+                    </>
+                )}
             </section>
 
             {viewMode === "overview" && (
@@ -249,11 +318,10 @@ export default function IntelligencePage() {
                             <div className="flex items-start justify-between">
                                 <h3 className="font-semibold">{stat.district}</h3>
                                 <span
-                                    className={`rounded-full px-2 py-1 text-xs font-medium ${
-                                        Number(stat.trend) > 0
+                                    className={`rounded-full px-2 py-1 text-xs font-medium ${Number(stat.trend) > 0
                                             ? "bg-red-100 text-red-700"
                                             : "bg-green-100 text-green-700"
-                                    }`}
+                                        }`}
                                 >
                                     {Number(stat.trend) > 0 ? "↑" : "↓"} {Math.abs(Number(stat.trend))}%
                                 </span>
@@ -334,13 +402,12 @@ export default function IntelligencePage() {
                                                 <p className="text-sm text-black/60">{listing.district}</p>
                                             </div>
                                             <div
-                                                className={`rounded-full px-3 py-1 text-sm font-bold ${
-                                                    probability >= 70
+                                                className={`rounded-full px-3 py-1 text-sm font-bold ${probability >= 70
                                                         ? "bg-green-100 text-green-700"
                                                         : probability >= 50
-                                                        ? "bg-yellow-100 text-yellow-700"
-                                                        : "bg-red-100 text-red-700"
-                                                }`}
+                                                            ? "bg-yellow-100 text-yellow-700"
+                                                            : "bg-red-100 text-red-700"
+                                                    }`}
                                             >
                                                 {probability}%
                                             </div>
@@ -384,11 +451,10 @@ function MetricCard({
                     {icon}
                 </div>
                 <div
-                    className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${
-                        isPositiveTrend
+                    className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${isPositiveTrend
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"
-                    }`}
+                        }`}
                 >
                     {isPositiveTrend ? "↑" : "↓"} {Math.abs(trend)}%
                 </div>
@@ -411,11 +477,10 @@ function ViewButton({
     return (
         <button
             onClick={onClick}
-            className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
-                active
+            className={`rounded-xl px-4 py-2 text-sm font-medium transition ${active
                     ? "bg-black text-white"
                     : "border border-black/20 bg-white hover:bg-black/5"
-            }`}
+                }`}
         >
             {children}
         </button>
@@ -437,22 +502,20 @@ function PredictionCard({
 }) {
     return (
         <div
-            className={`rounded-xl border p-4 ${
-                isPositive ? "border-green-200 bg-green-50" : "border-black/10 bg-white"
-            }`}
+            className={`rounded-xl border p-4 ${isPositive ? "border-green-200 bg-green-50" : "border-black/10 bg-white"
+                }`}
         >
             <div className="flex items-start justify-between">
                 <h3 className="font-semibold">{title}</h3>
                 <div className="flex items-center gap-2">
                     <span className="text-xs text-black/50">Confidence</span>
                     <span
-                        className={`rounded-full px-2 py-1 text-xs font-bold ${
-                            confidence >= 75
+                        className={`rounded-full px-2 py-1 text-xs font-bold ${confidence >= 75
                                 ? "bg-green-100 text-green-700"
                                 : confidence >= 50
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-red-100 text-red-700"
-                        }`}
+                                    ? "bg-yellow-100 text-yellow-700"
+                                    : "bg-red-100 text-red-700"
+                            }`}
                     >
                         {confidence}%
                     </span>

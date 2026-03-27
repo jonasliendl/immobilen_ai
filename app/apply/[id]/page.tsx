@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { berlinListings } from "@/lib/data";
+import { readTextStream } from "@/lib/read-text-stream";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -93,6 +94,7 @@ export default function ApplyPage({ params, searchParams }: ApplyPageProps) {
 
     async function generateCoverLetter() {
         setIsGenerating(true);
+        setCoverLetter("");
         try {
             const response = await fetch("/api/tenant/cover-letter", {
                 method: "POST",
@@ -102,8 +104,16 @@ export default function ApplyPage({ params, searchParams }: ApplyPageProps) {
                     profile,
                 }),
             });
-            const data = await response.json();
-            setCoverLetter(data.letter || "Dear landlord,\n\nI am very interested in your apartment...");
+
+            if (!response.ok) {
+                throw new Error("cover-letter-request-failed");
+            }
+
+            let nextValue = "";
+            await readTextStream(response, (chunk) => {
+                nextValue += chunk;
+                setCoverLetter(nextValue);
+            });
         } catch {
             setCoverLetter(`Dear ${listing.landlordName},
 
@@ -253,22 +263,20 @@ ${profile.name || "[Your name]"}`);
                             <button
                                 type="button"
                                 onClick={() => updateProfile("hasPets", false)}
-                                className={`rounded-xl border px-4 py-2 ${
-                                    !profile.hasPets
+                                className={`rounded-xl border px-4 py-2 ${!profile.hasPets
                                         ? "border-black bg-black text-white"
                                         : "border-black/20"
-                                }`}
+                                    }`}
                             >
                                 No
                             </button>
                             <button
                                 type="button"
                                 onClick={() => updateProfile("hasPets", true)}
-                                className={`rounded-xl border px-4 py-2 ${
-                                    profile.hasPets
+                                className={`rounded-xl border px-4 py-2 ${profile.hasPets
                                         ? "border-black bg-black text-white"
                                         : "border-black/20"
-                                }`}
+                                    }`}
                             >
                                 Yes
                             </button>
@@ -456,13 +464,12 @@ ${profile.name || "[Your name]"}`);
                 <div className="rounded-2xl border border-black/10 bg-white p-6">
                     <div className="mb-4 flex items-center justify-between">
                         <h2 className="text-lg font-semibold">Application Summary</h2>
-                        <div className={`rounded-full px-3 py-1 text-sm font-medium ${
-                            completionScore >= 80
+                        <div className={`rounded-full px-3 py-1 text-sm font-medium ${completionScore >= 80
                                 ? "bg-green-100 text-green-700"
                                 : completionScore >= 60
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-red-100 text-red-700"
-                        }`}>
+                                    ? "bg-yellow-100 text-yellow-700"
+                                    : "bg-red-100 text-red-700"
+                            }`}>
                             {completionScore}% Complete
                         </div>
                     </div>
@@ -470,13 +477,12 @@ ${profile.name || "[Your name]"}`);
                     {/* Progress Bar */}
                     <div className="h-3 w-full overflow-hidden rounded-full bg-black/10">
                         <div
-                            className={`h-full transition-all ${
-                                completionScore >= 80
+                            className={`h-full transition-all ${completionScore >= 80
                                     ? "bg-green-500"
                                     : completionScore >= 60
-                                    ? "bg-yellow-500"
-                                    : "bg-red-500"
-                            }`}
+                                        ? "bg-yellow-500"
+                                        : "bg-red-500"
+                                }`}
                             style={{ width: `${completionScore}%` }}
                         />
                     </div>
@@ -594,26 +600,23 @@ ${profile.name || "[Your name]"}`);
                             {steps.map((step, index) => (
                                 <div key={step.id} className="flex items-center">
                                     <div
-                                        className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition ${
-                                            index <= currentStepIndex
+                                        className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition ${index <= currentStepIndex
                                                 ? "bg-black text-white"
                                                 : "bg-black/10 text-black/40"
-                                        }`}
+                                            }`}
                                     >
                                         {index < currentStepIndex ? "✓" : step.icon}
                                     </div>
                                     <span
-                                        className={`ml-2 hidden text-sm font-medium md:block ${
-                                            index <= currentStepIndex ? "text-black" : "text-black/40"
-                                        }`}
+                                        className={`ml-2 hidden text-sm font-medium md:block ${index <= currentStepIndex ? "text-black" : "text-black/40"
+                                            }`}
                                     >
                                         {step.label}
                                     </span>
                                     {index < steps.length - 1 && (
                                         <div
-                                            className={`mx-2 h-0.5 w-8 md:w-16 ${
-                                                index < currentStepIndex ? "bg-black" : "bg-black/10"
-                                            }`}
+                                            className={`mx-2 h-0.5 w-8 md:w-16 ${index < currentStepIndex ? "bg-black" : "bg-black/10"
+                                                }`}
                                         />
                                     )}
                                 </div>
