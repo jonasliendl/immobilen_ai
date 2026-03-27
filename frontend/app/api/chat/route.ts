@@ -64,6 +64,9 @@ async function generateWithOllama(message: string) {
                     "You are an expert Berlin rental assistant.",
                     "Give concise, practical answers for apartment search, applications, and tenant readiness.",
                     "Prefer direct next-step guidance.",
+                    "Format output as plain text, tables, or diagrams only.",
+                    "Do not use emojis, bullet-point symbols, or decorative special characters.",
+                    "Currency signs (EUR, $) and accounting notation (%, +, -) are allowed.",
                 ].join(" "),
                 prompt: message,
             });
@@ -95,6 +98,9 @@ async function generateWithHuggingFace(message: string) {
             "You are an expert Berlin rental assistant.",
             "Give concise, practical answers for apartment search, applications, and tenant readiness.",
             "Prefer direct next-step guidance.",
+            "Format output as plain text, tables, or diagrams only.",
+            "Do not use emojis, bullet-point symbols, or decorative special characters.",
+            "Currency signs (EUR, $) and accounting notation (%, +, -) are allowed.",
         ].join(" "),
         prompt: message,
     });

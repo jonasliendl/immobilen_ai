@@ -154,15 +154,11 @@ export default function ApplyPage({ params, searchParams }: ApplyPageProps) {
 
 I am writing to express my strong interest in the apartment at ${listing.address}.
 
-About me:
-- Name: ${profile.name || "[Your name]"}
-- Occupation: ${profile.occupation || "[Your occupation]"}
-- Monthly net income: €${profile.monthlyNetIncome || "[Amount]"}
-- Household size: ${profile.householdSize} person(s)
+My name is ${profile.name || "[Your name]"} and I work as a ${profile.occupation || "[Your occupation]"}. My monthly net income is EUR ${profile.monthlyNetIncome || "[Amount]"} and my household size is ${profile.householdSize} person(s).
 
 I am a responsible tenant looking for a long-term home in ${listing.district}. I would be delighted to arrange a viewing.
 
-Best regards,
+Kind regards,
 ${profile.name || "[Your name]"}`);
         } finally {
             setIsGenerating(false);
@@ -184,6 +180,7 @@ ${profile.name || "[Your name]"}`);
                 profile.moveInDate ? `Preferred move-in: ${profile.moveInDate}.` : "",
                 `Tone: warm, professional, concise. Mention why the applicant is a good fit.`,
                 `Output ONLY the message text, no greeting or sign-off.`,
+                `Use plain text only. No emojis or special characters. Currency signs (EUR) are allowed.`,
             ].filter(Boolean).join(" ");
 
             const res = await fetch("/api/chat", {

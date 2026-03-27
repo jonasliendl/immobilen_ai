@@ -101,8 +101,10 @@ export async function POST(request: NextRequest) {
             system: [
                 "You write concise, high-conviction apartment application cover letters for Berlin rentals.",
                 "Output only the final letter body in English unless the landlord or applicant context explicitly requires German.",
-                "Keep the tone professional, warm, and factual. Do not use bullet points.",
+                "Keep the tone professional, warm, and factual.",
                 "Mention financial stability, document readiness, and fit for the listing.",
+                "Format output as plain text only. Do not use emojis, bullet points, or decorative special characters.",
+                "Currency signs (EUR, $) and accounting notation (%, +, -) are allowed.",
             ].join(" "),
             prompt: [
                 `Provider: Ollama at ${ollamaConfig.baseUrl}`,
