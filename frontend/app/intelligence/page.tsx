@@ -25,12 +25,12 @@ const mockTrends = {
     "1y": { avgPrice: 1150, change: 8.7, listings: 5200 },
 };
 
-const districtStats = Object.entries(districtRentBenchmarkPerM2).map(([district, pricePerM2]) => ({
+const districtStats = Object.entries(districtRentBenchmarkPerM2).map(([district, pricePerM2], i) => ({
     district,
     pricePerM2,
     avgRent: pricePerM2 * 55, // avg 55m2
     listings: berlinListings.filter((l) => l.district === district).length,
-    trend: (Math.random() * 10 - 3).toFixed(1),
+    trend: ((((i * 7 + 3) % 13) - 5) * 0.8).toFixed(1),
 }));
 
 export default function IntelligencePage() {
