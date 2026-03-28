@@ -11,6 +11,10 @@ import {
     getApplicationsByTenant,
 } from '../../features/tenants/tenants.service';
 import {
+    getNotificationsByTenant,
+    notifyApplicationSubmitted,
+} from '../../features/notifications/notifications.service';
+import {
     CreateTenantSchema,
     UpdateTenantSchema,
     UpsertPreferencesSchema,
@@ -149,6 +153,19 @@ export async function createApplicationHandler(
     }
 
     const application = await createApplication(request.params.id, parsed.data);
+
+    await notifyApplicationSubmitted({
+        tenantId: request.params.id,
+        tenantName: String(tenant.name ?? 'Tenant'),
+        tenantEmail: tenant.email === null || tenant.email === undefined ? null : String(tenant.email),
+        tenantWhatsappNumber:
+            tenant.whatsappNumber === null || tenant.whatsappNumber === undefined
+                ? null
+                : String(tenant.whatsappNumber),
+        applicationId: String(application.id),
+        listingId: String(application.listingId),
+    });
+
     await reply.status(201).send({ data: application });
 }
 
@@ -158,4 +175,12 @@ export async function getApplicationsHandler(
 ): Promise<void> {
     const applications = await getApplicationsByTenant(request.params.id);
     await reply.send({ data: applications });
+}
+
+export async function getNotificationsHandler(
+    request: FastifyRequest<{ Params: { id: string } }>,
+    reply: FastifyReply,
+): Promise<void> {
+    const notifications = await getNotificationsByTenant(request.params.id);
+    await reply.send({ data: notifications });
 }

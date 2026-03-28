@@ -72,6 +72,14 @@ export interface ScraperJobResult {
   readonly status: 'SUCCESS' | 'FAILED';
   readonly listingsProcessed: number;
   readonly listingsUpserted: number;
+  readonly listingAlerts: {
+    readonly newListings: number;
+    readonly matchedTenants: number;
+    readonly channelsCreated: number;
+    readonly channelsSent: number;
+    readonly channelsFailed: number;
+    readonly channelsSkippedDuplicate: number;
+  };
   readonly errorMessage: string | null;
   readonly startedAt: Date;
   readonly finishedAt: Date;

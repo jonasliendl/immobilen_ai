@@ -8,6 +8,7 @@ import {
     getPreferencesHandler,
     createApplicationHandler,
     getApplicationsHandler,
+    getNotificationsHandler,
 } from './tenants.controller';
 
 const tenantsRoutes: FastifyPluginCallback = (app, _options, done): void => {
@@ -39,6 +40,9 @@ const tenantsRoutes: FastifyPluginCallback = (app, _options, done): void => {
     // Tenant applications
     app.get<{ Params: { id: string } }>('/:id/applications', getApplicationsHandler);
     app.post<{ Params: { id: string } }>('/:id/applications', createApplicationHandler);
+
+    // Tenant notifications
+    app.get<{ Params: { id: string } }>('/:id/notifications', getNotificationsHandler);
 
     done();
 };
