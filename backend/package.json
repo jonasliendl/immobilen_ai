@@ -16,7 +16,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
-    "db:studio": "prisma studio"
+    "db:reset": "prisma migrate reset"
   },
   "prisma": {
     "schema": "src/database/schema.prisma"
@@ -37,7 +37,8 @@
     "fastify": "^5.8.4",
     "pg": "^8.20.0",
     "playwright": "^1.58.2",
-    "toad-scheduler": "^3.1.0"
+    "toad-scheduler": "^3.1.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

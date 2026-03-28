@@ -33,7 +33,12 @@ export abstract class BaseBrowserScraper implements ScraperInterface {
       );
     }
     return this.browser.newContext({
-      userAgent: 'Mozilla/5.0 (compatible; RealEstateBot/1.0)',
+      userAgent:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+      locale: 'de-DE',
+      extraHTTPHeaders: {
+        'Accept-Language': 'de-DE,de;q=0.9',
+      },
     });
   }
 }

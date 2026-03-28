@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import type { FastifyInstance } from 'fastify';
 import healthRoutes from './api/health/health.routes';
+import listingsRoutes from './api/listings/listings.routes';
 import scraperRoutes from './api/scraper/scraper.routes';
 import { scraperSchedulerPlugin } from './features/scraper/scraper-scheduler.plugin';
 import { sharedMiddleware } from './shared/middleware/index';
@@ -17,6 +18,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   // API routes
   await app.register(healthRoutes);
   await app.register(scraperRoutes, { prefix: '/api/v1/scrapers' });
+  await app.register(listingsRoutes, { prefix: '/api/v1/listings' });
 
   return app;
 }
