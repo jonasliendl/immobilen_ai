@@ -1,4 +1,3 @@
-import type { Locator } from 'playwright';
 import { BaseBrowserScraper } from '../base-browser-scraper';
 import { EnergyType, HeatingType } from '../scraper.types';
 import type { RawScrapedListing, ScrapeContext, StandardListing } from '../scraper.types';
@@ -9,71 +8,90 @@ export class InBerlinWohnenScraper extends BaseBrowserScraper {
 
   private readonly LISTINGS_URL = 'https://www.inberlinwohnen.de/wohnungsfinder';
 
-  async scrape(_context: ScrapeContext): Promise<RawScrapedListing[]> {
+  async scrape(context: ScrapeContext): Promise<RawScrapedListing[]> {
+    const { logger } = context;
     const browserContext = await this.newContext();
 
     try {
       const page = await browserContext.newPage();
-      await page.goto(this.LISTINGS_URL, {
-        waitUntil: 'networkidle',
-      });
+      logger.info('Navigating to listings page');
+      await page.goto(this.LISTINGS_URL, { waitUntil: 'networkidle' });
+
+      const saveCookieSettingsButton = page.getByRole('button', { name: 'Speichern' });
+      if (await saveCookieSettingsButton.count() > 0) {
+        logger.info('Saving cookie settings');
+
+        await page.getByRole('button', { name: 'Speichern' }).click();
+      }
 
       const rawItems: RawScrapedListing[] = [];
+      let pageNumber = 1;
 
       for (;;) {
-        const listingSections: Locator[] = await page
-          .getByRole('button', { name: /^Wohnungsangebot/ })
-          .all();
+        const snapshotDivs = await page.locator(String.raw`[wire\:snapshot]`).all();
+        logger.info({ pageNumber, count: snapshotDivs.length }, 'Scraping listings on page');
 
-        for (const listing of listingSections) {
-          await listing.click();
+        for (const div of snapshotDivs) {
+          const snapshotStr = await div.getAttribute('wire:snapshot');
+          if (snapshotStr === null || snapshotStr === '') continue;
 
-          const detailsDiv = listing.locator('..').locator('div.list__details');
-          await detailsDiv.waitFor({ state: 'visible' });
+          let item: Record<string, unknown>;
+          try {
+            const snapshot = JSON.parse(snapshotStr) as Record<string, unknown>;
+            const items = (snapshot.data as Record<string, unknown> | undefined)?.item;
+            if (!Array.isArray(items) || items.length === 0) continue;
+            item = items[0] as Record<string, unknown>;
+          } catch {
+            logger.warn('Failed to parse wire:snapshot JSON, skipping listing');
+            continue;
+          }
 
-          const rawTitle = await detailsDiv.locator('span').first().textContent();
-          const title = rawTitle?.trim() ?? '';
-
-          const dts = await detailsDiv.locator('dt').allTextContents();
-          const dds = await detailsDiv.locator('dd').allTextContents();
-
+          // Convert the details array (same data as the dt/dd pairs in the DOM) to a flat record.
+          // Values may contain HTML (e.g. "Zentralheizung<br>") — strip it.
           const details: Record<string, string> = {};
-          for (let i = 0; i < Math.min(dts.length, dds.length); i++) {
-            // eslint-disable-next-line security/detect-object-injection
-            details[dts[i].trim().slice(0, -1)] = dds[i].trim();
+          if (Array.isArray(item.details)) {
+            for (const detail of item.details as Record<string, unknown>[]) {
+              if (typeof detail.label === 'string' && detail.value !== null && detail.value !== undefined) {
+                const raw = typeof detail.value === 'string' ? detail.value : JSON.stringify(detail.value);
+                // eslint-disable-next-line unicorn/prefer-string-replace-all
+                details[detail.label] = raw.replace(/<[^>]*>/g, '').trim();
+              }
+            }
           }
 
-          const image = await detailsDiv.locator('img').first().getAttribute('src');
-          if (image !== null) {
-            details.imageUrl = image;
-          }
-
-          const url = await detailsDiv.locator('a').first().getAttribute('href');
-          if (url !== null) {
-            details.url = url;
-          }
-
-          const featureSpans = detailsDiv.locator('div > span');
-          const featureSpanCount = await featureSpans.count();
+          // Feature texts are readable via textContent even when the div has display:none.
+          const featureSpans = div.locator('div.list__details div > span');
+          const featureCount = await featureSpans.count();
           const featureTexts =
-            featureSpanCount > 0
-              ? await featureSpans.allTextContents()
+            featureCount > 0
+              ? (await featureSpans.allTextContents())
               : [];
-          const features = featureTexts.map((t) => t.trim()).filter((t) => t !== '');
+          const features = featureTexts.map((t) => t.trim()).filter((t) => t !== '')
 
+          const id = typeof item.id === 'number' || typeof item.id === 'string' ? String(item.id) : '';
+          logger.debug({ id }, 'Scraped listing');
           rawItems.push({
-            sourceListingId: title,
-            rawData: { title, features, ...details },
+            sourceListingId: id,
+            rawData: {
+              ...details,
+              title: item.title,
+              deeplink: item.deeplink,
+              imagePath: item.imagePath,
+              features,
+            },
           });
         }
 
-        const nextButton = page.getByRole('button', { name: /^Vor/ });
-        if ((await nextButton.count()) === 0) break;
+        const nextButtons = page.getByRole('button', { name: /^Vor/ });
+        if ((await nextButtons.count()) === 0) break;
 
-        await nextButton.click();
-        await page.waitForLoadState('networkidle');
+        pageNumber++;
+        logger.info({ pageNumber }, 'Navigating to next page');
+        await nextButtons.first().click({ force: true });
+        await page.waitForURL((url) => url.searchParams.get('page') === String(pageNumber));
       }
 
+      logger.info({ total: rawItems.length }, 'Finished scraping all pages');
       return rawItems;
     } finally {
       await browserContext.close();
@@ -111,7 +129,12 @@ export class InBerlinWohnenScraper extends BaseBrowserScraper {
   }
 
   private isUnknown(lower: string): boolean {
-    return lower.includes('unbekannt') || lower.includes('unknown') || lower.includes('keine angabe') || lower === '-';
+    return (
+      lower.includes('unbekannt') ||
+      lower.includes('unknown') ||
+      lower.includes('keine angabe') ||
+      lower === '-'
+    );
   }
 
   private parseHeatingType(value: unknown): HeatingType | null {
@@ -143,7 +166,7 @@ export class InBerlinWohnenScraper extends BaseBrowserScraper {
     const coldRentAmount = this.parseGermanNumber(d.Kaltmiete);
     const warmRentAmount = this.parseGermanNumber(d.Gesamtmiete);
     const hasCost = coldRentAmount !== null || warmRentAmount !== null;
-    const imageUrl = this.getString(d.imageUrl);
+    const imageUrl = this.getString(d.imagePath);
     const { floor, maxFloor } = this.parseFloor(d.Etage);
     const baujahr = this.parseGermanNumber(d.Baujahr);
 
@@ -154,26 +177,26 @@ export class InBerlinWohnenScraper extends BaseBrowserScraper {
       coldRentAmount,
       warmRentAmount,
       priceCurrency: hasCost ? 'EUR' : null,
-      freeFrom: this.parseGermanDate(d['Frei ab']),
+      freeFrom: this.parseGermanDate(d['Bezugsfertig ab']),
       insertedAt: this.parseGermanDate(d['Eingestellt am']),
       isWBSRequired: typeof d.WBS === 'string' ? d.WBS.toLowerCase().includes('erforderlich') : null,
       floor,
       maxFloor,
       yearOfConstruction: baujahr === null ? null : Math.trunc(baujahr),
-      heatingType: this.parseHeatingType(d.Heizungsart),
-      energyType: this.parseEnergyType(d['Energieträger']),
+      heatingType: this.parseHeatingType(d.Heizung),
+      energyType: this.parseEnergyType(d['Hauptenergieträger']),
       energyEfficiencyClass: this.getString(d.Energieeffizienzklasse),
-      energyConsumptionKWhPerYear: this.parseGermanNumber(d.Endenergieverbrauch),
+      energyConsumptionKWhPerYear: this.parseGermanNumber(d.Energieverbrauchskennwert),
       address: this.getString(d.Adresse),
       city: 'Berlin',
       country: 'DE',
       areaM2: this.parseGermanNumber(d['Wohnfläche']),
       rooms: this.parseGermanNumber(d.Zimmeranzahl),
-      listingUrl: this.getString(d.url) ?? '',
+      listingUrl: this.getString(d.deeplink) ?? '',
       imageUrls: imageUrl === null ? [] : [imageUrl],
-      features: (d.features as string[] | null) ?? [],
+      features: (d.featureTexts as string[] | null) ?? [],
       rawData: d,
-    };
+    } satisfies StandardListing;
   }
 
   validate(listing: StandardListing): boolean {
