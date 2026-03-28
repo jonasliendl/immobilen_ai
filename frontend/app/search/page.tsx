@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { FeaturePageIntro } from "@/components/feature-page-intro";
 import type { Listing, ListingsResponse } from "@/lib/types";
 import { getListings } from "@/lib/api";
+import { COMPANY_BASE_URLS } from "@/lib/company-urls";
+import Image from "next/image";
 
 type Filters = {
     city: string;
@@ -288,9 +290,9 @@ export default function SearchPage() {
                                 className="ds-card group p-4"
                             >
                                 <div className="aspect-video w-full overflow-hidden rounded-xl bg-surface-low">
-                                    {listing.imageUrls.length > 0 ? (
+                                    {listing.imageUrls.length > 0 && COMPANY_BASE_URLS[listing.source] ? (
                                         <img
-                                            src={listing.imageUrls[0]}
+                                            src={`${COMPANY_BASE_URLS[listing.source] ?? ''}${listing.imageUrls[0]}`}
                                             alt={listing.title}
                                             className="h-full w-full object-cover"
                                         />

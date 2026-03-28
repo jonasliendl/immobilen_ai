@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import type { Listing } from "@/lib/types";
 import { getListingById } from "@/lib/api";
+import { COMPANY_BASE_URLS } from "@/lib/company-urls";
 
 interface ListingDetailPageProps {
     params: Promise<{ id: string }>;
@@ -63,7 +64,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                         <div className="aspect-video w-full bg-gradient-to-br from-surface-low to-surface-high">
                             {listing.imageUrls.length > 0 ? (
                                 <img
-                                    src={listing.imageUrls[0]}
+                                    src={`${COMPANY_BASE_URLS[listing.source] ?? ''}${listing.imageUrls[0]}`}
                                     alt={listing.title}
                                     className="h-full w-full object-cover"
                                 />

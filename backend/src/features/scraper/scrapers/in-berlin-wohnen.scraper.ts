@@ -68,6 +68,9 @@ export class InBerlinWohnenScraper extends BaseBrowserScraper {
           const allTexts = featureCount > 0 ? await featureSpans.allTextContents() : [];
           const features = allTexts.map((t) => t.trim()).filter((t) => t !== '' && !t.startsWith('Eine Wohnung der'));
 
+          const imageEl = div.locator('div.list__details img[alt="Wohnungsbild"]').first();
+          const imagePath = (await imageEl.count()) > 0 ? await imageEl.getAttribute('src') : null;
+
           const id = typeof item.id === 'number' || typeof item.id === 'string' ? String(item.id) : '';
           logger.debug({ id }, 'Scraped listing');
           rawItems.push({
@@ -76,7 +79,7 @@ export class InBerlinWohnenScraper extends BaseBrowserScraper {
               ...details,
               title: item.title,
               deeplink: item.deeplink,
-              imagePath: item.imagePath,
+              imagePath,
               hasWbs: snapshotData.hasWbs,
               rooms: item.rooms,
               area: item.area,
