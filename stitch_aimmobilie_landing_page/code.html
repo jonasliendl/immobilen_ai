@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="de"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aimmobilie | Die intelligente Wohnungssuche</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed-dim": "#a2c9ff",
+                        "secondary": "#0060a9",
+                        "on-background": "#101c2e",
+                        "background": "#f9f9ff",
+                        "tertiary-fixed": "#ffd9e4",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#dee8ff",
+                        "secondary-fixed": "#d3e4ff",
+                        "on-primary-fixed": "#002116",
+                        "surface": "#f9f9ff",
+                        "tertiary-container": "#ff9ac0",
+                        "on-secondary-container": "#003b6a",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#3c4a43",
+                        "surface-container": "#e7eeff",
+                        "surface-bright": "#f9f9ff",
+                        "tertiary-fixed-dim": "#ffb0cc",
+                        "surface-variant": "#d7e3fc",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "primary-fixed-dim": "#50ddad",
+                        "outline-variant": "#bbcac1",
+                        "primary": "#006c4f",
+                        "on-primary-fixed-variant": "#00513b",
+                        "on-tertiary-fixed-variant": "#841a4f",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#00543d",
+                        "surface-container-low": "#f0f3ff",
+                        "surface-container-highest": "#d7e3fc",
+                        "on-secondary-fixed": "#001c38",
+                        "inverse-primary": "#50ddad",
+                        "on-tertiary-fixed": "#3e0020",
+                        "error-container": "#ffdad6",
+                        "outline": "#6c7a73",
+                        "inverse-on-surface": "#ecf1ff",
+                        "primary-container": "#3ecfa0",
+                        "surface-tint": "#006c4f",
+                        "secondary-container": "#59a6fd",
+                        "primary-fixed": "#71fac8",
+                        "on-surface": "#101c2e",
+                        "surface-dim": "#cfdaf3",
+                        "on-secondary-fixed-variant": "#004881",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#253144",
+                        "on-tertiary-container": "#871d51",
+                        "tertiary": "#a33467",
+                        "on-error": "#ffffff"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "card": "1.5rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'floating': '0 20px 40px -15px rgba(0, 0, 0, 0.1), 0 10px 20px -10px rgba(0, 0, 0, 0.05)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 24
+    }
+.glass-box {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1)
+    }
+/* 3D Cube Texture implementation */
+.cube-texture {
+    background-image: url(https://lh3.googleusercontent.com/aida/ADBb0ugDXpyXWo9hlo7wub4fBAtRxRxRHg0WuNSrzuoCUOatXjGaCLX4MGLp6222t8uUE95h9sPk5DqDPdGRjAJOsgsEY5LHgoR02MI9Ae5mNE0ZM1SkFS-2aQIYct5f17Zh-d1hwvn-Jfr-shZZO3dmnT5S6x5W-NUsGvqQipW_orsZ1-0kGk0Rcty4I86KEy0BVlNTh0mr_yEGmGNJu7PoC15aJtYlpc5hpzQ4MS3ZczgNv7NbB6h3HGwC_dTBE_Q7yxjwsUwagU0BXw);
+    background-size: 600px;
+    background-repeat: repeat;
+    mix-blend-mode: overlay;
+    opacity: 0.06;
+    pointer-events: none
+    }
+.cube-texture-dark {
+    background-image: url(https://lh3.googleusercontent.com/aida/ADBb0ugDXpyXWo9hlo7wub4fBAtRxRxRHg0WuNSrzuoCUOatXjGaCLX4MGLp6222t8uUE95h9sPk5DqDPdGRjAJOsgsEY5LHgoR02MI9Ae5mNE0ZM1SkFS-2aQIYct5f17Zh-d1hwvn-Jfr-shZZO3dmnT5S6x5W-NUsGvqQipW_orsZ1-0kGk0Rcty4I86KEy0BVlNTh0mr_yEGmGNJu7PoC15aJtYlpc5hpzQ4MS3ZczgNv7NbB6h3HGwC_dTBE_Q7yxjwsUwagU0BXw);
+    background-size: 600px;
+    background-repeat: repeat;
+    mix-blend-mode: soft-light;
+    opacity: 0.12;
+    pointer-events: none
+    }
+/* Updated multi-color gradient background - Vibrant Red to Mint */
+.brand-gradient {
+    background: linear-gradient(180deg, #FF4D4D 0%, #3ECFA0 100%)
+    }
+/* Improved text clarity on textures */
+.text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1)
+    }</style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-sm dark:shadow-none font-sans antialiased tracking-tight text-sm font-medium">
+<div class="flex justify-between items-center h-20 px-8 max-w-screen-2xl mx-auto">
+<div class="text-xl font-bold tracking-tighter text-slate-900 dark:text-white">Ai.mmobilie</div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-emerald-600 dark:text-emerald-400 font-semibold border-b-2 border-emerald-500 pb-1" href="#properties">Properties</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" href="#valuation">AI Valuation</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" href="#insights">Insights</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors" href="#concierge">Concierge</a>
+</div>
+<div class="flex items-center space-x-4">
+<button class="px-5 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 font-medium transition-all">Sign In</button>
+<button class="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-semibold transition-all shadow-md hover:shadow-emerald-500/20 active:scale-95">Get Started</button>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<header class="relative min-h-screen flex items-center bg-[#0F1B2D] text-white overflow-hidden pt-20">
+<!-- Subtle 3D Texture for Dark Section -->
+<div class="absolute inset-0 cube-texture-dark z-0"></div>
+<div class="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-tertiary/10 z-0"></div>
+<div class="container mx-auto px-8 grid lg:grid-cols-2 gap-16 items-center relative z-10">
+<div class="max-w-2xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 text-primary-container text-xs font-medium tracking-widest uppercase mb-8 backdrop-blur-md">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                Die Zukunft der Immobiliensuche
+            </div>
+<h1 class="text-5xl md:text-7xl font-extrabold leading-tight mb-8 tracking-tight">
+                Deine Wohnung.<br/>
+                Gefunden von KI.
+            </h1>
+<p class="text-lg md:text-xl text-slate-300 font-light leading-relaxed mb-12 max-w-lg">
+                Aimmobilie analysiert den Markt in Echtzeit. Wir finden keine Inserate, wir finden dein neues Zuhause – bevor es andere tun.
+            </p>
+<div class="flex flex-col sm:flex-row gap-6">
+<button class="px-8 py-4 bg-primary hover:bg-primary/90 rounded-xl text-white font-bold transition-all group flex items-center justify-center gap-3 shadow-lg shadow-primary/20">
+                    Kostenlos starten
+                    <span class="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<button class="px-8 py-4 border border-white/20 hover:bg-white/5 rounded-xl text-white font-medium transition-all flex items-center justify-center gap-3 backdrop-blur-sm">
+                    Wie es funktioniert
+                    <span class="material-symbols-outlined text-xl" data-icon="play_circle">play_circle</span>
+</button>
+</div>
+</div>
+<div class="relative hidden lg:block">
+<div class="absolute -top-24 -right-24 w-96 h-96 bg-primary/20 blur-[120px] rounded-full"></div>
+<div class="absolute -bottom-24 -left-24 w-96 h-96 bg-tertiary/10 blur-[120px] rounded-full"></div>
+<div class="relative glass-box p-8 rounded-[2rem] shadow-2xl overflow-hidden">
+<img alt="Modern luxury apartment interior" class="w-full h-[500px] object-cover rounded-2xl transition-all duration-700" data-alt="ultra-modern living room with minimalist furniture, large windows showing a cityscape at twilight, soft atmospheric lighting, premium architectural photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7W4t9tYUaXEJd2tvCytYyPtmPRq4_pIKWbr9tQOOWv85l5g4KiYPLb-LLxc3Je8kYDZJgmynpxjMJjlAdh3D7Ws6n2J3CLuouGspQc8w5ZMet_-V_pZI8c7JggU1xnX9ALjxAKdd-SnvdFdLwBQUQx5iHFJgh7_sCrVOFWcXsa368Rt_owWHd1hkWZtPblR9oxhxPjS6gpjR-TNoxVe1RhUaEZwR_VeZ4AXoMFPkulyoOKFpKgT9lc6MojJ4u9YiXihFfgvGsKIk"/>
+<div class="absolute bottom-12 left-12 right-12 glass-box p-6 rounded-2xl flex items-center justify-between border-white/20">
+<div>
+<p class="text-xs uppercase tracking-widest text-primary-container font-semibold mb-1">AI Match Score</p>
+<p class="text-2xl font-bold">98% Relevanz</p>
+</div>
+<div class="flex -space-x-3">
+<div class="w-10 h-10 rounded-full border-2 border-[#0F1B2D] bg-slate-800 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="portrait of a young professional woman smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq-u8-m_xaKtKk9xl7AdaqpimNJ_WMn5sUWBjqeHbuq3lV2Jnyqkpb94HAj9DqcR_pjw-3HEgzQoo0tFi4an82N7__mR0THhgjsbH1SrQvA-n7cIcqVPqoy_geiALMirzgwhdJZCte__Oo6SZsQL1H3HwyBrGJbxnHOF7Lz-gvRQHdMnNK4LdRJneYsVDRHveqbBVRhYfj4REg-B9u7Ekd_Q9AQDgfydE9s_KqFsDwyC6EjepSVjL3RbBmoTlBLM6IDJu2M0aGzCo"/>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-[#0F1B2D] bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-xs" data-icon="bolt" data-weight="fill">bolt</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Gradient Transition Section (Problem to Solution) -->
+<section class="relative py-24 md:py-48 brand-gradient overflow-visible">
+<!-- Subtle 3D Texture for Gradient Section -->
+<div class="absolute inset-0 cube-texture z-0"></div>
+<div class="container mx-auto px-8 relative z-10">
+<!-- Problem Floating Card -->
+<div class="bg-white rounded-[2rem] shadow-floating p-10 md:p-16 max-w-5xl mx-auto mb-20 md:-mt-64 relative z-20 transition-transform hover:scale-[1.01] duration-500">
+<div class="max-w-3xl">
+<h2 class="text-sm font-bold tracking-[0.3em] uppercase text-error mb-6">Das Problem</h2>
+<h3 class="text-4xl md:text-5xl font-extrabold text-on-background mb-8 leading-tight tracking-tight">
+                    Die klassische Suche ist ineffizient &amp; frustrierend.
+                </h3>
+<p class="text-lg text-slate-500 font-light leading-relaxed mb-12">
+                    Der Wohnungsmarkt ist überlaufen. Während du Filter einstellst, sind die besten Angebote bereits vergeben.
+                </p>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 transition-all hover:bg-white hover:shadow-lg group">
+<div class="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-error" data-icon="timer_off">timer_off</span>
+</div>
+<h4 class="text-lg font-bold mb-3">Zeitverschwendung</h4>
+<p class="text-slate-500 text-sm font-light leading-relaxed">Stundenlanges Scrollen durch veraltete Portale und Dubletten ohne Erfolg.</p>
+</div>
+<div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 transition-all hover:bg-white hover:shadow-lg group">
+<div class="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-error" data-icon="mail_lock">mail_lock</span>
+</div>
+<h4 class="text-lg font-bold mb-3">Keine Antwort</h4>
+<p class="text-slate-500 text-sm font-light leading-relaxed">Massenschreiben landen im digitalen Papierkorb, bevor sie gelesen werden.</p>
+</div>
+<div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 transition-all hover:bg-white hover:shadow-lg group">
+<div class="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-error" data-icon="visibility_off">visibility_off</span>
+</div>
+<h4 class="text-lg font-bold mb-3">Unsichtbare Angebote</h4>
+<p class="text-slate-500 text-sm font-light leading-relaxed">Die wertvollsten Immobilien erreichen nie den öffentlichen Markt.</p>
+</div>
+</div>
+</div>
+<!-- Solution Floating Card -->
+<div class="bg-white rounded-[2rem] shadow-floating p-10 md:p-16 max-w-5xl mx-auto relative z-20 transition-transform hover:scale-[1.01] duration-500">
+<div class="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-12 mb-16">
+<div class="max-w-2xl">
+<h2 class="text-sm font-bold tracking-[0.3em] uppercase text-primary mb-6">Die Lösung</h2>
+<h3 class="text-4xl md:text-5xl font-extrabold text-on-background leading-tight tracking-tight">
+                        Präzision durch datengetriebene Intelligenz.
+                    </h3>
+</div>
+</div>
+<div class="grid lg:grid-cols-2 gap-8">
+<div class="p-10 rounded-2xl bg-slate-50 border border-slate-100 relative overflow-hidden group">
+<div class="absolute -top-12 -right-12 w-48 h-48 bg-primary/5 blur-[60px] rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+<div class="relative z-10">
+<span class="material-symbols-outlined text-4xl text-primary mb-8" data-icon="neurology">neurology</span>
+<h4 class="text-2xl font-bold mb-6 text-on-background">Prädiktive Suche</h4>
+<p class="text-slate-500 font-light leading-relaxed text-lg mb-8">Unsere Algorithmen sagen voraus, welche Wohnungen demnächst frei werden, basierend auf sozio-demografischen Verschiebungen und Marktdaten.</p>
+<ul class="space-y-4">
+<li class="flex items-center gap-3 text-sm font-medium text-slate-700">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="check_circle">check_circle</span>
+                                Exklusiver Off-Market Zugang
+                            </li>
+<li class="flex items-center gap-3 text-sm font-medium text-slate-700">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="check_circle">check_circle</span>
+                                24/7 Echtzeit-Monitoring
+                            </li>
+</ul>
+</div>
+</div>
+<div class="p-10 rounded-2xl bg-slate-50 border border-slate-100 relative overflow-hidden group">
+<div class="absolute -top-12 -right-12 w-48 h-48 bg-secondary/5 blur-[60px] rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+<div class="relative z-10">
+<span class="material-symbols-outlined text-4xl text-secondary mb-8" data-icon="chat_paste_go">chat_paste_go</span>
+<h4 class="text-2xl font-bold mb-6 text-on-background">Automatisierte Bewerbung</h4>
+<p class="text-slate-500 font-light leading-relaxed text-lg mb-8">KI-erstellte Anschreiben, die genau auf das Profil des Vermieters zugeschnitten sind. Wir garantieren eine Antwortrate von über 80%.</p>
+<ul class="space-y-4">
+<li class="flex items-center gap-3 text-sm font-medium text-slate-700">
+<span class="material-symbols-outlined text-secondary text-lg" data-icon="check_circle">check_circle</span>
+                                Personalisiertes Dossier
+                            </li>
+<li class="flex items-center gap-3 text-sm font-medium text-slate-700">
+<span class="material-symbols-outlined text-secondary text-lg" data-icon="check_circle">check_circle</span>
+                                Automatisches Dokumenten-Matching
+                            </li>
+</ul>
+</div>
+</div>
+</div>
+<div class="mt-16 flex justify-center">
+<button class="px-10 py-4 border border-primary/20 bg-primary/5 hover:bg-primary/10 rounded-xl text-primary font-bold transition-all flex items-center gap-2 group shadow-sm">
+        Alle Features entdecken
+        <span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform" data-icon="arrow_outward">arrow_outward</span>
+</button>
+</div></div>
+</div>
+</section>
+<!-- How it Works (Light) -->
+<section class="relative py-32 bg-surface-container-low overflow-hidden">
+<div class="absolute inset-0 cube-texture opacity-[0.03] z-0"></div>
+<div class="container mx-auto px-8 relative z-10">
+<div class="text-center max-w-2xl mx-auto mb-24">
+<h2 class="text-sm font-bold tracking-[0.3em] uppercase text-slate-500 mb-6">Prozess</h2>
+<h3 class="text-4xl font-extrabold text-on-background leading-tight">In drei Schritten zum Einzug.</h3>
+</div>
+<div class="relative">
+<div class="hidden lg:block absolute top-1/2 left-0 w-full h-px bg-slate-200 -translate-y-1/2 z-0"></div>
+<div class="grid lg:grid-cols-3 gap-16 relative z-10">
+<div class="flex flex-col items-center text-center">
+<div class="w-20 h-20 rounded-2xl bg-white shadow-xl flex items-center justify-center text-3xl font-bold text-primary mb-8 outline outline-8 outline-surface-container-low">01</div>
+<h4 class="text-xl font-bold mb-4">Profil definieren</h4>
+<p class="text-slate-500 font-light leading-relaxed">Einmalige Eingabe deiner Wünsche und Dokumente. Unsere KI lernt deine Prioritäten.</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-20 h-20 rounded-2xl bg-white shadow-xl flex items-center justify-center text-3xl font-bold text-secondary mb-8 outline outline-8 outline-surface-container-low">02</div>
+<h4 class="text-xl font-bold mb-4">Matches erhalten</h4>
+<p class="text-slate-500 font-light leading-relaxed">Wir filtern tausende Quellen und senden dir nur die Top-Performer per Push.</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-20 h-20 rounded-2xl bg-white shadow-xl flex items-center justify-center text-3xl font-bold text-tertiary mb-8 outline outline-8 outline-surface-container-low">03</div>
+<h4 class="text-xl font-bold mb-4">Direkt besichtigen</h4>
+<p class="text-slate-500 font-light leading-relaxed">Automatisierte Terminvereinbarung. Du konzentrierst dich nur noch auf den Schlüssel.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Closing CTA (Dark) -->
+<section class="py-32 bg-[#0F1B2D] text-white relative overflow-hidden">
+<!-- Subtle 3D Texture for Dark CTA Section -->
+<div class="absolute inset-0 cube-texture-dark z-0"></div>
+<div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-primary/10 z-0"></div>
+<div class="container mx-auto px-8 relative z-10 text-center">
+<div class="max-w-4xl mx-auto glass-box p-16 md:p-24 rounded-[3rem] border-white/10">
+<h2 class="text-5xl md:text-6xl font-extrabold mb-8 leading-tight tracking-tight">
+                Bereit für den nächsten Schritt?
+            </h2>
+<p class="text-xl text-slate-300 font-light leading-relaxed mb-12 max-w-2xl mx-auto">
+                Schließe dich über 5.000 zufriedenen Mietern an, die ihre Traumwohnung mit Aimmobilie gefunden haben.
+            </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+<button class="w-full sm:w-auto px-12 py-5 bg-primary hover:bg-primary/90 rounded-2xl text-white font-bold text-lg transition-all shadow-2xl shadow-primary/30">
+                    Jetzt kostenfrei testen
+                </button>
+<button class="w-full sm:w-auto px-12 py-5 border border-white/20 hover:bg-white/10 rounded-2xl text-white font-bold text-lg transition-all backdrop-blur-sm">
+                    Berater kontaktieren
+                </button>
+</div>
+<div class="mt-16 flex items-center justify-center gap-8 grayscale opacity-40">
+<span class="text-xs uppercase tracking-widest font-bold text-white">Bekannt aus</span>
+<div class="flex gap-8">
+<div class="h-6 w-24 bg-white/30 rounded"></div>
+<div class="h-6 w-24 bg-white/30 rounded"></div>
+<div class="h-6 w-24 bg-white/30 rounded"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-white dark:bg-slate-950 w-full py-16 px-8 font-sans text-xs uppercase tracking-widest font-medium border-t border-slate-100">
+<div class="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:flex lg:justify-between items-center gap-8">
+<div class="text-lg font-black text-slate-900 dark:text-white">Ai.mmobilie</div>
+<div class="flex flex-wrap gap-x-12 gap-y-4">
+<a class="text-slate-500 dark:text-slate-500 hover:text-emerald-500 transition-colors hover:underline decoration-emerald-500 underline-offset-4" href="#">Privacy Policy</a>
+<a class="text-slate-500 dark:text-slate-500 hover:text-emerald-500 transition-colors hover:underline decoration-emerald-500 underline-offset-4" href="#">Terms of Service</a>
+<a class="text-slate-500 dark:text-slate-500 hover:text-emerald-500 transition-colors hover:underline decoration-emerald-500 underline-offset-4" href="#">Cookie Settings</a>
+<a class="text-slate-500 dark:text-slate-500 hover:text-emerald-500 transition-colors hover:underline decoration-emerald-500 underline-offset-4" href="#">Press Kit</a>
+</div>
+<div class="text-slate-500 dark:text-slate-500 lowercase tracking-normal font-normal">
+            © 2024 Aimmobilie. The Lucid Intelligence in Real Estate.
+        </div>
+</div>
+</footer>
+</body></html>

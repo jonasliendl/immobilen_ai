@@ -154,6 +154,45 @@ export const rejectionAnalyses: RejectionAnalysis[] = [
     },
 ];
 
+export function createDocument(input: {
+    tenantId: string;
+    type: import("@/lib/types").DocumentType;
+    fileName: string;
+}): StoredDocument {
+    const created: StoredDocument = {
+        id: `doc-${1000 + storedDocuments.length + 1}`,
+        tenantId: input.tenantId,
+        type: input.type,
+        fileName: input.fileName,
+        storageUrl: `https://storage.example.com/docs/${input.fileName}`,
+        uploadedAtIso: nowIso(),
+    };
+    storedDocuments.push(created);
+    return created;
+}
+
+export function createDocumentBundle(input: {
+    tenantId: string;
+    documentIds: string[];
+}): import("@/lib/types").DocumentBundle {
+    const validDocIds = input.documentIds.filter((id) =>
+        storedDocuments.some((d) => d.id === id)
+    );
+
+    const totalRequired = 5;
+    const completenessScore = Math.round((validDocIds.length / totalRequired) * 100);
+
+    const created: import("@/lib/types").DocumentBundle = {
+        id: `bundle-${1000 + documentBundles.length + 1}`,
+        tenantId: input.tenantId,
+        documentIds: validDocIds,
+        generatedAtIso: nowIso(),
+        completenessScore: Math.min(completenessScore, 100),
+    };
+    documentBundles.push(created);
+    return created;
+}
+
 export function createApplication(input: {
     tenantId: string;
     listingId: string;

@@ -11,7 +11,7 @@ const BerlinNeighborhoodMap = dynamic(
     () => import("@/components/berlin-neighborhood-map").then((mod) => mod.BerlinNeighborhoodMap),
     {
         ssr: false,
-        loading: () => <div className="h-[360px] animate-pulse rounded-2xl bg-black/5" />,
+        loading: () => <div className="h-[360px] animate-pulse rounded-2xl bg-surface-low" />,
     },
 );
 
@@ -130,10 +130,10 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
                 score: listing.district === "Prenzlauer Berg" ? 50 : listing.district === "Lichtenberg" ? 80 : 65,
                 weight: 15,
                 note: `${listing.district} - ${listing.district === "Prenzlauer Berg"
-                        ? "High competition area"
-                        : listing.district === "Lichtenberg"
-                            ? "Moderate competition"
-                            : "Average competition"
+                    ? "High competition area"
+                    : listing.district === "Lichtenberg"
+                        ? "Moderate competition"
+                        : "Average competition"
                     }`,
             },
         ];
@@ -223,26 +223,26 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
     return (
         <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-8 md:px-8">
             {/* Breadcrumb */}
-            <nav className="text-sm text-black/60">
+            <nav className="text-sm text-muted">
                 <Link href="/search" className="hover:underline">Search</Link>
                 <span className="mx-2">/</span>
                 <Link href={`/listings/${listing.id}`} className="hover:underline">{listing.title}</Link>
                 <span className="mx-2">/</span>
-                <span className="text-black/80">Intelligence</span>
+                <span className="text-on-background">Intelligence</span>
             </nav>
 
             {/* Header */}
-            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
+            <section className="ds-card p-6">
                 <div className="flex items-start justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold">📊 Listing Intelligence</h1>
-                        <p className="mt-1 text-black/60">{listing.title}</p>
-                        <p className="text-sm text-black/50">{listing.address}</p>
+                        <h1 className="text-headline text-on-background">📊 Listing Intelligence</h1>
+                        <p className="mt-1 text-muted">{listing.title}</p>
+                        <p className="text-sm text-muted">{listing.address}</p>
                     </div>
                     <div className="text-right">
                         <Link
                             href={`/apply/${listing.id}?step=profile`}
-                            className="rounded-xl bg-black px-6 py-3 font-medium text-white transition hover:bg-black/80"
+                            className="btn-primary"
                         >
                             Apply Now
                         </Link>
@@ -252,8 +252,8 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
 
             {/* Success Probability Score */}
             <section className="grid gap-6 md:grid-cols-2">
-                <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                    <h2 className="text-lg font-semibold">Your Success Probability</h2>
+                <div className="ds-card p-6">
+                    <h2 className="text-title text-on-background">Your Success Probability</h2>
 
                     <div className="mt-4 flex items-center justify-center">
                         <div className="relative">
@@ -277,61 +277,61 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
                                     strokeDasharray={440}
                                     strokeDashoffset={440 - (440 * successProbability) / 100}
                                     className={`${successProbability >= 70
-                                            ? "text-green-500"
-                                            : successProbability >= 50
-                                                ? "text-yellow-500"
-                                                : "text-red-500"
+                                        ? "text-green-500"
+                                        : successProbability >= 50
+                                            ? "text-yellow-500"
+                                            : "text-red-500"
                                         } transition-all`}
                                 />
                             </svg>
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
                                 <span className="text-3xl font-bold">{successProbability}%</span>
-                                <span className="text-xs text-black/50">chance</span>
+                                <span className="text-xs text-muted">chance</span>
                             </div>
                         </div>
                     </div>
 
                     <div className="mt-4 text-center">
-                        <p className="text-sm text-black/60">
+                        <p className="text-sm text-muted">
                             Your ranking: <span className="font-medium">{competitorAnalysis.yourRanking}</span> of applicants
                         </p>
                     </div>
 
-                    <div className="mt-4 rounded-xl bg-black/5 p-4">
+                    <div className="mt-4 rounded-xl bg-surface-low p-4">
                         <p className="text-sm font-medium">Competitor Analysis</p>
                         <div className="mt-2 flex justify-between text-sm">
-                            <span className="text-black/60">Estimated applications:</span>
+                            <span className="text-muted">Estimated applications:</span>
                             <span className="font-medium">~{competitorAnalysis.estimatedApplications}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                            <span className="text-black/60">Your position:</span>
+                            <span className="text-muted">Your position:</span>
                             <span className="font-medium">{competitorAnalysis.yourAdvantage}</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                    <h2 className="text-lg font-semibold">Score Breakdown</h2>
+                <div className="ds-card p-6">
+                    <h2 className="text-title text-on-background">Score Breakdown</h2>
 
                     <div className="mt-4 space-y-4">
                         {probabilityBreakdown.map((item) => (
                             <div key={item.name}>
                                 <div className="flex items-center justify-between text-sm">
                                     <span className="font-medium">{item.name}</span>
-                                    <span className="text-black/60">{item.score}/100</span>
+                                    <span className="text-muted">{item.score}/100</span>
                                 </div>
-                                <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-black/10">
+                                <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-surface-low">
                                     <div
                                         className={`h-full ${item.score >= 80
-                                                ? "bg-green-500"
-                                                : item.score >= 60
-                                                    ? "bg-yellow-500"
-                                                    : "bg-red-500"
+                                            ? "bg-green-500"
+                                            : item.score >= 60
+                                                ? "bg-yellow-500"
+                                                : "bg-red-500"
                                             }`}
                                         style={{ width: `${item.score}%` }}
                                     />
                                 </div>
-                                <p className="mt-1 text-xs text-black/50">{item.note}</p>
+                                <p className="mt-1 text-xs text-muted">{item.note}</p>
                             </div>
                         ))}
                     </div>
@@ -339,48 +339,48 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
             </section>
 
             {/* Price Assessment */}
-            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-semibold">💰 Price Assessment</h2>
+            <section className="ds-card p-6">
+                <h2 className="text-title text-on-background">💰 Price Assessment</h2>
 
                 <div className="mt-4 grid gap-4 md:grid-cols-4">
-                    <div className="rounded-xl border border-black/10 p-4">
-                        <p className="text-sm text-black/60">Listing Price</p>
+                    <div className="rounded-xl bg-surface-low p-4">
+                        <p className="text-sm text-muted">Listing Price</p>
                         <p className="mt-1 text-2xl font-bold">€{listing.monthlyRentEur}</p>
-                        <p className="text-xs text-black/50">{listing.sizeM2}m² = €{(listing.monthlyRentEur / listing.sizeM2).toFixed(1)}/m²</p>
+                        <p className="text-xs text-muted">{listing.sizeM2}m² = €{(listing.monthlyRentEur / listing.sizeM2).toFixed(1)}/m²</p>
                     </div>
-                    <div className="rounded-xl border border-black/10 p-4">
-                        <p className="text-sm text-black/60">Fair Market Value</p>
+                    <div className="rounded-xl bg-surface-low p-4">
+                        <p className="text-sm text-muted">Fair Market Value</p>
                         <p className="mt-1 text-2xl font-bold">€{priceAssessment.expectedRentEur}</p>
-                        <p className="text-xs text-black/50">Based on district avg</p>
+                        <p className="text-xs text-muted">Based on district avg</p>
                     </div>
                     <div className={`rounded-xl p-4 ${priceAssessment.deltaEur > 0 ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"}`}>
-                        <p className="text-sm text-black/60">Difference</p>
+                        <p className="text-sm text-muted">Difference</p>
                         <p className={`mt-1 text-2xl font-bold ${priceAssessment.deltaEur > 0 ? "text-red-600" : "text-green-600"}`}>
                             {priceAssessment.deltaEur > 0 ? "+" : ""}€{priceAssessment.deltaEur}
                         </p>
-                        <p className="text-xs text-black/50">{priceAssessment.deltaEur > 0 ? "Over market" : "Under market"}</p>
+                        <p className="text-xs text-muted">{priceAssessment.deltaEur > 0 ? "Over market" : "Under market"}</p>
                     </div>
-                    <div className="rounded-xl border border-black/10 p-4">
-                        <p className="text-sm text-black/60">Confidence</p>
+                    <div className="rounded-xl bg-surface-low p-4">
+                        <p className="text-sm text-muted">Confidence</p>
                         <p className="mt-1 text-2xl font-bold">{(priceAssessment.confidence * 100).toFixed(0)}%</p>
-                        <p className="text-xs text-black/50">AI assessment</p>
+                        <p className="text-xs text-muted">AI assessment</p>
                     </div>
                 </div>
             </section>
 
             {/* Recommendations */}
-            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-semibold">💡 AI Recommendations</h2>
+            <section className="ds-card p-6">
+                <h2 className="text-title text-on-background">💡 AI Recommendations</h2>
 
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
                     {recommendations.map((rec, index) => (
                         <div
                             key={index}
                             className={`rounded-xl border p-4 ${rec.type === "warning"
-                                    ? "border-yellow-200 bg-yellow-50"
-                                    : rec.type === "success"
-                                        ? "border-green-200 bg-green-50"
-                                        : "border-blue-200 bg-blue-50"
+                                ? "border-yellow-200 bg-yellow-50"
+                                : rec.type === "success"
+                                    ? "border-green-200 bg-green-50"
+                                    : "border-blue-200 bg-blue-50"
                                 }`}
                         >
                             <p className="font-semibold">{rec.title}</p>
@@ -390,36 +390,37 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
+            <section className="ds-card p-6">
                 <div className="mb-4 flex items-start justify-between gap-4">
                     <div>
-                        <h2 className="text-lg font-semibold">Neighborhood Map Overlay</h2>
-                        <p className="mt-1 text-sm text-black/60">
+                        <h2 className="text-title text-on-background">Neighborhood Map Overlay</h2>
+                        <p className="mt-1 text-sm text-muted">
                             Noise intensity is color-coded across the district overlay and the dashed corridor approximates the commute into central Berlin.
                         </p>
                     </div>
-                    <span className="rounded-full bg-black/5 px-3 py-1 text-xs font-medium text-black/70">
-                        {listing.district}
+                    <span className="rounded-full bg-surface-low px-3 py-1 text-xs font-medium text-black/70">
                     </span>
                 </div>
 
-                {mapOverlay ? (
-                    <BerlinNeighborhoodMap
-                        overlay={mapOverlay}
-                        selectedDistrict={listing.district}
-                        heightClassName="h-[360px]"
-                    />
-                ) : (
-                    <div className="h-[360px] animate-pulse rounded-2xl bg-black/5" />
-                )}
+                {
+                    mapOverlay ? (
+                        <BerlinNeighborhoodMap
+                            overlay={mapOverlay}
+                            selectedDistrict={listing.district}
+                            heightClassName="h-[360px]"
+                        />
+                    ) : (
+                        <div className="h-[360px] animate-pulse rounded-2xl bg-surface-low" />
+                    )
+                }
             </section>
 
             {/* Tips to Improve Chances */}
-            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-semibold">🎯 How to Improve Your Chances</h2>
+            <section className="ds-card p-6">
+                <h2 className="text-title text-on-background">🎯 How to Improve Your Chances</h2>
 
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
-                    <div className="rounded-xl border border-black/10 p-4">
+                    <div className="rounded-xl bg-surface-low p-4">
                         <h3 className="font-semibold">Quick Wins</h3>
                         <ul className="mt-3 space-y-2 text-sm">
                             {competitorAnalysis.tips.map((tip, index) => (
@@ -431,7 +432,7 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
                         </ul>
                     </div>
 
-                    <div className="rounded-xl border border-black/10 p-4">
+                    <div className="rounded-xl bg-surface-low p-4">
                         <h3 className="font-semibold">Document Checklist</h3>
                         <ul className="mt-3 space-y-2 text-sm">
                             <li className="flex items-center gap-2">
@@ -462,8 +463,8 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
             </section>
 
             {/* Similar Listings */}
-            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-semibold">🏠 Similar Listings</h2>
+            <section className="ds-card p-6">
+                <h2 className="text-title text-on-background">🏠 Similar Listings</h2>
 
                 <div className="mt-4 grid gap-4 md:grid-cols-3">
                     {berlinListings
@@ -473,21 +474,21 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
                             <Link
                                 key={similar.id}
                                 href={`/listings/${similar.id}`}
-                                className="rounded-xl border border-black/10 bg-white p-4 transition hover:border-black hover:shadow-sm"
+                                className="ds-card p-4 transition hover:shadow-sm"
                             >
                                 <p className="font-medium">{similar.title}</p>
-                                <p className="text-sm text-black/60">{similar.district}</p>
+                                <p className="text-sm text-muted">{similar.district}</p>
                                 <div className="mt-2 flex items-center justify-between">
                                     <span className="font-bold">€{similar.monthlyRentEur}</span>
-                                    <span className="text-xs text-black/50">{similar.sizeM2}m²</span>
+                                    <span className="text-xs text-muted">{similar.sizeM2}m²</span>
                                 </div>
                             </Link>
                         ))}
                     {berlinListings.filter((l) => l.id !== listing.id && l.district === listing.district).length === 0 && (
-                        <p className="text-sm text-black/60">No similar listings in this district. Try expanding your search.</p>
+                        <p className="text-sm text-muted">No similar listings in this district. Try expanding your search.</p>
                     )}
                 </div>
-            </section>
-        </main>
+            </section >
+        </main >
     );
 }

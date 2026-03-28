@@ -19,6 +19,38 @@ function getHuggingFaceModel(
     return hfProvider(modelId);
 }
 
+function stripMarkdown(text: string): string {
+    return text
+        // Remove heading markers
+        .replace(/^#{1,6}\s+/gm, "")
+        // Remove horizontal rules
+        .replace(/^-{3,}$/gm, "")
+        .replace(/^\*{3,}$/gm, "")
+        .replace(/^_{3,}$/gm, "")
+        // Remove bold/italic markers
+        .replace(/\*{1,3}([^*]+)\*{1,3}/g, "$1")
+        .replace(/_{1,3}([^_]+)_{1,3}/g, "$1")
+        // Remove inline code backticks
+        .replace(/`([^`]+)`/g, "$1")
+        // Remove code fences
+        .replace(/^```[\s\S]*?```$/gm, "")
+        // Remove blockquote markers
+        .replace(/^>\s?/gm, "")
+        // Convert pipe-delimited table rows to plain text
+        .replace(/^\|(.+)\|$/gm, (_match, inner: string) =>
+            inner
+                .split("|")
+                .map((cell: string) => cell.trim())
+                .filter(Boolean)
+                .join("  –  "),
+        )
+        // Remove table separator rows (e.g. |---|---|)
+        .replace(/^\|?[\s-:|]+\|?$/gm, "")
+        // Collapse multiple blank lines
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+}
+
 function buildFallbackReply(message: string) {
     const lower = message.toLowerCase();
 
@@ -64,6 +96,12 @@ async function generateWithOllama(message: string) {
                     "You are an expert Berlin rental assistant.",
                     "Give concise, practical answers for apartment search, applications, and tenant readiness.",
                     "Prefer direct next-step guidance.",
+                    "IMPORTANT: Output plain text ONLY. Never use markdown formatting.",
+                    "Do not use asterisks (*), hash symbols (#), horizontal rules (---), pipe tables (|), backticks (`), or angle brackets (>).",
+                    "Do not wrap words in asterisks for emphasis. Do not prefix lines with # for headings.",
+                    "Use numbered lists (1. 2. 3.) or plain dashes for lists. Use line breaks for separation.",
+                    "Do not use emojis or decorative characters.",
+                    "Currency signs (EUR, $) and accounting notation (%, +, -) are allowed.",
                 ].join(" "),
                 prompt: message,
             });
@@ -95,6 +133,12 @@ async function generateWithHuggingFace(message: string) {
             "You are an expert Berlin rental assistant.",
             "Give concise, practical answers for apartment search, applications, and tenant readiness.",
             "Prefer direct next-step guidance.",
+            "IMPORTANT: Output plain text ONLY. Never use markdown formatting.",
+            "Do not use asterisks (*), hash symbols (#), horizontal rules (---), pipe tables (|), backticks (`), or angle brackets (>).",
+            "Do not wrap words in asterisks for emphasis. Do not prefix lines with # for headings.",
+            "Use numbered lists (1. 2. 3.) or plain dashes for lists. Use line breaks for separation.",
+            "Do not use emojis or decorative characters.",
+            "Currency signs (EUR, $) and accounting notation (%, +, -) are allowed.",
         ].join(" "),
         prompt: message,
     });
@@ -135,7 +179,7 @@ export async function POST(request: NextRequest) {
     }
 
     const payload: ChatResponse = {
-        reply,
+        reply: stripMarkdown(reply),
         provider,
         timestamp: new Date().toISOString(),
     };

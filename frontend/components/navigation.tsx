@@ -7,10 +7,10 @@ export function Navigation() {
     const pathname = usePathname();
 
     const navItems = [
-        { href: "/search", label: "Search", icon: "🔍" },
-        { href: "/tracker", label: "Tracker", icon: "📊" },
-        { href: "/intelligence", label: "Intelligence", icon: "🧠" },
-        { href: "/chat", label: "Chat", icon: "💬" },
+        { href: "/search", label: "Search" },
+        { href: "/tracker", label: "Tracker" },
+        { href: "/intelligence", label: "Intelligence" },
+        { href: "/chat", label: "Chat" },
     ];
 
     const isActive = (href: string) => {
@@ -19,46 +19,44 @@ export function Navigation() {
     };
 
     return (
-        <nav className="sticky top-0 z-50 border-b border-black/10 bg-white/80 backdrop-blur-md">
-            <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-8">
-                <Link href="/" className="flex items-center gap-2">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-black text-lg text-white">
-                        🏠
-                    </span>
-                    <span className="font-bold">Immobilen AI</span>
+        <nav className="fixed top-0 z-50 w-full bg-surface-container-lowest/80 font-sans text-sm font-medium tracking-tight antialiased shadow-sm backdrop-blur-xl dark:bg-slate-950/80 dark:shadow-none">
+            <div className="mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-8">
+                <Link
+                    href="/"
+                    className="inline-block text-xl font-bold tracking-tighter bg-gradient-to-r from-primary-container to-primary bg-clip-text text-transparent"
+                >
+                    Ai.mmobilie
                 </Link>
 
-                {/* Desktop Navigation */}
-                <div className="hidden items-center gap-1 md:flex">
+                <div className="hidden items-center gap-8 md:flex">
                     {navItems.map((item) => (
                         <Link
                             key={item.href}
                             href={item.href}
-                            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition ${
+                            className={
                                 isActive(item.href)
-                                    ? "bg-black text-white"
-                                    : "text-black/70 hover:bg-black/5"
-                            }`}
+                                    ? "border-b-2 border-primary-container pb-1 font-semibold text-primary transition-colors"
+                                    : "text-primary/70 transition-colors hover:text-primary"
+                            }
                         >
-                            <span>{item.icon}</span>
-                            <span className="hidden lg:inline">{item.label}</span>
+                            {item.label}
                         </Link>
                     ))}
                 </div>
 
-                {/* User Menu */}
-                <div className="flex items-center gap-3">
-                    <button className="hidden rounded-xl border border-black/20 px-4 py-2 text-sm font-medium transition hover:bg-black/5 md:block">
+                <div className="flex items-center gap-4">
+                    <button
+                        type="button"
+                        className="hidden px-5 py-2 font-medium text-primary/75 transition-all hover:text-primary md:block"
+                    >
                         Sign In
                     </button>
-                    <button className="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-black/80">
+                    <Link
+                        href="/search"
+                        className="rounded-xl bg-primary px-6 py-2 font-semibold text-on-primary shadow-md transition-all hover:bg-primary/90 hover:shadow-[0_8px_24px_rgb(0_108_79_/_.2)] active:scale-[0.98]"
+                    >
                         Get Started
-                    </button>
-
-                    {/* Mobile Menu Button */}
-                    <button className="rounded-lg p-2 hover:bg-black/5 md:hidden">
-                        ☰
-                    </button>
+                    </Link>
                 </div>
             </div>
         </nav>
@@ -69,10 +67,10 @@ export function MobileNav({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
     const pathname = usePathname();
 
     const navItems = [
-        { href: "/search", label: "Search", icon: "🔍" },
-        { href: "/tracker", label: "Tracker", icon: "📊" },
-        { href: "/intelligence", label: "Intelligence", icon: "🧠" },
-        { href: "/chat", label: "Chat", icon: "💬" },
+        { href: "/search", label: "Search" },
+        { href: "/tracker", label: "Tracker" },
+        { href: "/intelligence", label: "Intelligence" },
+        { href: "/chat", label: "Chat" },
     ];
 
     const isActive = (href: string) => {
@@ -84,14 +82,20 @@ export function MobileNav({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
 
     return (
         <div className="fixed inset-0 z-50 md:hidden" onClick={onClose}>
-            <div className="absolute inset-0 bg-black/50" />
+            <div className="absolute inset-0 bg-hero-dark/40 backdrop-blur-sm" />
             <div
-                className="absolute right-0 top-0 h-full w-64 bg-white p-4"
+                className="absolute right-0 top-0 h-full w-64 bg-surface-container-lowest p-4 shadow-ambient"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="mb-6 flex items-center justify-between">
-                    <span className="font-bold">Menu</span>
-                    <button onClick={onClose} className="rounded-lg p-2 hover:bg-black/5">
+                    <span className="bg-gradient-to-r from-primary-container to-primary bg-clip-text font-bold text-transparent">
+                        Menu
+                    </span>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="rounded-lg p-2 text-primary/70 hover:bg-surface-container-low hover:text-primary"
+                    >
                         ✕
                     </button>
                 </div>
@@ -101,13 +105,12 @@ export function MobileNav({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                             key={item.href}
                             href={item.href}
                             onClick={onClose}
-                            className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
+                            className={`block rounded-xl px-4 py-3 text-sm font-medium transition ${
                                 isActive(item.href)
-                                    ? "bg-black text-white"
-                                    : "text-black/70 hover:bg-black/5"
+                                    ? "bg-primary text-on-primary"
+                                    : "text-primary/80 hover:bg-primary/5 hover:text-primary"
                             }`}
                         >
-                            <span>{item.icon}</span>
                             {item.label}
                         </Link>
                     ))}

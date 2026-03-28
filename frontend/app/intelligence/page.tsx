@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { FeaturePageIntro } from "@/components/feature-page-intro";
 import { berlinListings, districtRentBenchmarkPerM2 } from "@/lib/data";
 import { calculatePriceAssessment } from "@/lib/scoring";
 import { NeighborhoodMapResponse } from "@/lib/types";
@@ -11,7 +12,7 @@ const BerlinNeighborhoodMap = dynamic(
     () => import("@/components/berlin-neighborhood-map").then((mod) => mod.BerlinNeighborhoodMap),
     {
         ssr: false,
-        loading: () => <div className="h-[420px] animate-pulse rounded-2xl bg-black/5" />,
+        loading: () => <div className="h-[420px] animate-pulse rounded-2xl bg-surface-low" />,
     },
 );
 
@@ -25,12 +26,12 @@ const mockTrends = {
     "1y": { avgPrice: 1150, change: 8.7, listings: 5200 },
 };
 
-const districtStats = Object.entries(districtRentBenchmarkPerM2).map(([district, pricePerM2]) => ({
+const districtStats = Object.entries(districtRentBenchmarkPerM2).map(([district, pricePerM2], i) => ({
     district,
     pricePerM2,
     avgRent: pricePerM2 * 55, // avg 55m2
     listings: berlinListings.filter((l) => l.district === district).length,
-    trend: (Math.random() * 10 - 3).toFixed(1),
+    trend: ((((i * 7 + 3) % 13) - 5) * 0.8).toFixed(1),
 }));
 
 export default function IntelligencePage() {
@@ -39,8 +40,66 @@ export default function IntelligencePage() {
     const [selectedDistrict, setSelectedDistrict] = useState<string>("");
     const [mapOverlay, setMapOverlay] = useState<NeighborhoodMapResponse | null>(null);
     const [mapLoading, setMapLoading] = useState(true);
+    const [predictions, setPredictions] = useState<
+        { title: string; prediction: string; confidence: number; tags: string[]; isPositive?: boolean }[]
+    >([]);
+    const [predictionsLoading, setPredictionsLoading] = useState(false);
+    const [predictionsProvider, setPredictionsProvider] = useState<string>("");
 
     const trends = mockTrends[timeRange];
+
+    useEffect(() => {
+        if (viewMode !== "predictions") return;
+        let active = true;
+
+        async function loadPredictions() {
+            setPredictionsLoading(true);
+            try {
+                const res = await fetch(`/api/intelligence/predictions?timeRange=${timeRange}`);
+                if (!res.ok) throw new Error("fetch failed");
+                const data = (await res.json()) as {
+                    predictions: typeof predictions;
+                    provider: string;
+                };
+                if (!active) return;
+                setPredictions(data.predictions);
+                setPredictionsProvider(data.provider);
+            } catch {
+                if (!active) return;
+                setPredictions([
+                    {
+                        title: "Best Districts Next Month",
+                        prediction:
+                            "Based on current listing volume, Friedrichshain and Wedding show increasing supply with stable prices.",
+                        confidence: 68,
+                        tags: ["Friedrichshain", "Wedding"],
+                        isPositive: true,
+                    },
+                    {
+                        title: "Price Forecast",
+                        prediction:
+                            "Average rents expected to rise 2-3% in Q2 2026 due to seasonal demand.",
+                        confidence: 60,
+                        tags: ["Berlin-wide", "Q2 2026"],
+                    },
+                    {
+                        title: "Genossenschaft Opportunities",
+                        prediction:
+                            "Multiple co-ops typically open spring application rounds. Complete documents improve your position.",
+                        confidence: 72,
+                        tags: ["Genossenschaft", "Spring Cycle"],
+                        isPositive: true,
+                    },
+                ]);
+                setPredictionsProvider("fallback");
+            } finally {
+                if (active) setPredictionsLoading(false);
+            }
+        }
+
+        void loadPredictions();
+        return () => { active = false; };
+    }, [viewMode, timeRange]);
 
     useEffect(() => {
         let active = true;
@@ -99,47 +158,55 @@ export default function IntelligencePage() {
 
     return (
         <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-8 md:px-8">
-            {/* Header */}
-            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold">🧠 Market Intelligence</h1>
-                        <p className="mt-1 text-sm text-black/70">
-                            AI-powered insights to help you find and secure your home faster
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
-                        <ViewButton active={viewMode === "overview"} onClick={() => setViewMode("overview")}>
-                            Overview
-                        </ViewButton>
-                        <ViewButton active={viewMode === "districts"} onClick={() => setViewMode("districts")}>
-                            Districts
-                        </ViewButton>
-                        <ViewButton active={viewMode === "predictions"} onClick={() => setViewMode("predictions")}>
-                            Predictions
-                        </ViewButton>
-                    </div>
+            <FeaturePageIntro
+                eyebrow="Market Intelligence"
+                title="See rent pressure before you apply"
+                description="This dashboard turns Berlin listing and benchmark data into charts, district tables, and a live map overlay. Use it to check whether a flat is above typical neighbourhood rent, spot trends, and prioritise Genossenschaft or affordable pockets — then jump back to Search with clearer targets."
+                howItWorks={[
+                    "Pick a time window (7d–1y) to frame how aggressive the market feels.",
+                    "Scan district stats and mock insight cards for directional signals (demo data today).",
+                    "Use the map (client-only Leaflet) with overlays from /api/neighborhoods/map for spatial context.",
+                    "Filter by district when you want the map and stats to focus on one borough.",
+                ]}
+            />
+            <section className="flex flex-col justify-between gap-4 rounded-2xl bg-surface-container-low px-6 py-4 shadow-sm sm:flex-row sm:items-center">
+                <div>
+                    <p className="font-mono text-xs uppercase tracking-wider text-primary">Live view</p>
+                    <p className="font-sans text-sm text-on-surface/80">
+                        Map + metrics update when you change district or range below.
+                    </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <ViewButton active={viewMode === "overview"} onClick={() => setViewMode("overview")}>
+                        Overview
+                    </ViewButton>
+                    <ViewButton active={viewMode === "districts"} onClick={() => setViewMode("districts")}>
+                        Districts
+                    </ViewButton>
+                    <ViewButton active={viewMode === "predictions"} onClick={() => setViewMode("predictions")}>
+                        Predictions
+                    </ViewButton>
                 </div>
             </section>
 
             {/* Time Range Selector */}
-            <section className="flex items-center justify-between rounded-2xl border border-black/10 bg-white p-4 shadow-sm">
+            <section className="flex items-center justify-between ds-card p-4">
                 <div className="flex gap-2">
                     {(["7d", "30d", "90d", "1y"] as TimeRange[]).map((range) => (
                         <button
                             key={range}
                             onClick={() => setTimeRange(range)}
-                            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${timeRange === range
-                                    ? "bg-black text-white"
-                                    : "border border-black/20 bg-white hover:bg-black/5"
+                            className={`rounded-xl px-4 py-2 text-sm font-medium transition ${timeRange === range
+                                ? "bg-primary text-white"
+                                : "bg-surface-low hover:bg-surface-high"
                                 }`}
                         >
                             {range === "7d" ? "Last 7 days" : range === "30d" ? "Last 30 days" : range === "90d" ? "Last 90 days" : "Last year"}
                         </button>
                     ))}
                 </div>
-                <p className="text-sm text-black/60">
-                    Data updated: <span className="font-medium">2 hours ago</span>
+                <p className="text-sm text-muted">
+                    Data updated: <span className="font-medium text-on-background">2 hours ago</span>
                 </p>
             </section>
 
@@ -174,24 +241,24 @@ export default function IntelligencePage() {
             </section>
 
             {/* Market Insights */}
-            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                <h2 className="mb-4 text-lg font-semibold">Market Insights</h2>
+            <section className="ds-card p-6">
+                <h2 className="text-title mb-4 text-on-background">Market Insights</h2>
                 <div className="grid gap-4 md:grid-cols-2">
                     {marketInsights.map((insight, index) => (
                         <div
                             key={index}
-                            className={`rounded-xl border p-4 ${insight.severity === "warning"
-                                    ? "border-yellow-200 bg-yellow-50"
-                                    : insight.severity === "success"
-                                        ? "border-green-200 bg-green-50"
-                                        : "border-blue-200 bg-blue-50"
+                            className={`rounded-xl p-4 ${insight.severity === "warning"
+                                ? "bg-yellow-50"
+                                : insight.severity === "success"
+                                    ? "bg-green-50"
+                                    : "bg-secondary-fixed"
                                 }`}
                         >
                             <div className="flex items-start gap-3">
                                 <span className="text-2xl">{insight.icon}</span>
                                 <div>
-                                    <p className="font-semibold">{insight.title}</p>
-                                    <p className="mt-1 text-sm text-black/70">{insight.description}</p>
+                                    <p className="font-semibold text-on-background">{insight.title}</p>
+                                    <p className="mt-1 text-sm text-muted">{insight.description}</p>
                                 </div>
                             </div>
                         </div>
@@ -199,21 +266,21 @@ export default function IntelligencePage() {
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
+            <section className="ds-card p-6">
                 <div className="mb-4 flex items-start justify-between gap-4">
                     <div>
-                        <h2 className="text-lg font-semibold">Berlin Noise & Commute Overlay</h2>
-                        <p className="mt-1 text-sm text-black/60">
+                        <h2 className="text-title text-on-background">Berlin Noise & Commute Overlay</h2>
+                        <p className="mt-1 text-sm text-muted">
                             OpenStreetMap tiles with LOR-compatible overlay data. When no official GeoJSON URL is configured,
                             the app falls back to lightweight district geometries so the experience stays available.
                         </p>
                     </div>
-                    <span className="rounded-full bg-black/5 px-3 py-1 text-xs font-medium text-black/70">
+                    <span className="rounded-full bg-surface-low px-3 py-1 text-xs font-medium text-muted">
                         Source: {mapOverlay?.source ?? "loading"}
                     </span>
                 </div>
 
-                {mapLoading && <div className="h-[420px] animate-pulse rounded-2xl bg-black/5" />}
+                {mapLoading && <div className="h-[420px] animate-pulse rounded-2xl bg-surface-low" />}
                 {!mapLoading && mapOverlay && (
                     <>
                         <BerlinNeighborhoodMap
@@ -233,13 +300,13 @@ export default function IntelligencePage() {
             {viewMode === "overview" && (
                 <>
                     {/* Price Trends Chart Placeholder */}
-                    <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
+                    <section className="ds-card p-6">
                         <div className="mb-4 flex items-center justify-between">
-                            <h2 className="text-lg font-semibold">Price Trends</h2>
+                            <h2 className="text-title text-on-background">Price Trends</h2>
                             <select
                                 value={selectedDistrict}
                                 onChange={(e) => setSelectedDistrict(e.target.value)}
-                                className="rounded-xl border border-black/20 px-3 py-2 text-sm"
+                                className="ds-input"
                             >
                                 <option value="">All Berlin</option>
                                 {Object.keys(districtRentBenchmarkPerM2).map((d) => (
@@ -247,17 +314,17 @@ export default function IntelligencePage() {
                                 ))}
                             </select>
                         </div>
-                        <div className="flex h-64 items-end justify-between gap-2 rounded-xl bg-black/5 p-4">
+                        <div className="flex h-64 items-end justify-between gap-2 rounded-xl bg-surface-low p-4">
                             {[65, 72, 68, 75, 82, 78, 85, 88, 84, 90, 92, 95].map((height, i) => (
                                 <div
                                     key={i}
-                                    className="flex-1 rounded-t-lg bg-gradient-to-t from-black to-black/60 transition hover:from-black/80 hover:to-black"
+                                    className="flex-1 rounded-t-lg bg-gradient-to-t from-primary-container to-primary transition hover:opacity-80"
                                     style={{ height: `${height}%` }}
                                     title={`Month ${i + 1}: €${1000 + height * 3}`}
                                 />
                             ))}
                         </div>
-                        <div className="mt-3 flex justify-between text-xs text-black/50">
+                        <div className="mt-3 flex justify-between text-xs text-muted">
                             <span>Jan</span>
                             <span>Mar</span>
                             <span>Jun</span>
@@ -267,34 +334,34 @@ export default function IntelligencePage() {
                     </section>
 
                     {/* District Comparison */}
-                    <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                        <h2 className="mb-4 text-lg font-semibold">District Comparison</h2>
+                    <section className="ds-card p-6">
+                        <h2 className="text-title mb-4 text-on-background">District Comparison</h2>
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
-                                    <tr className="border-b border-black/10 text-left">
-                                        <th className="pb-3 font-semibold">District</th>
-                                        <th className="pb-3 font-semibold">Avg Rent/m²</th>
-                                        <th className="pb-3 font-semibold">Avg Total Rent</th>
-                                        <th className="pb-3 font-semibold">Listings</th>
-                                        <th className="pb-3 font-semibold">Trend</th>
-                                        <th className="pb-3 font-semibold">Action</th>
+                                    <tr className="text-left">
+                                        <th className="pb-3 font-semibold text-on-background">District</th>
+                                        <th className="pb-3 font-semibold text-on-background">Avg Rent/m²</th>
+                                        <th className="pb-3 font-semibold text-on-background">Avg Total Rent</th>
+                                        <th className="pb-3 font-semibold text-on-background">Listings</th>
+                                        <th className="pb-3 font-semibold text-on-background">Trend</th>
+                                        <th className="pb-3 font-semibold text-on-background">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {districtStats.map((stat) => (
-                                        <tr key={stat.district} className="border-b border-black/5">
-                                            <td className="py-3 font-medium">{stat.district}</td>
-                                            <td className="py-3">€{stat.pricePerM2}/m²</td>
-                                            <td className="py-3">€{stat.avgRent}</td>
-                                            <td className="py-3">{stat.listings}</td>
+                                        <tr key={stat.district} className="">
+                                            <td className="py-3 font-medium text-on-background">{stat.district}</td>
+                                            <td className="py-3 text-muted">€{stat.pricePerM2}/m²</td>
+                                            <td className="py-3 text-muted">€{stat.avgRent}</td>
+                                            <td className="py-3 text-muted">{stat.listings}</td>
                                             <td className={`py-3 ${Number(stat.trend) > 0 ? "text-red-600" : "text-green-600"}`}>
                                                 {Number(stat.trend) > 0 ? "↑" : "↓"} {Math.abs(Number(stat.trend))}%
                                             </td>
                                             <td className="py-3">
                                                 <Link
                                                     href={`/search?district=${encodeURIComponent(stat.district)}`}
-                                                    className="text-black underline hover:text-black/70"
+                                                    className="text-primary hover:text-primary-hover"
                                                 >
                                                     Browse
                                                 </Link>
@@ -313,14 +380,14 @@ export default function IntelligencePage() {
                     {districtStats.map((stat) => (
                         <div
                             key={stat.district}
-                            className="rounded-xl border border-black/10 bg-white p-5 shadow-sm transition hover:border-black"
+                            className="ds-card p-5"
                         >
                             <div className="flex items-start justify-between">
-                                <h3 className="font-semibold">{stat.district}</h3>
+                                <h3 className="font-semibold text-on-background">{stat.district}</h3>
                                 <span
                                     className={`rounded-full px-2 py-1 text-xs font-medium ${Number(stat.trend) > 0
-                                            ? "bg-red-100 text-red-700"
-                                            : "bg-green-100 text-green-700"
+                                        ? "bg-red-100 text-red-700"
+                                        : "bg-green-100 text-green-700"
                                         }`}
                                 >
                                     {Number(stat.trend) > 0 ? "↑" : "↓"} {Math.abs(Number(stat.trend))}%
@@ -328,21 +395,21 @@ export default function IntelligencePage() {
                             </div>
                             <div className="mt-4 space-y-2">
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-black/60">Price/m²</span>
-                                    <span className="font-medium">€{stat.pricePerM2}</span>
+                                    <span className="text-muted">Price/m²</span>
+                                    <span className="font-medium text-on-background">€{stat.pricePerM2}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-black/60">Avg Rent</span>
-                                    <span className="font-medium">€{stat.avgRent}</span>
+                                    <span className="text-muted">Avg Rent</span>
+                                    <span className="font-medium text-on-background">€{stat.avgRent}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-black/60">Active Listings</span>
-                                    <span className="font-medium">{stat.listings}</span>
+                                    <span className="text-muted">Active Listings</span>
+                                    <span className="font-medium text-on-background">{stat.listings}</span>
                                 </div>
                             </div>
                             <Link
                                 href={`/search?district=${encodeURIComponent(stat.district)}`}
-                                className="mt-4 block w-full rounded-lg bg-black/5 py-2 text-center text-sm font-medium transition hover:bg-black/10"
+                                className="mt-4 block w-full rounded-xl bg-surface-low py-2 text-center text-sm font-medium text-primary transition hover:bg-surface-high"
                             >
                                 View {stat.listings} listings →
                             </Link>
@@ -354,35 +421,41 @@ export default function IntelligencePage() {
             {viewMode === "predictions" && (
                 <>
                     {/* AI Predictions */}
-                    <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                        <h2 className="mb-4 text-lg font-semibold">🔮 AI Predictions</h2>
-                        <div className="space-y-4">
-                            <PredictionCard
-                                title="Best Districts Next Month"
-                                prediction="Based on current trends, Friedrichshain and Wedding show increasing supply with stable prices."
-                                confidence={78}
-                                tags={["Friedrichshain", "Wedding"]}
-                            />
-                            <PredictionCard
-                                title="Price Forecast"
-                                prediction="Average rents expected to rise 2-3% in Q2 2026 due to seasonal demand increase."
-                                confidence={65}
-                                tags={["Berlin-wide", "Q2 2026"]}
-                            />
-                            <PredictionCard
-                                title="Genossenschaft Opportunities"
-                                prediction="3 co-ops expected to open applications in April. Your profile matches 2 of them."
-                                confidence={82}
-                                tags={["Genossenschaft", "High Match"]}
-                                isPositive
-                            />
+                    <section className="ds-card p-6">
+                        <div className="mb-4 flex items-center justify-between">
+                            <h2 className="text-title text-on-background">AI Predictions</h2>
+                            {predictionsProvider && (
+                                <span className="rounded-full bg-surface-low px-3 py-1 text-xs font-medium text-muted">
+                                    Source: {predictionsProvider}
+                                </span>
+                            )}
                         </div>
+                        {predictionsLoading ? (
+                            <div className="space-y-4">
+                                {[1, 2, 3].map((i) => (
+                                    <div key={i} className="h-28 animate-pulse rounded-xl bg-surface-low" />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {predictions.map((pred, i) => (
+                                    <PredictionCard
+                                        key={i}
+                                        title={pred.title}
+                                        prediction={pred.prediction}
+                                        confidence={pred.confidence}
+                                        tags={pred.tags}
+                                        isPositive={pred.isPositive}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </section>
 
                     {/* Success Probability Calculator */}
-                    <section className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
-                        <h2 className="mb-4 text-lg font-semibold">📊 Success Probability Calculator</h2>
-                        <p className="mb-4 text-sm text-black/60">
+                    <section className="ds-card p-6">
+                        <h2 className="text-title mb-4 text-on-background">📊 Success Probability Calculator</h2>
+                        <p className="mb-4 text-sm text-muted">
                             Select a listing to see your personalized success probability based on your profile,
                             income, and competition analysis.
                         </p>
@@ -394,27 +467,27 @@ export default function IntelligencePage() {
                                     <Link
                                         key={listing.id}
                                         href={`/intelligence/${listing.id}`}
-                                        className="rounded-xl border border-black/10 bg-white p-4 transition hover:border-black hover:shadow-md"
+                                        className="ds-card p-4"
                                     >
                                         <div className="flex items-start justify-between">
                                             <div>
-                                                <p className="font-semibold">{listing.title}</p>
-                                                <p className="text-sm text-black/60">{listing.district}</p>
+                                                <p className="font-semibold text-on-background">{listing.title}</p>
+                                                <p className="text-sm text-muted">{listing.district}</p>
                                             </div>
                                             <div
                                                 className={`rounded-full px-3 py-1 text-sm font-bold ${probability >= 70
-                                                        ? "bg-green-100 text-green-700"
-                                                        : probability >= 50
-                                                            ? "bg-yellow-100 text-yellow-700"
-                                                            : "bg-red-100 text-red-700"
+                                                    ? "bg-green-100 text-green-700"
+                                                    : probability >= 50
+                                                        ? "bg-yellow-100 text-yellow-700"
+                                                        : "bg-red-100 text-red-700"
                                                     }`}
                                             >
                                                 {probability}%
                                             </div>
                                         </div>
                                         <div className="mt-3 flex items-center justify-between text-sm">
-                                            <span className="text-black/60">€{listing.monthlyRentEur}/month</span>
-                                            <span className="text-black/60">
+                                            <span className="text-muted">€{listing.monthlyRentEur}/month</span>
+                                            <span className="text-muted">
                                                 {assessment.isOverpriced ? "Overpriced" : "Fair price"}
                                             </span>
                                         </div>
@@ -445,22 +518,22 @@ function MetricCard({
     const isPositiveTrend = isPositive !== undefined ? isPositive : trend > 0;
 
     return (
-        <div className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
+        <div className="ds-card p-5">
             <div className="flex items-start justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/10 text-xl">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-low text-xl">
                     {icon}
                 </div>
                 <div
                     className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${isPositiveTrend
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
                         }`}
                 >
                     {isPositiveTrend ? "↑" : "↓"} {Math.abs(trend)}%
                 </div>
             </div>
-            <p className="mt-3 text-2xl font-bold">{value}</p>
-            <p className="text-sm text-black/60">{label}</p>
+            <p className="mt-3 text-2xl font-bold text-on-background">{value}</p>
+            <p className="text-sm text-muted">{label}</p>
         </div>
     );
 }
@@ -478,8 +551,8 @@ function ViewButton({
         <button
             onClick={onClick}
             className={`rounded-xl px-4 py-2 text-sm font-medium transition ${active
-                    ? "bg-black text-white"
-                    : "border border-black/20 bg-white hover:bg-black/5"
+                ? "bg-primary text-white"
+                : "bg-surface-low hover:bg-surface-high"
                 }`}
         >
             {children}
@@ -502,31 +575,31 @@ function PredictionCard({
 }) {
     return (
         <div
-            className={`rounded-xl border p-4 ${isPositive ? "border-green-200 bg-green-50" : "border-black/10 bg-white"
+            className={`rounded-xl p-4 ${isPositive ? "bg-green-50" : "ds-card"
                 }`}
         >
             <div className="flex items-start justify-between">
-                <h3 className="font-semibold">{title}</h3>
+                <h3 className="font-semibold text-on-background">{title}</h3>
                 <div className="flex items-center gap-2">
-                    <span className="text-xs text-black/50">Confidence</span>
+                    <span className="text-xs text-muted">Confidence</span>
                     <span
                         className={`rounded-full px-2 py-1 text-xs font-bold ${confidence >= 75
-                                ? "bg-green-100 text-green-700"
-                                : confidence >= 50
-                                    ? "bg-yellow-100 text-yellow-700"
-                                    : "bg-red-100 text-red-700"
+                            ? "bg-green-100 text-green-700"
+                            : confidence >= 50
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-red-100 text-red-700"
                             }`}
                     >
                         {confidence}%
                     </span>
                 </div>
             </div>
-            <p className="mt-2 text-sm text-black/70">{prediction}</p>
+            <p className="mt-2 text-sm text-muted">{prediction}</p>
             <div className="mt-3 flex flex-wrap gap-2">
                 {tags.map((tag) => (
                     <span
                         key={tag}
-                        className="rounded-full bg-black/10 px-2 py-1 text-xs text-black/70"
+                        className="rounded-full bg-surface-low px-2 py-1 text-xs text-muted"
                     >
                         {tag}
                     </span>

@@ -192,25 +192,25 @@ export function PlatformDashboard() {
 
     return (
         <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-8 md:px-8">
-            <section className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm">
+            <section className="ds-card p-5">
                 <h1 className="text-2xl font-bold">Berlin AI Rental Platform</h1>
-                <p className="mt-2 text-sm text-black/70">
+                <p className="mt-2 text-sm text-muted">
                     Search listings, evaluate success probability, generate cover letters,
                     and connect with Wohnungsgenossenschaften.
                 </p>
             </section>
 
-            <section className="grid gap-4 rounded-2xl border border-black/10 bg-white p-5 md:grid-cols-4">
+            <section className="ds-section grid gap-4 md:grid-cols-4">
                 <input
                     value={district}
                     onChange={(event) => setDistrict(event.target.value)}
                     placeholder="District (e.g. Pankow)"
-                    className="rounded-xl border border-black/20 px-3 py-2"
+                    className="rounded-xl ds-input px-3 py-2"
                 />
                 <select
                     value={source}
                     onChange={(event) => setSource(event.target.value)}
-                    className="rounded-xl border border-black/20 px-3 py-2"
+                    className="rounded-xl ds-input px-3 py-2"
                 >
                     <option value="">All sources</option>
                     <option value="immobilienscout24">ImmobilienScout24</option>
@@ -221,66 +221,66 @@ export function PlatformDashboard() {
                 <button
                     onClick={searchListings}
                     disabled={loading}
-                    className="rounded-xl bg-black px-4 py-2 text-white"
+                    className="btn-primary !h-auto !py-2"
                 >
                     {loading ? "Searching..." : "Search Listings"}
                 </button>
                 <button
                     onClick={analyzeListing}
                     disabled={!selectedId}
-                    className="rounded-xl border border-black px-4 py-2"
+                    className="btn-secondary !h-auto !py-2"
                 >
                     Analyze Selected Listing
                 </button>
             </section>
 
-            <section className="grid gap-3 rounded-2xl border border-black/10 bg-white p-5 md:grid-cols-5">
+            <section className="ds-section grid gap-3 md:grid-cols-5">
                 <button
                     onClick={loadApplications}
-                    className="rounded-xl border border-black px-3 py-2"
+                    className="btn-secondary !h-auto !py-2"
                 >
                     Load Applications
                 </button>
                 <button
                     onClick={loadDocumentBundles}
-                    className="rounded-xl border border-black px-3 py-2"
+                    className="btn-secondary !h-auto !py-2"
                 >
                     Load Documents
                 </button>
                 <button
                     onClick={loadNeighborhoods}
-                    className="rounded-xl border border-black px-3 py-2"
+                    className="btn-secondary !h-auto !py-2"
                 >
                     Load Neighborhoods
                 </button>
                 <button
                     onClick={loadChatSessions}
-                    className="rounded-xl border border-black px-3 py-2"
+                    className="btn-secondary !h-auto !py-2"
                 >
                     Load Chat Sessions
                 </button>
                 <button
                     onClick={loadRejectionAnalyses}
-                    className="rounded-xl border border-black px-3 py-2"
+                    className="btn-secondary !h-auto !py-2"
                 >
                     Load Rejection Analysis
                 </button>
             </section>
 
             <section className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-black/10 bg-white p-5">
+                <div className="ds-card p-5">
                     <h2 className="text-lg font-semibold">Listings</h2>
                     <div className="mt-3 flex flex-col gap-3">
                         {listings.length === 0 && (
-                            <p className="text-sm text-black/60">Run a search to load listings.</p>
+                            <p className="text-sm text-muted">Run a search to load listings.</p>
                         )}
                         {listings.map((listing) => (
                             <button
                                 key={listing.id}
                                 onClick={() => setSelectedId(listing.id)}
                                 className={`rounded-xl border p-3 text-left transition ${selectedId === listing.id
-                                    ? "border-black bg-black text-white"
-                                    : "border-black/15"
+                                    ? "border-primary bg-primary text-white"
+                                    : "ghost-border"
                                     }`}
                             >
                                 <p className="font-semibold">{listing.title}</p>
@@ -298,10 +298,10 @@ export function PlatformDashboard() {
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-black/10 bg-white p-5">
+                <div className="ds-card p-5">
                     <h2 className="text-lg font-semibold">Listing Intelligence</h2>
                     {!selectedListing && (
-                        <p className="mt-3 text-sm text-black/60">Select a listing first.</p>
+                        <p className="mt-3 text-sm text-muted">Select a listing first.</p>
                     )}
                     {selectedListing && (
                         <div className="mt-3 space-y-2 text-sm">
@@ -320,7 +320,7 @@ export function PlatformDashboard() {
                     )}
 
                     {score && (
-                        <div className="mt-4 rounded-xl border border-black/15 p-3 text-sm">
+                        <div className="mt-4 rounded-xl bg-surface-low p-3 text-sm">
                             <p className="font-semibold">Tenant score: {score.tenantScore.total}/100</p>
                             <p>Success probability: {score.success.probability}%</p>
                             <p className="mt-2 font-medium">Reasoning:</p>
@@ -354,30 +354,30 @@ export function PlatformDashboard() {
             </section>
 
             <section className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-black/10 bg-white p-5">
+                <div className="ds-card p-5">
                     <h2 className="text-lg font-semibold">AI Cover Letter</h2>
                     <button
                         onClick={generateLetter}
                         disabled={!selectedId || isGeneratingLetter}
-                        className="mt-3 rounded-xl bg-black px-4 py-2 text-white"
+                        className="mt-3 btn-primary !h-auto !py-2"
                     >
                         {isGeneratingLetter ? "Generating with Ollama..." : "Generate Letter"}
                     </button>
                     <textarea
                         value={coverLetter}
                         readOnly
-                        className="mt-3 min-h-52 w-full rounded-xl border border-black/20 p-3 text-sm"
+                        className="mt-3 min-h-52 w-full rounded-xl ds-input p-3 text-sm"
                         placeholder="Generated letter appears here"
                     />
                     <button
                         onClick={createApplicationFromSelection}
                         disabled={!selectedId}
-                        className="mt-3 rounded-xl border border-black px-4 py-2"
+                        className="mt-3 btn-secondary !h-auto !py-2"
                     >
                         Submit Application
                     </button>
                     {submitMessage && (
-                        <p className="mt-2 text-sm text-black/70">{submitMessage}</p>
+                        <p className="mt-2 text-sm text-muted">{submitMessage}</p>
                     )}
                     {selectedId && (
                         <Link
@@ -389,37 +389,37 @@ export function PlatformDashboard() {
                     )}
                 </div>
 
-                <div className="rounded-2xl border border-black/10 bg-white p-5">
+                <div className="ds-card p-5">
                     <h2 className="text-lg font-semibold">AI Chat Assistant</h2>
                     <div className="mt-3 flex gap-2">
                         <input
                             value={chatInput}
                             onChange={(event) => setChatInput(event.target.value)}
                             placeholder="Ask about price, genossenschaft, or cover letter"
-                            className="flex-1 rounded-xl border border-black/20 px-3 py-2"
+                            className="flex-1 rounded-xl ds-input px-3 py-2"
                         />
                         <button
                             onClick={askChatbot}
-                            className="rounded-xl bg-black px-4 py-2 text-white"
+                            className="btn-primary !h-auto !py-2"
                         >
                             Ask
                         </button>
                     </div>
-                    <p className="mt-3 rounded-xl border border-black/15 p-3 text-sm">
+                    <p className="mt-3 rounded-xl bg-surface-low p-3 text-sm">
                         {chatReply || "Chat response will appear here."}
                     </p>
                 </div>
             </section>
 
             <section className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-black/10 bg-white p-5">
+                <div className="ds-card p-5">
                     <h2 className="text-lg font-semibold">Application Tracker</h2>
                     <div className="mt-3 space-y-2 text-sm">
                         {applications.length === 0 && (
-                            <p className="text-black/60">No applications loaded yet.</p>
+                            <p className="text-muted">No applications loaded yet.</p>
                         )}
                         {applications.map((application) => (
-                            <div key={application.id} className="rounded-lg border border-black/15 p-2">
+                            <div key={application.id} className="rounded-lg border ghost-border p-2">
                                 <p className="font-medium">{application.id}</p>
                                 <p>Status: {application.status}</p>
                                 <p>Listing: {application.listingId}</p>
@@ -428,21 +428,21 @@ export function PlatformDashboard() {
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-black/10 bg-white p-5">
+                <div className="ds-card p-5">
                     <h2 className="text-lg font-semibold">Document Bundle</h2>
                     {!documents && (
-                        <p className="mt-3 text-sm text-black/60">Load documents to view bundle readiness.</p>
+                        <p className="mt-3 text-sm text-muted">Load documents to view bundle readiness.</p>
                     )}
                     {documents && (
                         <div className="mt-3 space-y-3 text-sm">
                             {documents.bundles.map((bundle) => (
-                                <div key={bundle.id} className="rounded-lg border border-black/15 p-2">
+                                <div key={bundle.id} className="rounded-lg border ghost-border p-2">
                                     <p className="font-medium">{bundle.id}</p>
                                     <p>Completeness: {bundle.completenessScore}%</p>
                                     <p>Documents: {bundle.documentIds.length}</p>
                                 </div>
                             ))}
-                            <p className="text-black/70">
+                            <p className="text-muted">
                                 Uploaded files: {documents.documents.map((doc) => doc.fileName).join(", ")}
                             </p>
                         </div>
@@ -451,14 +451,14 @@ export function PlatformDashboard() {
             </section>
 
             <section className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border border-black/10 bg-white p-5">
+                <div className="ds-card p-5">
                     <h2 className="text-lg font-semibold">Neighborhood Intelligence</h2>
                     {neighborhoods.length === 0 && (
-                        <p className="mt-3 text-sm text-black/60">No neighborhood metrics loaded yet.</p>
+                        <p className="mt-3 text-sm text-muted">No neighborhood metrics loaded yet.</p>
                     )}
                     <div className="mt-3 space-y-2 text-sm">
                         {neighborhoods.map((item) => (
-                            <div key={item.district} className="rounded-lg border border-black/15 p-2">
+                            <div key={item.district} className="rounded-lg border ghost-border p-2">
                                 <p className="font-medium">{item.district}</p>
                                 <p>Safety: {item.safetyScore}</p>
                                 <p>Green spaces: {item.greenSpaceScore}</p>
@@ -468,14 +468,14 @@ export function PlatformDashboard() {
                     </div>
                 </div>
 
-                <div className="rounded-2xl border border-black/10 bg-white p-5">
+                <div className="ds-card p-5">
                     <h2 className="text-lg font-semibold">Chat Sessions</h2>
                     {chatSessions.length === 0 && (
-                        <p className="mt-3 text-sm text-black/60">No chat sessions loaded yet.</p>
+                        <p className="mt-3 text-sm text-muted">No chat sessions loaded yet.</p>
                     )}
                     <div className="mt-3 space-y-2 text-sm">
                         {chatSessions.map((session) => (
-                            <div key={session.id} className="rounded-lg border border-black/15 p-2">
+                            <div key={session.id} className="rounded-lg border ghost-border p-2">
                                 <p className="font-medium">{session.id}</p>
                                 <p>Messages: {session.messages.length}</p>
                                 <p>Updated: {new Date(session.updatedAtIso).toLocaleString()}</p>
@@ -485,14 +485,14 @@ export function PlatformDashboard() {
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-black/10 bg-white p-5">
+            <section className="ds-card p-5">
                 <h2 className="text-lg font-semibold">Automated Rejection Analysis</h2>
                 {rejections.length === 0 && (
-                    <p className="mt-3 text-sm text-black/60">No rejection analyses loaded yet.</p>
+                    <p className="mt-3 text-sm text-muted">No rejection analyses loaded yet.</p>
                 )}
                 <div className="mt-3 space-y-3 text-sm">
                     {rejections.map((analysis) => (
-                        <div key={analysis.id} className="rounded-lg border border-black/15 p-3">
+                        <div key={analysis.id} className="rounded-lg border ghost-border p-3">
                             <p className="font-medium">Application {analysis.applicationId}</p>
                             <p>Reason: {analysis.reasonCode}</p>
                             <p>Confidence: {Math.round(analysis.confidence * 100)}%</p>

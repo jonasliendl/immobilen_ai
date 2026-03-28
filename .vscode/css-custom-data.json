@@ -1,0 +1,13 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@theme",
+      "description": "Tailwind CSS v4: register theme variables (e.g. `@theme inline { ... }`)."
+    },
+    {
+      "name": "@import",
+      "description": "CSS import; with Tailwind v4 often `@import \"tailwindcss\"`."
+    }
+  ]
+}
