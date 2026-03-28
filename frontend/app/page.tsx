@@ -60,7 +60,7 @@ const solutionCards = [
         icon: "hub",
         stat: "All portals",
         title: "Scrape · Match · Genossenschaft-first",
-        text: "Lucid Intelligence pulls listings from every major Berlin platform, deduplicates them, and prioritises affordable, member-aligned homes. Tell us your Genossenschaft (Wohnungsgenossenschaft) and share tier — we weight offers that fit cooperative rules and your budget.",
+        text: "Budenfinder pulls listings from every major Berlin platform, deduplicates them, and prioritises affordable, member-aligned homes. Tell us your Genossenschaft (Wohnungsgenossenschaft) and share tier — we weight offers that fit cooperative rules and your budget.",
         color: "text-primary-container",
     },
     {
@@ -302,7 +302,7 @@ const useCases = [
 const testimonials = [
     {
         quote:
-            "I found my Berlin apartment in 4 days. As a non-German speaker I was terrified of scams — Ai.mmobilie made the whole process feel safe and simple.",
+            "I found my Berlin apartment in 4 days. As a non-German speaker I was terrified of scams — Budenfinder made the whole process feel safe and simple.",
         name: "Sarah M.",
         role: "Software Engineer · Relocated from London",
         tag: "Prenzlauer Berg",
@@ -337,7 +337,7 @@ const team = [
         initials: "JL",
         name: "Jonas Liendl",
         role: "CTO · Engineer",
-        bio: "Architecture, AI/ML hooks, and data pipelines that power Lucid Intelligence.",
+        bio: "Architecture, AI/ML hooks, and data pipelines that power Budenfinder.",
     },
     {
         initials: "TB",
@@ -356,59 +356,70 @@ const team = [
 export default function Home() {
     return (
         <main className="flex w-full flex-1 flex-col">
-            {/* SECTION 1 — HERO */}
-            <header className="relative flex min-h-screen flex-col overflow-hidden bg-hero-dark pt-20 text-white">
+            {/* SECTION 1 — HERO (starts below fixed nav via MainContent pt-20; extra inner padding for title) */}
+            <header className="relative flex min-h-[calc(100dvh-5rem)] flex-col overflow-hidden bg-hero-dark text-white">
                 <div className="cube-texture-dark pointer-events-none absolute inset-0 z-0" aria-hidden />
                 <div
-                    className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-primary/10 via-transparent to-tertiary/5"
+                    className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-tr from-primary/10 via-transparent to-white/5"
                     aria-hidden
                 />
 
-                <ScrollReveal className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-6 text-center md:px-8">
-                    <p className="font-mono text-xs font-medium uppercase tracking-[0.2em] text-primary-container">
+                <ScrollReveal className="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-6 pt-8 text-center md:px-8 md:pt-14">
+                    <div className="mx-auto mb-2 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-white/5 px-3 py-1 font-mono text-xs font-medium uppercase tracking-[0.2em] text-primary-container backdrop-blur-md">
+                        <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-primary" aria-hidden />
                         Berlin · AI-Powered Rental Intelligence
-                    </p>
+                    </div>
                     <h1 className="mt-6 font-sans text-4xl font-extrabold leading-[1.1] tracking-tight md:text-5xl lg:text-6xl">
                         Find Your Berlin Apartment.
                         <br />
                         Before Anyone Else Does.
                     </h1>
-                    <p className="mx-auto mt-6 max-w-lg font-sans text-base font-normal leading-relaxed text-secondary-fixed md:text-lg">
-                        Lucid Intelligence finds fair, affordable Berlin homes for Genossenschaft members — one feed,
+                    <p className="mx-auto mt-8 max-w-lg font-sans text-base font-light leading-relaxed text-slate-300 md:mt-10 md:text-lg">
+                        Budenfinder finds fair, affordable Berlin homes for Genossenschaft members — one feed,
                         smart applications, and chat before you apply.
                     </p>
-                    <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:flex-wrap">
+                    <div className="mt-12 flex w-full max-w-md flex-col items-stretch justify-center gap-5 sm:mx-auto sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center sm:justify-center md:mt-14 md:gap-6">
                         <Link
                             href="/search"
-                            className="btn-primary-gradient inline-flex min-h-[48px] items-center justify-center rounded-xl px-8 py-3.5 font-bold text-on-primary shadow-lg transition hover:-translate-y-0.5 hover:shadow-ambient"
+                            className="btn-primary-gradient inline-flex min-h-[52px] w-full min-w-[14rem] items-center justify-center rounded-xl px-8 py-3.5 text-center font-bold text-on-primary shadow-lg transition hover:-translate-y-0.5 sm:w-auto"
                         >
                             Start Searching
                         </Link>
                         <a
                             href="#waitlist"
-                            className="inline-flex min-h-[48px] items-center justify-center rounded-xl border-2 border-primary-container px-8 py-3.5 font-semibold text-white transition hover:bg-white/5"
+                            className="inline-flex min-h-[52px] w-full min-w-[14rem] items-center justify-center rounded-xl border border-white/20 bg-white/5 px-8 py-3.5 text-center font-medium text-white backdrop-blur-sm transition hover:bg-white/10 sm:w-auto"
                         >
                             Join the Waitlist →
                         </a>
                     </div>
                 </ScrollReveal>
 
-                <div className="relative z-10 mx-auto mt-auto w-full max-w-4xl px-6 pb-12 md:px-8">
-                    <ScrollReveal>
-                        <div className="glass-box rounded-2xl px-4 py-5 md:px-8 md:py-6">
-                            <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4">
+                <div className="relative z-10 mx-auto mt-auto flex w-full max-w-4xl flex-col items-center px-6 pb-10 pt-6 md:px-8 md:pb-14 md:pt-10">
+                    <ScrollReveal className="w-full">
+                        <div className="glass-box rounded-2xl border border-white/10 px-5 py-6 shadow-[0_8px_40px_rgba(0,0,0,0.12)] md:px-10 md:py-8">
+                            <p className="mb-4 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-primary-container/90 md:mb-5 md:text-xs">
+                                Why renters choose us
+                            </p>
+                            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-3 md:gap-x-4 md:gap-y-4">
                                 {[
                                     "🏠 10,000+ Listings Daily",
                                     "✅ Mietpreisbremse Verified",
                                     "🚨 Scam-Free Filtered",
                                     "🌐 English & German",
-                                ].map((pill) => (
-                                    <span
-                                        key={pill}
-                                        className="rounded-full bg-white/5 px-3 py-1.5 text-xs font-medium text-white/90 md:text-sm"
-                                    >
-                                        {pill}
-                                    </span>
+                                ].map((pill, idx, arr) => (
+                                    <Fragment key={pill}>
+                                        <span className="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-medium text-white/95 backdrop-blur-sm transition-colors hover:border-white/25 hover:bg-white/15 md:text-sm">
+                                            {pill}
+                                        </span>
+                                        {idx < arr.length - 1 ? (
+                                            <span
+                                                className="hidden text-white/25 sm:inline md:text-lg"
+                                                aria-hidden="true"
+                                            >
+                                                ·
+                                            </span>
+                                        ) : null}
+                                    </Fragment>
                                 ))}
                             </div>
                         </div>
@@ -416,110 +427,107 @@ export default function Home() {
                 </div>
             </header>
 
-            {/* SECTION 2+3 — PROBLEM → SOLUTION (single card, red → green) */}
-            <section className="bg-surface py-20 md:py-28">
-                <ScrollReveal className="mx-auto max-w-screen-xl px-6 md:px-8">
-                    <div className="overflow-hidden rounded-[2rem] shadow-floating">
-                        <div className="problem-solution-flow relative">
-                            <div
-                                className="cube-texture pointer-events-none absolute inset-0 opacity-[0.07]"
-                                aria-hidden
-                            />
-                            {/* Problem zone — red end of gradient */}
-                            <div className="relative px-6 pb-10 pt-12 md:px-12 md:pb-14 md:pt-16">
-                                <p className="font-mono text-xs font-semibold uppercase tracking-[0.25em] text-white/90">
-                                    The Problem
-                                </p>
-                                <h2 className="mt-4 max-w-3xl font-sans text-3xl font-bold leading-tight text-white md:text-4xl">
-                                    Berlin&apos;s Rental Market Is Broken.
-                                </h2>
-                                <p className="mt-4 max-w-2xl font-sans text-sm leading-relaxed text-white/80 md:text-base">
-                                    Especially for{" "}
-                                    <strong className="font-semibold text-white">Genossenschaft shareholders</strong> —
-                                    affordable member flats hide across ten portals while scams and illegal rents crowd
-                                    the feed.
-                                </p>
-                                <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                                    {problemStats.map((c) => (
-                                        <div
-                                            key={c.label}
-                                            className="flex flex-col items-center rounded-2xl bg-white/18 px-4 py-8 text-center shadow-lg backdrop-blur-md"
-                                        >
-                                            <span className="font-mono text-3xl font-semibold text-white text-shadow-sm md:text-4xl">
-                                                {c.num}
-                                            </span>
-                                            <p className="mt-3 font-sans text-sm font-semibold text-white">{c.label}</p>
-                                            <p className="mt-2 font-sans text-xs font-normal leading-relaxed text-white/75">
-                                                {c.sub}
-                                            </p>
-                                        </div>
-                                    ))}
+            {/* SECTION 2+3 — PROBLEM → SOLUTION (stitch_aimmobilie_landing_page_black_white) */}
+            <section className="brand-gradient relative overflow-visible py-24 md:py-48">
+                <div className="cube-texture pointer-events-none absolute inset-0 z-0" aria-hidden />
+                <ScrollReveal className="relative z-10 mx-auto max-w-screen-xl px-6 md:px-8">
+                    <div className="mx-auto mb-12 max-w-5xl rounded-[2rem] bg-white p-10 shadow-floating transition-transform duration-500 hover:scale-[1.01] md:mb-20 md:-mt-16 md:p-16 lg:-mt-24">
+                        <div className="max-w-3xl">
+                            <p className="mb-6 font-sans text-sm font-bold uppercase tracking-[0.3em] text-slate-500">
+                                The Problem
+                            </p>
+                            <h2 className="mb-8 font-sans text-3xl font-extrabold leading-tight tracking-tight text-on-background md:text-4xl lg:text-5xl">
+                                Berlin&apos;s rental market is broken.
+                            </h2>
+                            <p className="mb-12 font-sans text-lg font-light leading-relaxed text-muted">
+                                Especially for{" "}
+                                <strong className="font-semibold text-on-background">Genossenschaft shareholders</strong>
+                                — affordable member flats hide across ten portals while scams and illegal rents crowd
+                                the feed.
+                            </p>
+                        </div>
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                            {problemStats.map((c) => (
+                                <div
+                                    key={c.label}
+                                    className="group rounded-2xl border border-slate-100 bg-slate-50 p-6 text-center transition-all hover:bg-white hover:shadow-lg md:p-8"
+                                >
+                                    <span className="font-mono text-2xl font-semibold text-slate-800 md:text-3xl">
+                                        {c.num}
+                                    </span>
+                                    <p className="mt-3 font-sans text-sm font-bold text-on-background">{c.label}</p>
+                                    <p className="mt-2 font-sans text-xs font-light leading-relaxed text-muted">
+                                        {c.sub}
+                                    </p>
                                 </div>
-                            </div>
-                            {/* Mid transition label */}
-                            <div className="relative px-6 md:px-12">
-                                <div className="h-px w-full bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-                                <p className="pt-6 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.35em] text-white/80 md:text-xs">
-                                    Shift to clarity
-                                </p>
-                            </div>
-                            {/* Solution zone — Stitch mint end (#3ECFA0) */}
-                            <div className="relative px-6 pb-12 pt-8 md:px-12 md:pb-16 md:pt-10">
-                                <p className="font-mono text-xs font-semibold uppercase tracking-[0.25em] text-hero-dark/85">
-                                    The Solution
-                                </p>
-                                <h2 className="mt-4 max-w-3xl font-sans text-3xl font-bold tracking-tight text-hero-dark md:text-4xl">
-                                    One platform. Every listing. Zero guesswork.
-                                </h2>
-                                <p className="mt-5 max-w-2xl text-pretty font-sans text-base font-normal leading-relaxed text-hero-dark/90 md:text-lg">
-                                    Ai.mmobilie is the <strong className="font-semibold text-hero-dark">AI layer</strong>{" "}
-                                    for cooperative members and community shareholders: it pulls ads from across
-                                    Berlin, surfaces the{" "}
-                                    <strong className="font-semibold text-hero-dark">cheapest legal rents</strong> that
-                                    match your shares and filters, and saves hours every week. Ship stronger
-                                    applications through the{" "}
-                                    <strong className="font-semibold text-hero-dark">tracker</strong>, talk it through
-                                    in <strong className="font-semibold text-hero-dark">chat</strong> — all before a
-                                    landlord ever opens your folder.
-                                </p>
-                                <div className="mt-10 grid gap-6 md:grid-cols-3">
-                                    {solutionCards.map((c) => (
-                                        <div
-                                            key={c.title}
-                                            className="rounded-2xl bg-surface-container-lowest/95 p-8 shadow-ambient backdrop-blur-sm"
-                                        >
-                                            <span className={`material-symbols-outlined text-[32px] ${c.color}`}>
-                                                {c.icon}
-                                            </span>
-                                            <p className="mt-4 font-mono text-xl font-semibold text-primary md:text-2xl">
-                                                {c.stat}
-                                            </p>
-                                            <h3 className="mt-2 font-sans text-lg font-semibold text-on-background">
-                                                {c.title}
-                                            </h3>
-                                            <p className="mt-3 font-sans text-sm font-normal leading-relaxed text-on-surface/85">
-                                                {c.text}
-                                            </p>
-                                        </div>
-                                    ))}
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mx-auto max-w-5xl rounded-[2rem] bg-white p-10 shadow-floating transition-transform duration-500 hover:scale-[1.01] md:p-16">
+                        <div className="mb-12 max-w-2xl">
+                            <p className="mb-6 font-sans text-sm font-bold uppercase tracking-[0.3em] text-primary">
+                                The Solution
+                            </p>
+                            <h2 className="font-sans text-3xl font-extrabold leading-tight tracking-tight text-on-background md:text-4xl lg:text-5xl">
+                                One platform. Every listing. Zero guesswork.
+                            </h2>
+                        </div>
+                        <p className="mb-10 max-w-2xl font-sans text-lg font-light leading-relaxed text-muted">
+                            Budenfinder is the <strong className="font-semibold text-on-background">AI layer</strong> for
+                            cooperative members: it pulls ads from across Berlin, surfaces the{" "}
+                            <strong className="font-semibold text-on-background">cheapest legal rents</strong> that match
+                            your shares and filters, and saves hours every week — via the{" "}
+                            <strong className="font-semibold text-on-background">tracker</strong> and{" "}
+                            <strong className="font-semibold text-on-background">chat</strong> before a landlord opens
+                            your folder.
+                        </p>
+                        <div className="grid gap-6 md:grid-cols-3">
+                            {solutionCards.map((c) => (
+                                <div
+                                    key={c.title}
+                                    className="relative overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-8 transition-shadow hover:shadow-lg"
+                                >
+                                    <div
+                                        className={`pointer-events-none absolute -right-12 -top-12 h-48 w-48 rounded-full blur-[60px] ${c.color === "text-secondary" ? "bg-secondary/10" : "bg-primary/10"}`}
+                                        aria-hidden
+                                    />
+                                    <div className="relative z-10">
+                                        <span className={`material-symbols-outlined text-[32px] ${c.color}`}>
+                                            {c.icon}
+                                        </span>
+                                        <p className="mt-4 font-mono text-xl font-semibold text-primary md:text-2xl">
+                                            {c.stat}
+                                        </p>
+                                        <h3 className="mt-2 font-sans text-lg font-semibold text-on-background">
+                                            {c.title}
+                                        </h3>
+                                        <p className="mt-3 font-sans text-sm font-light leading-relaxed text-muted">
+                                            {c.text}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </ScrollReveal>
             </section>
 
-            {/* SECTION 4 — WHO WE SERVE (Genossenschaft & affordable housing) */}
-            <section className="bg-surface-container-low py-20 md:py-28">
-                <ScrollReveal className="mx-auto max-w-screen-xl px-6 md:px-8">
-                    <p className="font-mono text-xs font-semibold uppercase tracking-[0.25em] text-secondary">
+            {/* SECTION 4 — WHO WE SERVE */}
+            <section className="relative overflow-hidden bg-white py-20 md:py-32">
+                <div
+                    className="cube-texture pointer-events-none absolute inset-0 z-0 [opacity:0.03]"
+                    aria-hidden
+                />
+                <ScrollReveal className="relative z-10 mx-auto max-w-screen-xl px-6 md:px-8">
+                    <p className="font-sans text-sm font-bold uppercase tracking-[0.3em] text-slate-400">
                         Who We Serve
                     </p>
                     <h2 className="mt-4 font-sans text-3xl font-bold text-on-background md:text-4xl">
                         Cooperative members & affordable-housing seekers.
                     </h2>
                     <p className="mt-4 max-w-3xl font-sans text-base leading-relaxed text-on-surface/85">
-                        Ai.mmobilie is built for people with{" "}
+                        Budenfinder is built for people with{" "}
                         <strong className="text-on-background">shares in a Berlin Wohnungsgenossenschaft</strong> and
                         anyone chasing <strong className="text-on-background">truly affordable</strong> rents. Lucid
                         Intelligence maps portal data to your membership, filters, and documents so you spend less time
@@ -810,7 +818,7 @@ export default function Home() {
                         Built by Renters. For Renters.
                     </h2>
                     <p className="mx-auto mt-6 max-w-lg font-sans text-base font-normal leading-relaxed text-secondary-fixed">
-                        We have lived the Berlin rental nightmare firsthand. Ai.mmobilie exists because we could not
+                        We have lived the Berlin rental nightmare firsthand. Budenfinder exists because we could not
                         find a tool that actually worked — so we built one.
                     </p>
                     <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -882,165 +890,102 @@ export default function Home() {
                 </ScrollReveal>
             </section>
 
-            {/* SECTION 11 — FINAL CTA */}
-            <section className="relative overflow-hidden bg-hero-dark py-20 md:py-24">
+            {/* SECTION 11 — FINAL CTA (stitch_aimmobilie_landing_page_black_white closing band) */}
+            <section className="relative overflow-hidden bg-hero-dark py-20 md:py-32">
                 <div className="cube-texture-dark pointer-events-none absolute inset-0 z-0" aria-hidden />
-                <ScrollReveal className="relative z-10 mx-auto max-w-3xl px-6 text-center md:px-8">
-                    <h2 className="font-sans text-3xl font-extrabold text-white md:text-4xl lg:text-5xl">
-                        Your Berlin Apartment Is Waiting.
-                    </h2>
-                    <p className="mt-6 font-sans text-lg text-secondary-fixed">
-                        Stop scrolling 10 portals. Let AI do the work.
-                    </p>
-                    <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                        <Link
-                            href="/search"
-                            className="btn-primary-gradient inline-flex min-h-[48px] items-center justify-center rounded-xl px-10 py-3.5 font-bold text-on-primary shadow-lg transition hover:-translate-y-0.5"
-                        >
-                            Start Searching
-                        </Link>
-                        <a
-                            href="#waitlist"
-                            className="inline-flex min-h-[48px] items-center justify-center rounded-xl border-2 border-primary-container px-10 py-3.5 font-semibold text-white transition hover:bg-white/5"
-                        >
-                            Join the Waitlist
-                        </a>
+                <div
+                    className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-transparent to-primary/5"
+                    aria-hidden
+                />
+                <ScrollReveal className="relative z-10 mx-auto max-w-4xl px-6 text-center md:px-8">
+                    <div className="glass-box rounded-[2rem] border-white/10 p-10 md:rounded-[3rem] md:p-16 lg:p-24">
+                        <h2 className="font-sans text-3xl font-extrabold leading-tight tracking-tight text-white md:text-5xl lg:text-6xl">
+                            Your Berlin Apartment Is Waiting.
+                        </h2>
+                        <p className="mx-auto mt-6 max-w-2xl font-sans text-lg font-light leading-relaxed text-slate-300 md:text-xl">
+                            Stop scrolling 10 portals. Let AI do the work.
+                        </p>
+                        <div className="mt-12 flex w-full max-w-md flex-col items-stretch justify-center gap-6 sm:mx-auto sm:max-w-none sm:flex-row sm:items-center md:mt-12">
+                            <Link
+                                href="/search"
+                                className="btn-primary-gradient inline-flex min-h-[52px] w-full min-w-[14rem] items-center justify-center rounded-2xl px-10 py-4 text-lg font-bold text-on-primary shadow-2xl transition hover:-translate-y-0.5 sm:w-auto"
+                            >
+                                Start Searching
+                            </Link>
+                            <a
+                                href="#waitlist"
+                                className="inline-flex min-h-[52px] w-full min-w-[14rem] items-center justify-center rounded-2xl border border-white/20 bg-white/5 px-10 py-4 text-lg font-bold text-white backdrop-blur-sm transition hover:bg-white/10 sm:w-auto"
+                            >
+                                Join the Waitlist
+                            </a>
+                        </div>
                     </div>
                 </ScrollReveal>
             </section>
 
-            {/* FOOTER */}
-            <footer className="bg-[#0A1220] px-6 py-16 text-white md:px-8">
-                <div className="mx-auto grid max-w-screen-xl gap-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-                    <div>
-                        <p className="bg-gradient-to-r from-primary-container to-primary bg-clip-text text-xl font-bold tracking-tighter text-transparent">
-                            Ai.mmobilie
-                        </p>
-                        <p className="mt-3 font-sans text-sm text-white/70">
-                            Lucid Intelligence for Berlin Renters
-                        </p>
-                        <div className="mt-6 flex gap-4">
-                            <a
-                                href="https://twitter.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sm text-white/60 transition hover:text-primary-container"
-                                aria-label="Twitter"
-                            >
-                                𝕏
-                            </a>
-                            <a
-                                href="https://linkedin.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sm text-white/60 transition hover:text-primary-container"
-                                aria-label="LinkedIn"
-                            >
-                                in
-                            </a>
-                            <a
-                                href="https://instagram.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sm text-white/60 transition hover:text-primary-container"
-                                aria-label="Instagram"
-                            >
-                                ◎
-                            </a>
-                        </div>
+            {/* FOOTER — stitch_aimmobilie_landing_page_black_white */}
+            <footer className="w-full border-t border-slate-100 bg-white px-6 py-16 font-sans text-xs font-medium uppercase tracking-widest text-slate-500 dark:border-slate-800 dark:bg-slate-950 md:px-8">
+                <div className="mx-auto grid max-w-screen-2xl grid-cols-1 items-center gap-8 md:grid-cols-2 lg:flex lg:justify-between">
+                    <div className="text-lg font-black normal-case tracking-tighter text-slate-900 dark:text-white">
+                        Budenfinder
                     </div>
-                    <div>
-                        <p className="font-mono text-xs font-semibold uppercase tracking-wider text-primary-container">
-                            Platform
-                        </p>
-                        <ul className="mt-4 space-y-2 font-sans text-sm text-white/80">
-                            <li>
-                                <Link href="/search" className="transition hover:text-primary-container">
-                                    Search Listings
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/intelligence" className="transition hover:text-primary-container">
-                                    Market Intelligence
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/chat" className="transition hover:text-primary-container">
-                                    AI Assistant
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/tracker" className="transition hover:text-primary-container">
-                                    Application Tracker
-                                </Link>
-                            </li>
-                        </ul>
+                    <div className="flex max-w-3xl flex-wrap gap-x-10 gap-y-3 normal-case tracking-normal">
+                        <Link
+                            href="/search"
+                            className="transition-colors hover:text-primary hover:underline hover:decoration-primary hover:underline-offset-4"
+                        >
+                            Search
+                        </Link>
+                        <Link
+                            href="/tracker"
+                            className="transition-colors hover:text-primary hover:underline hover:decoration-primary hover:underline-offset-4"
+                        >
+                            Tracker
+                        </Link>
+                        <Link
+                            href="/intelligence"
+                            className="transition-colors hover:text-primary hover:underline hover:decoration-primary hover:underline-offset-4"
+                        >
+                            Intelligence
+                        </Link>
+                        <Link
+                            href="/chat"
+                            className="transition-colors hover:text-primary hover:underline hover:decoration-primary hover:underline-offset-4"
+                        >
+                            Chat
+                        </Link>
+                        <Link
+                            href="/privacy"
+                            className="transition-colors hover:text-primary hover:underline hover:decoration-primary hover:underline-offset-4"
+                        >
+                            Privacy
+                        </Link>
+                        <Link
+                            href="/terms"
+                            className="transition-colors hover:text-primary hover:underline hover:decoration-primary hover:underline-offset-4"
+                        >
+                            Terms
+                        </Link>
+                        <Link
+                            href="/impressum"
+                            className="transition-colors hover:text-primary hover:underline hover:decoration-primary hover:underline-offset-4"
+                        >
+                            Impressum
+                        </Link>
+                        <a
+                            href="mailto:hello@budenfinder.de"
+                            className="transition-colors hover:text-primary hover:underline hover:decoration-primary hover:underline-offset-4"
+                        >
+                            Contact
+                        </a>
                     </div>
-                    <div>
-                        <p className="font-mono text-xs font-semibold uppercase tracking-wider text-primary-container">
-                            Community
-                        </p>
-                        <ul className="mt-4 space-y-2 font-sans text-sm text-white/80">
-                            <li>
-                                <a href="#waitlist" className="transition hover:text-primary-container">
-                                    Shareholder Benefits
-                                </a>
-                            </li>
-                            <li>
-                                <Link
-                                    href="/search?source=Genossenschaft"
-                                    className="transition hover:text-primary-container"
-                                >
-                                    Genossenschaft Match
-                                </Link>
-                            </li>
-                            <li>
-                                <a href="#" className="transition hover:text-primary-container">
-                                    Partner Agencies
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" className="transition hover:text-primary-container">
-                                    Refer a Friend
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div>
-                        <p className="font-mono text-xs font-semibold uppercase tracking-wider text-primary-container">
-                            Legal
-                        </p>
-                        <ul className="mt-4 space-y-2 font-sans text-sm text-white/80">
-                            <li>
-                                <Link href="/privacy" className="transition hover:text-primary-container">
-                                    Privacy Policy (DSGVO)
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/impressum" className="transition hover:text-primary-container">
-                                    Impressum
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/terms" className="transition hover:text-primary-container">
-                                    Terms of Service
-                                </Link>
-                            </li>
-                            <li>
-                                <a
-                                    href="mailto:hello@ai.mmobilie.de"
-                                    className="transition hover:text-primary-container"
-                                >
-                                    Contact
-                                </a>
-                            </li>
-                        </ul>
+                    <div className="normal-case tracking-normal text-slate-500 dark:text-slate-500">
+                        © 2026 Budenfinder. Berlin rental search, simplified.
                     </div>
                 </div>
-                <div className="mx-auto mt-14 max-w-screen-xl border-t border-white/10 pt-8">
-                    <p className="text-center font-sans text-xs text-[#64748B]">
-                        © 2026 Ai.mmobilie. Built in Berlin with ❤️ for Berlin renters. All listings verified against
-                        Mietpreisbremse law.
+                <div className="mx-auto mt-10 max-w-screen-2xl border-t border-slate-100 pt-8 dark:border-slate-800">
+                    <p className="text-center font-sans text-xs font-normal normal-case tracking-normal text-slate-500">
+                        Search · Tracker · Intelligence · Chat — Mietpreisbremse-aware listings.
                     </p>
                 </div>
             </footer>

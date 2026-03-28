@@ -70,7 +70,7 @@ function cloneBundle(p: TenantProfile, docs: string[], letter: string): DraftBun
 }
 
 function storageKey(listingId: string) {
-    return `ai.mmobilie.apply-draft.${listingId}`;
+    return `budenfinder.apply-draft.${listingId}`;
 }
 
 function loadDraft(listingId: string): DraftBundle | null {

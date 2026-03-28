@@ -123,7 +123,7 @@ export default function SearchPage() {
             <FeaturePageIntro
                 eyebrow="Search"
                 title="Find Berlin flats in one place"
-                description="This page is your unified listing browser. Lucid Intelligence aggregates signals from multiple Berlin sources (including Genossenschaft-friendly filters), applies Mietpreisbremse-style checks where data allows, and lets you slice by district, rent, size, rooms, commute, and vibe — so cooperative members and budget hunters see the cheapest legal options first."
+                description="This page is your unified listing browser. Budenfinder aggregates signals from multiple Berlin sources (including Genossenschaft-friendly filters), applies Mietpreisbremse-style checks where data allows, and lets you slice by district, rent, size, rooms, commute, and vibe — so cooperative members and budget hunters see the cheapest legal options first."
                 howItWorks={[
                     "Set filters on the left: district, price band, square metres, rooms, source (e.g. Genossenschaft), commute cap, and vibe tags.",
                     "We rank and filter the in-app Berlin dataset instantly; each card links to detail and apply flows.",
@@ -138,10 +138,10 @@ export default function SearchPage() {
                 </p>
             </section>
 
-            {/* Filters */}
-            <section className="ds-section">
+            {/* Filters — white panel reads clearly on bg-surface (fixes low-contrast ds-section tint) */}
+            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8 dark:border-slate-700 dark:bg-slate-900">
                 <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-title text-on-background">Filters</h2>
+                    <h2 className="text-title text-primary">Filters</h2>
                     <button
                         onClick={clearFilters}
                         className="text-sm text-primary hover:text-primary-hover"
@@ -153,11 +153,11 @@ export default function SearchPage() {
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     {/* District */}
                     <div>
-                        <label className="text-label mb-1 block text-muted">District</label>
+                        <label className="text-label mb-1 block text-primary">District</label>
                         <select
                             value={filters.district}
                             onChange={(e) => setFilters({ ...filters, district: e.target.value })}
-                            className="ds-input w-full"
+                            className="ds-input w-full text-primary placeholder:text-primary/45"
                         >
                             <option value="">All districts</option>
                             {allDistricts.map((d) => (
@@ -168,53 +168,53 @@ export default function SearchPage() {
 
                     {/* Price Range */}
                     <div>
-                        <label className="text-label mb-1 block text-muted">Price Range (EUR)</label>
+                        <label className="text-label mb-1 block text-primary">Price Range (EUR)</label>
                         <div className="flex gap-2">
                             <input
                                 type="number"
                                 value={filters.minPrice}
                                 onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
                                 placeholder="Min"
-                                className="ds-input w-full"
+                                className="ds-input w-full text-primary placeholder:text-primary/45"
                             />
                             <input
                                 type="number"
                                 value={filters.maxPrice}
                                 onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
                                 placeholder="Max"
-                                className="ds-input w-full"
+                                className="ds-input w-full text-primary placeholder:text-primary/45"
                             />
                         </div>
                     </div>
 
                     {/* Size Range */}
                     <div>
-                        <label className="text-label mb-1 block text-muted">Size (m²)</label>
+                        <label className="text-label mb-1 block text-primary">Size (m²)</label>
                         <div className="flex gap-2">
                             <input
                                 type="number"
                                 value={filters.minSize}
                                 onChange={(e) => setFilters({ ...filters, minSize: e.target.value })}
                                 placeholder="Min"
-                                className="ds-input w-full"
+                                className="ds-input w-full text-primary placeholder:text-primary/45"
                             />
                             <input
                                 type="number"
                                 value={filters.maxSize}
                                 onChange={(e) => setFilters({ ...filters, maxSize: e.target.value })}
                                 placeholder="Max"
-                                className="ds-input w-full"
+                                className="ds-input w-full text-primary placeholder:text-primary/45"
                             />
                         </div>
                     </div>
 
                     {/* Rooms */}
                     <div>
-                        <label className="text-label mb-1 block text-muted">Rooms</label>
+                        <label className="text-label mb-1 block text-primary">Rooms</label>
                         <select
                             value={filters.rooms}
                             onChange={(e) => setFilters({ ...filters, rooms: e.target.value })}
-                            className="ds-input w-full"
+                            className="ds-input w-full text-primary placeholder:text-primary/45"
                         >
                             <option value="">Any</option>
                             <option value="1">1+ room</option>
@@ -226,11 +226,11 @@ export default function SearchPage() {
 
                     {/* Source */}
                     <div>
-                        <label className="text-label mb-1 block text-muted">Source</label>
+                        <label className="text-label mb-1 block text-primary">Source</label>
                         <select
                             value={filters.source}
                             onChange={(e) => setFilters({ ...filters, source: e.target.value })}
-                            className="ds-input w-full"
+                            className="ds-input w-full text-primary placeholder:text-primary/45"
                         >
                             <option value="">All sources</option>
                             {allSources.map((s) => (
@@ -243,11 +243,11 @@ export default function SearchPage() {
 
                     {/* Max Commute */}
                     <div>
-                        <label className="text-label mb-1 block text-muted">Max Commute (min)</label>
+                        <label className="text-label mb-1 block text-primary">Max Commute (min)</label>
                         <select
                             value={filters.maxCommute}
                             onChange={(e) => setFilters({ ...filters, maxCommute: e.target.value })}
-                            className="ds-input w-full"
+                            className="ds-input w-full text-primary placeholder:text-primary/45"
                         >
                             <option value="">Any</option>
                             <option value="15">15 min</option>
@@ -259,11 +259,11 @@ export default function SearchPage() {
 
                     {/* Sort */}
                     <div>
-                        <label className="text-label mb-1 block text-muted">Sort by</label>
+                        <label className="text-label mb-1 block text-primary">Sort by</label>
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                            className="ds-input w-full"
+                            className="ds-input w-full text-primary placeholder:text-primary/45"
                         >
                             <option value="relevance">Relevance</option>
                             <option value="price_asc">Price: Low to High</option>
@@ -276,7 +276,7 @@ export default function SearchPage() {
 
                 {/* Vibe Tags */}
                 <div className="mt-4">
-                    <label className="text-label mb-2 block text-muted">Vibe & Lifestyle</label>
+                    <label className="text-label mb-2 block text-primary">Vibe & Lifestyle</label>
                     <div className="flex flex-wrap gap-2">
                         {allVibeTags.map((tag) => (
                             <button
@@ -284,7 +284,7 @@ export default function SearchPage() {
                                 onClick={() => toggleVibeTag(tag)}
                                 className={`rounded-full px-4 py-1.5 text-sm transition ${filters.vibeTags.includes(tag)
                                         ? "bg-primary text-white"
-                                        : "bg-surface-card ghost-border hover:bg-surface-high"
+                                        : "bg-surface-card text-primary ghost-border hover:bg-surface-high hover:text-primary-hover"
                                     }`}
                             >
                                 {tag}

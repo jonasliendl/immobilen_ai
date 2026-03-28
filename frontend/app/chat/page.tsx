@@ -231,7 +231,7 @@ export default function ChatPage() {
                             <FeaturePageIntro
                                 eyebrow="AI Assistant"
                                 title="Ask anything before you apply"
-                                description="This chat connects to the Ai.mmobilie AI stack (Ollama with Hugging Face fallback). Use it to sanity-check Genossenschaft rules, decode contract clauses, rehearse landlord questions, or understand SCHUFA impact — without leaving the platform."
+                                description="This chat connects to the Budenfinder AI stack (Ollama with Hugging Face fallback). Use it to sanity-check Genossenschaft rules, decode contract clauses, rehearse landlord questions, or understand SCHUFA impact — without leaving the platform."
                                 howItWorks={[
                                     "Type a question or tap a quick action to seed the conversation.",
                                     "The model answers with Berlin rental context; verify critical legal points with a professional.",

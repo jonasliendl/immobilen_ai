@@ -19,13 +19,14 @@ export function Navigation() {
     };
 
     return (
-        <nav className="fixed top-0 z-50 w-full bg-surface-container-lowest/80 font-sans text-sm font-medium tracking-tight antialiased shadow-sm backdrop-blur-xl dark:bg-slate-950/80 dark:shadow-none">
+        <nav className="fixed top-0 z-50 w-full border-b border-slate-100 bg-white/80 font-sans text-sm font-medium tracking-tight antialiased shadow-sm backdrop-blur-xl dark:border-white/5 dark:bg-slate-950/80 dark:shadow-none">
             <div className="mx-auto flex h-20 max-w-screen-2xl items-center justify-between px-8">
                 <Link
                     href="/"
-                    className="inline-block text-xl font-bold tracking-tighter bg-gradient-to-r from-primary-container to-primary bg-clip-text text-transparent"
+                    className="text-xl font-bold tracking-tighter text-slate-900 dark:text-white"
+                    title="Budenfinder home"
                 >
-                    Ai.mmobilie
+                    Budenfinder
                 </Link>
 
                 <div className="hidden items-center gap-8 md:flex">
@@ -35,8 +36,8 @@ export function Navigation() {
                             href={item.href}
                             className={
                                 isActive(item.href)
-                                    ? "border-b-2 border-primary-container pb-1 font-semibold text-primary transition-colors"
-                                    : "text-primary/70 transition-colors hover:text-primary"
+                                    ? "border-b-2 border-primary pb-1 font-semibold text-primary transition-colors dark:text-primary"
+                                    : "text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
                             }
                         >
                             {item.label}
@@ -47,13 +48,13 @@ export function Navigation() {
                 <div className="flex items-center gap-4">
                     <button
                         type="button"
-                        className="hidden px-5 py-2 font-medium text-primary/75 transition-all hover:text-primary md:block"
+                        className="hidden px-5 py-2 font-medium text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 md:block"
                     >
                         Sign In
                     </button>
                     <Link
                         href="/search"
-                        className="rounded-xl bg-primary px-6 py-2 font-semibold text-on-primary shadow-md transition-all hover:bg-primary/90 hover:shadow-[0_8px_24px_rgb(0_108_79_/_.2)] active:scale-[0.98]"
+                        className="rounded-lg bg-primary px-6 py-2 font-semibold text-on-primary shadow-md shadow-primary/20 transition-all hover:opacity-90 active:scale-[0.98]"
                     >
                         Get Started
                     </Link>
@@ -88,13 +89,11 @@ export function MobileNav({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="mb-6 flex items-center justify-between">
-                    <span className="bg-gradient-to-r from-primary-container to-primary bg-clip-text font-bold text-transparent">
-                        Menu
-                    </span>
+                    <span className="font-bold text-slate-900 dark:text-white">Menu</span>
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-lg p-2 text-primary/70 hover:bg-surface-container-low hover:text-primary"
+                        className="rounded-lg p-2 text-slate-600 hover:bg-surface-container-low dark:text-slate-400"
                     >
                         ✕
                     </button>
@@ -107,8 +106,8 @@ export function MobileNav({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                             onClick={onClose}
                             className={`block rounded-xl px-4 py-3 text-sm font-medium transition ${
                                 isActive(item.href)
-                                    ? "bg-primary text-on-primary"
-                                    : "text-primary/80 hover:bg-primary/5 hover:text-primary"
+                                    ? "bg-primary/10 font-semibold text-primary"
+                                    : "text-slate-600 hover:bg-surface-container-low dark:text-slate-400"
                             }`}
                         >
                             {item.label}

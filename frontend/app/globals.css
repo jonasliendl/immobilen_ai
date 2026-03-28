@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /*
-  Design system: stitch_aimmobilie_landing_page (DESIGN.md + code.html)
-  Lucid Intelligence — tonal layering, no harsh layout borders, Inter typography.
+  Design system: stitch_aimmobilie_landing_page_black_white (DESIGN.md + code.html)
+  Editorial B&W + mint accent — solid typography, no nav text gradients, soft brand band.
 */
 
 :root {
@@ -13,7 +13,7 @@
 }
 
 @theme inline {
-  /* Core palette (aligned with code.html Tailwind extend) */
+  /* Core palette — aligned with stitch_aimmobilie_landing_page_black_white/code.html */
   --color-background: #f9f9ff;
   --color-on-background: #101c2e;
   --color-surface: #f9f9ff;
@@ -25,23 +25,23 @@
   --color-surface-container-high: #dee8ff;
   --color-surface-container-highest: #d7e3fc;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-tint: #006c4f;
+  --color-surface-tint: #3ecfa0;
 
   --color-on-surface: #101c2e;
   --color-on-surface-variant: #3c4a43;
   --color-inverse-surface: #253144;
   --color-inverse-on-surface: #ecf1ff;
 
-  --color-primary: #006c4f;
+  --color-primary: #3ecfa0;
   --color-on-primary: #ffffff;
-  --color-primary-container: #3ecfa0;
+  --color-primary-container: #50ddad;
   --color-on-primary-container: #00543d;
   --color-primary-fixed: #71fac8;
   --color-primary-fixed-dim: #50ddad;
   --color-on-primary-fixed: #002116;
   --color-on-primary-fixed-variant: #00513b;
   --color-inverse-primary: #50ddad;
-  --color-primary-hover: #00543d;
+  --color-primary-hover: #2db890;
 
   --color-secondary: #0060a9;
   --color-on-secondary: #ffffff;
@@ -114,7 +114,7 @@ body {
   background-size: 600px;
   background-repeat: repeat;
   mix-blend-mode: overlay;
-  opacity: 0.06;
+  opacity: 0.04;
   pointer-events: none;
 }
 
@@ -123,33 +123,27 @@ body {
   background-size: 600px;
   background-repeat: repeat;
   mix-blend-mode: soft-light;
-  opacity: 0.12;
+  opacity: 0.1;
   pointer-events: none;
 }
 
+/* stitch_aimmobilie_landing_page_black_white/code.html — light editorial band */
 .brand-gradient {
-  background: linear-gradient(180deg, #ff4d4d 0%, #3ecfa0 100%);
-}
-
-.problem-solution-flow {
-  background: linear-gradient(
-    180deg,
-    #ff6b6b 0%,
-    #ff4d4d 28%,
-    #ff7a72 45%,
-    #7ddeb8 52%,
-    #52d4b8 68%,
-    #3ecfa0 86%,
-    #34c399 100%
-  );
+  background: linear-gradient(180deg, #f1f5f9 0%, #fff 100%);
 }
 
 .text-shadow-sm {
   text-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
 }
 
+/* Solid mint CTA — matches Stitch (bg-primary + shadow-primary/20) */
 .btn-primary-gradient {
-  background: linear-gradient(180deg, #3ecfa0 0%, #006c4f 100%);
+  background: #3ecfa0;
+  box-shadow: 0 10px 40px -10px rgb(62 207 160 / 0.35);
+}
+
+.btn-primary-gradient:hover {
+  background: #2db890;
 }
 
 .material-symbols-outlined {
@@ -196,7 +190,7 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(180deg, #3ecfa0 0%, #006c4f 100%);
+  background: #3ecfa0;
   color: white;
   border-radius: var(--radius-md);
   height: 48px;
@@ -226,7 +220,8 @@ body {
 }
 
 .ds-input {
-  background: var(--color-surface-low);
+  /* Neutral field fill: readable on white panels (e.g. search filters) and tinted sections */
+  background: #f1f5f9;
   border: none;
   border-radius: var(--radius-md);
   padding: 0.625rem 0.875rem;
