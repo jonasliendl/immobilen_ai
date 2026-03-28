@@ -97,8 +97,8 @@ export default function SearchPage() {
     }
 
     function displayRent(listing: Listing): string {
-        if (listing.warmRentAmount != null) return `€${listing.warmRentAmount}`;
-        if (listing.coldRentAmount != null) return `€${listing.coldRentAmount}`;
+        if (listing.warmRentAmount != null) return `€${parseFloat(Number(listing.warmRentAmount).toFixed(2))}`;
+        if (listing.coldRentAmount != null) return `€${parseFloat(Number(listing.coldRentAmount).toFixed(2))}`;
         return "N/A";
     }
 
@@ -290,7 +290,7 @@ export default function SearchPage() {
                                 className="ds-card group p-4"
                             >
                                 <div className="aspect-video w-full overflow-hidden rounded-xl bg-surface-low">
-                                    {listing.imageUrls.length > 0 && COMPANY_BASE_URLS[listing.source] ? (
+                                    {listing.imageUrls.length > 0 ? (
                                         <img
                                             src={`${COMPANY_BASE_URLS[listing.source] ?? ''}${listing.imageUrls[0]}`}
                                             alt={listing.title}
@@ -315,7 +315,7 @@ export default function SearchPage() {
                                     <div className="mt-2 flex items-center justify-between">
                                         <span className="text-lg font-bold text-on-background">{displayRent(listing)}</span>
                                         <span className="text-sm text-muted">
-                                            {listing.areaM2 != null ? `${listing.areaM2}m²` : ""}
+                                            {listing.areaM2 != null ? `${parseFloat(Number(listing.areaM2).toFixed(2))}m²` : ""}
                                             {listing.rooms != null ? ` · ${listing.rooms} rooms` : ""}
                                         </span>
                                     </div>

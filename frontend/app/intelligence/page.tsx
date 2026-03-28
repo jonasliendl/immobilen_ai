@@ -31,7 +31,7 @@ const districtStats = Object.entries(districtRentBenchmarkPerM2).map(([district,
     pricePerM2,
     avgRent: pricePerM2 * 55, // avg 55m2
     listings: berlinListings.filter((l) => l.city === district || (l.address && l.address.includes(district))).length,
-    trend: ((((i * 7 + 3) % 13) - 5) * 0.8).toFixed(1),
+    trend: ((((i * 7 + 3) % 13) - 5) * 0.8).toFixed(2),
 }));
 
 export default function IntelligencePage() {
@@ -352,8 +352,8 @@ export default function IntelligencePage() {
                                     {districtStats.map((stat) => (
                                         <tr key={stat.district} className="">
                                             <td className="py-3 font-medium text-on-background">{stat.district}</td>
-                                            <td className="py-3 text-muted">€{stat.pricePerM2}/m²</td>
-                                            <td className="py-3 text-muted">€{stat.avgRent}</td>
+                                            <td className="py-3 text-muted">€{parseFloat(stat.pricePerM2.toFixed(2))}/m²</td>
+                                            <td className="py-3 text-muted">€{parseFloat(stat.avgRent.toFixed(2))}</td>
                                             <td className="py-3 text-muted">{stat.listings}</td>
                                             <td className={`py-3 ${Number(stat.trend) > 0 ? "text-red-600" : "text-green-600"}`}>
                                                 {Number(stat.trend) > 0 ? "↑" : "↓"} {Math.abs(Number(stat.trend))}%
@@ -396,11 +396,11 @@ export default function IntelligencePage() {
                             <div className="mt-4 space-y-2">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted">Price/m²</span>
-                                    <span className="font-medium text-on-background">€{stat.pricePerM2}</span>
+                                    <span className="font-medium text-on-background">€{parseFloat(stat.pricePerM2.toFixed(2))}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted">Avg Rent</span>
-                                    <span className="font-medium text-on-background">€{stat.avgRent}</span>
+                                    <span className="font-medium text-on-background">€{parseFloat(stat.avgRent.toFixed(2))}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted">Active Listings</span>
@@ -529,7 +529,7 @@ function MetricCard({
                         : "bg-red-100 text-red-700"
                         }`}
                 >
-                    {isPositiveTrend ? "↑" : "↓"} {Math.abs(trend)}%
+                    {isPositiveTrend ? "↑" : "↓"} {parseFloat(Math.abs(trend).toFixed(2))}%
                 </div>
             </div>
             <p className="mt-3 text-2xl font-bold text-on-background">{value}</p>

@@ -139,7 +139,7 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
             items.push({
                 type: "warning",
                 title: "Consider negotiating",
-                description: `This listing is €${priceAssessment.deltaEur} above market rate. Mention comparable listings in your application.`,
+                description: `This listing is €${parseFloat(priceAssessment.deltaEur.toFixed(2))} above market rate. Mention comparable listings in your application.`,
             });
         } else {
             items.push({
@@ -330,11 +330,11 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
                     <div className="rounded-xl bg-surface-low p-4">
                         <p className="text-sm text-muted">Listing Price</p>
                         <p className="mt-1 text-2xl font-bold">€{Number(listing.warmRentAmount ?? listing.coldRentAmount ?? 0)}</p>
-                        <p className="text-xs text-muted">{listing.areaM2 ?? 0}m² = €{((listing.areaM2 ?? 0) > 0 ? (Number(listing.warmRentAmount ?? listing.coldRentAmount ?? 0) / Number(listing.areaM2)).toFixed(1) : "N/A")}/m²</p>
+                        <p className="text-xs text-muted">{listing.areaM2 ?? 0}m² = €{((listing.areaM2 ?? 0) > 0 ? (Number(listing.warmRentAmount ?? listing.coldRentAmount ?? 0) / Number(listing.areaM2)).toFixed(2) : "N/A")}/m²</p>
                     </div>
                     <div className="rounded-xl bg-surface-low p-4">
                         <p className="text-sm text-muted">Fair Market Value</p>
-                        <p className="mt-1 text-2xl font-bold">€{priceAssessment.expectedRentEur}</p>
+                        <p className="mt-1 text-2xl font-bold">€{parseFloat(priceAssessment.expectedRentEur.toFixed(2))}</p>
                         <p className="text-xs text-muted">Based on district avg</p>
                     </div>
                     <div className={`rounded-xl p-4 ${priceAssessment.deltaEur > 0 ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"}`}>
@@ -463,8 +463,8 @@ export default function ListingIntelligencePage({ params, searchParams }: Listin
                                 <p className="font-medium">{similar.title}</p>
                                 <p className="text-sm text-muted">{similar.city ?? "Berlin"}</p>
                                 <div className="mt-2 flex items-center justify-between">
-                                    <span className="font-bold">€{similar.warmRentAmount ?? similar.coldRentAmount ?? "N/A"}</span>
-                                    <span className="text-xs text-muted">{similar.areaM2 ?? "?"}m²</span>
+                                    <span className="font-bold">€{similar.warmRentAmount != null ? parseFloat(similar.warmRentAmount.toFixed(2)) : similar.coldRentAmount != null ? parseFloat(similar.coldRentAmount.toFixed(2)) : "N/A"}</span>
+                                    <span className="text-xs text-muted">{similar.areaM2 != null ? parseFloat(similar.areaM2.toFixed(2)) : "?"}m²</span>
                                 </div>
                             </Link>
                         ))}

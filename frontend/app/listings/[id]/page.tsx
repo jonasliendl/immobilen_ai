@@ -91,13 +91,13 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                             {/* Key Stats */}
                             <div className="mt-6 grid grid-cols-4 gap-4 rounded-xl bg-surface-low p-4">
                                 <div className="text-center">
-                                    <p className="text-2xl font-bold text-primary">€{rentDisplay}</p>
+                                    <p className="text-2xl font-bold text-primary">€{parseFloat(Number(rentDisplay).toFixed(2))}</p>
                                     <p className="text-label text-muted">
                                         {listing.warmRentAmount != null ? "Warm" : "Cold"} Rent
                                     </p>
                                 </div>
                                 <div className="text-center">
-                                    <p className="text-2xl font-bold text-on-background">{area || "—"}</p>
+                                    <p className="text-2xl font-bold text-on-background">{area ? parseFloat(Number(area).toFixed(2)) : "—"}</p>
                                     <p className="text-label text-muted">Square Meters</p>
                                 </div>
                                 <div className="text-center">
@@ -106,7 +106,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                                 </div>
                                 <div className="text-center">
                                     <p className="text-2xl font-bold text-on-background">
-                                        {pricePerM2 > 0 ? `€${pricePerM2.toFixed(1)}` : "—"}
+                                        {pricePerM2 > 0 ? `€${pricePerM2.toFixed(2)}` : "—"}
                                     </p>
                                     <p className="text-label text-muted">Per m²</p>
                                 </div>
@@ -145,7 +145,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                                         <FeatureItem icon="⚡" label="Energy Class" value={listing.energyEfficiencyClass} />
                                     )}
                                     {listing.coldRentAmount != null && listing.warmRentAmount != null && (
-                                        <FeatureItem icon="💰" label="Cold Rent" value={`€${listing.coldRentAmount}`} />
+                                        <FeatureItem icon="💰" label="Cold Rent" value={`€${parseFloat(Number(listing.coldRentAmount!).toFixed(2))}`} />
                                     )}
                                 </div>
                             </div>
@@ -176,13 +176,13 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                             {listing.coldRentAmount != null && (
                                 <div className="rounded-xl bg-surface-low p-4">
                                     <p className="text-label text-muted">Cold Rent</p>
-                                    <p className="mt-1 text-2xl font-bold text-on-background">€{listing.coldRentAmount}</p>
+                                    <p className="mt-1 text-2xl font-bold text-on-background">€{parseFloat(Number(listing.coldRentAmount!).toFixed(2))}</p>
                                 </div>
                             )}
                             {listing.warmRentAmount != null && (
                                 <div className="rounded-xl bg-surface-low p-4">
                                     <p className="text-label text-muted">Warm Rent</p>
-                                    <p className="mt-1 text-2xl font-bold text-on-background">€{listing.warmRentAmount}</p>
+                                    <p className="mt-1 text-2xl font-bold text-on-background">€{parseFloat(Number(listing.warmRentAmount!).toFixed(2))}</p>
                                 </div>
                             )}
                             {pricePerM2 > 0 && (
@@ -244,7 +244,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                                 <div className="flex justify-between">
                                     <span className="text-muted">Price/m²</span>
                                     <span className="font-medium text-on-background">
-                                        {pricePerM2 > 0 ? `€${pricePerM2.toFixed(1)}` : "—"}
+                                        {pricePerM2 > 0 ? `€${pricePerM2.toFixed(2)}` : "—"}
                                     </span>
                                 </div>
                                 <div className="flex justify-between">
