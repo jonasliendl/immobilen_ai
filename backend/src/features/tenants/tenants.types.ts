@@ -51,3 +51,16 @@ export const CreateApplicationSchema = z.object({
 });
 
 export type CreateApplicationInput = z.infer<typeof CreateApplicationSchema>;
+
+// ─── Auto Apply ────────────────────────────────────────────────
+
+export const RunAutoApplySchema = z.object({
+    maxListings: z.number().int().min(1).max(100).default(20),
+    dryRun: z.boolean().default(false),
+});
+
+export type RunAutoApplyInput = z.infer<typeof RunAutoApplySchema>;
+
+export const RunAutoApplyBatchSchema = RunAutoApplySchema;
+
+export type RunAutoApplyBatchInput = z.infer<typeof RunAutoApplyBatchSchema>;

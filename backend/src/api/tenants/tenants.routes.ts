@@ -9,6 +9,8 @@ import {
     createApplicationHandler,
     getApplicationsHandler,
     getNotificationsHandler,
+    runAutoApplyBatchHandler,
+    runAutoApplyHandler,
 } from './tenants.controller';
 
 const tenantsRoutes: FastifyPluginCallback = (app, _options, done): void => {
@@ -27,6 +29,9 @@ const tenantsRoutes: FastifyPluginCallback = (app, _options, done): void => {
     //   }
     // });
 
+    // Auto-apply batch route must be registered before dynamic :id routes.
+    app.post('/auto-apply/run', runAutoApplyBatchHandler);
+
     // Tenant CRUD
     app.post('/', createTenantHandler);
     app.get<{ Params: { id: string } }>('/:id', getTenantHandler);
@@ -43,6 +48,9 @@ const tenantsRoutes: FastifyPluginCallback = (app, _options, done): void => {
 
     // Tenant notifications
     app.get<{ Params: { id: string } }>('/:id/notifications', getNotificationsHandler);
+
+    // Auto-apply agent (Phase 4)
+    app.post<{ Params: { id: string } }>('/:id/auto-apply/run', runAutoApplyHandler);
 
     done();
 };

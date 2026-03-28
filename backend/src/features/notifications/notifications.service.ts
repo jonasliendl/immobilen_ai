@@ -14,6 +14,13 @@ interface NotificationPayload {
     [key: string]: unknown;
 }
 
+interface ListingAlertDispatchSummary {
+    channelsCreated: number;
+    channelsSent: number;
+    channelsFailed: number;
+    channelsSkippedDuplicate: number;
+}
+
 async function createNotificationRecord(
     tenantId: string,
     type: NotificationType,
@@ -165,7 +172,9 @@ async function hasListingAlertNotification(
     return rows[0]?.exists === true;
 }
 
-export async function notifyListingAlert(input: ListingAlertNotificationInput): Promise<void> {
+export async function notifyListingAlert(
+    input: ListingAlertNotificationInput,
+): Promise<ListingAlertDispatchSummary> {
     let channelsCreated = 0;
     let channelsSent = 0;
     let channelsFailed = 0;

@@ -14,11 +14,14 @@ import {
     getNotificationsByTenant,
     notifyApplicationSubmitted,
 } from '../../features/notifications/notifications.service';
+import { runAutoApplyForEnabledTenants, runAutoApplyForTenant } from '../../features/applicator/applicator.service';
 import {
     CreateTenantSchema,
     UpdateTenantSchema,
     UpsertPreferencesSchema,
     CreateApplicationSchema,
+    RunAutoApplyBatchSchema,
+    RunAutoApplySchema,
 } from '../../features/tenants/tenants.types';
 
 // ─── Auth stub (commented out — Phase 1 placeholder) ────────────
@@ -183,4 +186,44 @@ export async function getNotificationsHandler(
 ): Promise<void> {
     const notifications = await getNotificationsByTenant(request.params.id);
     await reply.send({ data: notifications });
+}
+
+export async function runAutoApplyHandler(
+    request: FastifyRequest<{ Params: { id: string } }>,
+    reply: FastifyReply,
+): Promise<void> {
+    const parsed = RunAutoApplySchema.safeParse(request.body ?? {});
+    if (!parsed.success) {
+        await reply.status(400).send({ error: z.treeifyError(parsed.error) });
+        return;
+    }
+
+    const result = await runAutoApplyForTenant(request.params.id, {
+        maxListings: parsed.data.maxListings,
+        dryRun: parsed.data.dryRun,
+    });
+    if (!result) {
+        await reply.status(404).send({ error: 'Tenant not found' });
+        return;
+    }
+
+    await reply.send({ data: result });
+}
+
+export async function runAutoApplyBatchHandler(
+    request: FastifyRequest,
+    reply: FastifyReply,
+): Promise<void> {
+    const parsed = RunAutoApplyBatchSchema.safeParse(request.body ?? {});
+    if (!parsed.success) {
+        await reply.status(400).send({ error: z.treeifyError(parsed.error) });
+        return;
+    }
+
+    const summary = await runAutoApplyForEnabledTenants({
+        maxListings: parsed.data.maxListings,
+        dryRun: parsed.data.dryRun,
+    });
+
+    await reply.send({ data: summary });
 }
