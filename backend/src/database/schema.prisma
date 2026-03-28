@@ -57,80 +57,22 @@ model ScraperJob {
   errorMessage      String?
 }
 
-// ─── Tenant & Application Models ─────────────────────────────────
-
-model Tenant {
-  id                  String              @id @default(cuid())
-  email               String              @unique
-  phone               String?
-  whatsappNumber      String?
-  name                String
-  monthlyNetIncomeEur Int?
-  householdSize       Int                 @default(1)
-  hasPets             Boolean             @default(false)
-  hasSchufa           Boolean             @default(false)
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
-  preferences         TenantPreference?
-  documents           TenantDocument[]
-  applications        Application[]
-  notifications       Notification[]
-}
-
-model TenantPreference {
-  id                 String   @id @default(cuid())
-  tenantId           String   @unique
-  tenant             Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  minRooms           Decimal?
-  maxRooms           Decimal?
-  maxColdRent        Decimal?
-  maxWarmRent        Decimal?
-  minAreaM2          Decimal?
-  preferredDistricts String[]
-  wbsRequired        Boolean?
-  autoApplyEnabled   Boolean  @default(false)
-}
-
-model TenantDocument {
-  id         String   @id @default(cuid())
-  tenantId   String
-  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  type       String // schufa, payslip, id, employment-proof
-  fileName   String
-  storageUrl String
-  uploadedAt DateTime @default(now())
-}
-
-enum ApplicationStatus {
-  PENDING
-  SUBMITTED
-  ACCEPTED
-  REJECTED
-  WITHDRAWN
-}
-
-model Application {
-  id              String            @id @default(cuid())
-  tenantId        String
-  tenant          Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  listingId       String
-  coverLetter     String?
-  status          ApplicationStatus @default(PENDING)
-  submittedAt     DateTime?
-  responseAt      DateTime?
-  responseContent String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-}
-
-model Notification {
+/// Email waitlist signups (web form or after QR landing).
+model WaitlistSignup {
   id        String   @id @default(cuid())
-  tenantId  String
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  type      String // listing-alert, application-submitted, application-response
-  channel   String // email, whatsapp
-  payload   Json
-  status    String   @default("pending") // pending, sent, failed
-  sentAt    DateTime?
+  email     String   @unique
+  source    String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([source])
+  @@index([createdAt])
+}
+
+/// One row per QR landing (phone opened /join?via=qr). Count rows to monitor scans.
+model WaitlistQrOpen {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }
