@@ -56,3 +56,23 @@ model ScraperJob {
   listingsUpserted  Int              @default(0)
   errorMessage      String?
 }
+
+/// Email waitlist signups (web form or after QR landing).
+model WaitlistSignup {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([source])
+  @@index([createdAt])
+}
+
+/// One row per QR landing (phone opened /join?via=qr). Count rows to monitor scans.
+model WaitlistQrOpen {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

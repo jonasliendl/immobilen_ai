@@ -2,50 +2,7 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { WaitlistForm } from "@/components/waitlist-form";
-
-function QrPlaceholder() {
-    return (
-        <svg
-            viewBox="0 0 120 120"
-            className="mx-auto h-40 w-40 text-on-background"
-            aria-hidden
-        >
-            <rect fill="currentColor" x="8" y="8" width="32" height="32" rx="2" />
-            <rect fill="currentColor" x="80" y="8" width="32" height="32" rx="2" />
-            <rect fill="currentColor" x="8" y="80" width="32" height="32" rx="2" />
-            <rect fill="none" stroke="currentColor" strokeWidth="3" x="14" y="14" width="20" height="20" />
-            <rect fill="none" stroke="currentColor" strokeWidth="3" x="86" y="14" width="20" height="20" />
-            <rect fill="none" stroke="currentColor" strokeWidth="3" x="14" y="86" width="20" height="20" />
-            {[
-                [48, 8],
-                [64, 8],
-                [48, 24],
-                [72, 24],
-                [48, 40],
-                [88, 40],
-                [8, 48],
-                [24, 56],
-                [40, 48],
-                [56, 56],
-                [72, 48],
-                [88, 56],
-                [104, 48],
-                [48, 72],
-                [64, 72],
-                [80, 72],
-                [48, 88],
-                [72, 88],
-                [96, 88],
-                [104, 104],
-                [88, 104],
-                [72, 104],
-                [56, 104],
-            ].map(([x, y], i) => (
-                <rect key={i} fill="currentColor" x={x} y={y} width="10" height="10" rx="1" />
-            ))}
-        </svg>
-    );
-}
+import { WaitlistQr } from "@/components/waitlist-qr";
 
 const problemStats = [
     { num: "+12%", label: "Rent increase in 2025", sub: "€15.79/m² median asking rent" },
@@ -103,104 +60,6 @@ const whoWeServe = [
         stat: "Pre-apply",
         title: "Chat before you commit",
         text: "Unsure about Genossenschaft clauses, Nebenkosten, or Anmeldung timing? Talk to the AI assistant first — then apply with confidence from the same platform.",
-    },
-];
-
-type ShareTier = {
-    id: string;
-    name: string;
-    popular?: boolean;
-    founding?: boolean;
-    sharesBadge: string;
-    sharesBadgeMuted?: boolean;
-    price: string;
-    priceClass: string;
-    perMonth: string;
-    perMonthClass?: string;
-    shareCost: string;
-    shareCostClass?: string;
-    benefits: string[];
-    cta: { label: string; href: string; variant: "outline-green" | "gradient" | "outline-mint" };
-};
-
-const shareTiers: ShareTier[] = [
-    {
-        id: "explorer",
-        name: "Explorer",
-        sharesBadgeMuted: true,
-        sharesBadge: "0 shares",
-        price: "€0",
-        priceClass: "text-on-background",
-        perMonth: "/ month · Free forever",
-        shareCost: "No share required",
-        shareCostClass: "text-[#64748B]",
-        benefits: [
-            "Basic apartment search",
-            "Scam detection",
-            "Mietpreisbremse checker",
-            "10 saved listings",
-        ],
-        cta: { label: "Get Started", href: "/search", variant: "outline-green" },
-    },
-    {
-        id: "member",
-        name: "Member",
-        sharesBadge: "1 share · €50 one-time",
-        price: "€4.90",
-        priceClass: "text-primary",
-        perMonth: "/ month",
-        shareCost: "+ €50 refundable share",
-        shareCostClass: "text-[#64748B]",
-        benefits: [
-            "Everything in Explorer",
-            "Full AI personalised matching",
-            "Priority listing alerts",
-            "Unlimited saved listings",
-            "AI chat unlimited",
-        ],
-        cta: { label: "Become a Member", href: "#waitlist", variant: "gradient" },
-    },
-    {
-        id: "shareholder",
-        name: "Shareholder",
-        popular: true,
-        sharesBadge: "3 shares · €150 one-time",
-        price: "€9.90",
-        priceClass: "text-primary",
-        perMonth: "/ month",
-        shareCost: "+ €150 refundable share",
-        shareCostClass: "text-[#64748B]",
-        benefits: [
-            "Everything in Member",
-            "Hidden & off-market listings",
-            "One-click application autofill",
-            "Contract review service",
-            "Anmeldung registration help",
-            "Application optimiser",
-            "Community voting rights",
-        ],
-        cta: { label: "Become a Shareholder", href: "#waitlist", variant: "gradient" },
-    },
-    {
-        id: "founding",
-        name: "Founding Shareholder",
-        founding: true,
-        sharesBadge: "6 shares · €300 one-time",
-        price: "€14.90",
-        priceClass: "text-primary-container",
-        perMonth: "/ month",
-        perMonthClass: "text-secondary-fixed",
-        shareCost: "+ €300 refundable share",
-        shareCostClass: "text-[#A8DADC]",
-        benefits: [
-            "Everything in Shareholder",
-            "Lifetime price lock guaranteed",
-            "Direct landlord network access",
-            "Dedicated concierge agent",
-            "Early feature access",
-            "Founding member badge",
-        ],
-        cta: { label: "Join as Founder", href: "#waitlist", variant: "outline-mint" },
     },
 ];
 
@@ -269,60 +128,6 @@ const features = [
         title: "Application Optimiser",
         text: "Connect your existing rental profile and we analyse it against what Berlin landlords actually want. Get a scored tenant report and an AI-generated cover letter in seconds.",
         href: "/tracker",
-    },
-];
-
-const useCases = [
-    {
-        accent: "border-t-primary-container",
-        icon: "✈️",
-        scenario: "Relocating from abroad",
-        stat: "Found in 4 days",
-        text: "Sarah moved from London to Berlin for a tech job. She set her profile in 90 seconds, got 12 matched listings by morning, and signed a lease within 4 days — fully in English.",
-        tag: "Expat · Prenzlauer Berg · €950/mo",
-    },
-    {
-        accent: "border-t-primary",
-        icon: "💻",
-        scenario: "Freelancer on a budget",
-        stat: "18% below market rate",
-        text: "Karim used the Market Intelligence feature to find a Mitte flat priced 18% below the district benchmark. The Mietpreisbremse checker flagged 3 of his shortlisted flats as overpriced before he wasted time applying.",
-        tag: "Freelancer · Mitte · €780/mo",
-    },
-    {
-        accent: "border-t-secondary",
-        icon: "🎓",
-        scenario: "Student optimising their application",
-        stat: "5 viewing invites in 1 week",
-        text: "Julia's rental applications were getting ignored. The Application Optimiser scored her profile, rewrote her cover letter, and she went from zero responses to 5 viewing invitations in 7 days.",
-        tag: "Student · Neukölln · €620/mo",
-    },
-];
-
-const testimonials = [
-    {
-        quote:
-            "I found my Berlin apartment in 4 days. As a non-German speaker I was terrified of scams — Budenfinder made the whole process feel safe and simple.",
-        name: "Sarah M.",
-        role: "Software Engineer · Relocated from London",
-        tag: "Prenzlauer Berg",
-        initials: "SM",
-    },
-    {
-        quote:
-            "The AI matched me to a flat 18% below market rate and flagged 3 overpriced listings on my shortlist before I wasted time applying. Genuinely impressive.",
-        name: "Karim A.",
-        role: "Freelance Designer · Cairo → Berlin",
-        tag: "Mitte",
-        initials: "KA",
-    },
-    {
-        quote:
-            "The Application Optimiser rewrote my cover letter and I went from zero responses to 5 viewing invitations in one week. Worth every cent.",
-        name: "Julia B.",
-        role: "Erasmus Student · Freie Universität",
-        tag: "Neukölln",
-        initials: "JB",
     },
 ];
 
@@ -549,113 +354,6 @@ export default function Home() {
                 </ScrollReveal>
             </section>
 
-            {/* MEMBERSHIP & SHARES — business model */}
-            <section className="scroll-mt-20 bg-surface-container-low py-20 md:py-28">
-                <ScrollReveal className="mx-auto max-w-screen-xl px-6 md:px-8">
-                    <p className="text-center font-mono text-xs font-semibold uppercase tracking-[0.25em] text-primary">
-                        Membership &amp; Shares
-                    </p>
-                    <h2 className="mt-4 text-center font-sans text-3xl font-bold text-on-background md:text-4xl">
-                        Own a Share. Unlock the Platform.
-                    </h2>
-                    <p className="mx-auto mt-5 max-w-2xl text-center font-sans text-base leading-relaxed text-[#64748B]">
-                        Inspired by Berlin&apos;s Genossenschaft cooperative housing model. Buy 1–6 shares at €50 each —
-                        fully refundable if you leave. More shares unlock higher tiers and more community voting weight.
-                    </p>
-
-                    <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-                        {shareTiers.map((tier) => (
-                            <div
-                                key={tier.id}
-                                className={`relative flex flex-col rounded-2xl p-6 shadow-floating md:p-7 ${tier.founding
-                                    ? "bg-hero-dark text-white"
-                                    : "bg-surface-container-lowest"
-                                    } ${tier.popular ? "border-t-4 border-primary-container pt-8" : "pt-6"}`}
-                            >
-                                {tier.popular && (
-                                    <span className="absolute -top-3 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-primary-container px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-hero-dark md:text-xs">
-                                        Most Popular
-                                    </span>
-                                )}
-
-                                <h3 className="font-sans text-lg font-bold text-inherit">{tier.name}</h3>
-
-                                <p
-                                    className={`mt-3 font-mono text-xs font-medium ${tier.sharesBadgeMuted ? "text-[#64748B]" : "text-primary-container"} ${tier.founding ? "!text-primary-container" : ""}`}
-                                >
-                                    {tier.sharesBadge}
-                                </p>
-
-                                <div className="mt-4 flex flex-wrap items-baseline gap-x-1 gap-y-0">
-                                    <span className={`font-mono text-3xl font-bold tracking-tight ${tier.priceClass}`}>
-                                        {tier.price}
-                                    </span>
-                                    <span
-                                        className={`font-sans text-sm ${tier.perMonthClass ?? (tier.founding ? "text-secondary-fixed" : "text-on-surface/70")}`}
-                                    >
-                                        {tier.perMonth}
-                                    </span>
-                                </div>
-
-                                <p
-                                    className={`mt-2 font-sans text-sm ${tier.shareCostClass ?? "text-[#64748B]"}`}
-                                >
-                                    {tier.shareCost}
-                                </p>
-
-                                <div
-                                    className={`my-5 border-t ${tier.founding ? "border-white/10" : "border-outline-variant/25"}`}
-                                />
-
-                                <ul className="flex-1 space-y-2.5 font-sans text-sm">
-                                    {tier.benefits.map((b) => (
-                                        <li
-                                            key={b}
-                                            className={`flex gap-2 leading-snug ${tier.founding ? "text-secondary-fixed" : "text-on-surface/85"}`}
-                                        >
-                                            <span className="shrink-0 text-primary-container">✓</span>
-                                            <span>{b}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                <div className="mt-8">
-                                    {tier.cta.variant === "outline-green" && (
-                                        <Link
-                                            href={tier.cta.href}
-                                            className="flex min-h-[48px] w-full items-center justify-center rounded-xl border-2 border-primary px-4 py-3 text-center font-semibold text-primary transition hover:bg-primary/5"
-                                        >
-                                            {tier.cta.label}
-                                        </Link>
-                                    )}
-                                    {tier.cta.variant === "gradient" && (
-                                        <a
-                                            href={tier.cta.href}
-                                            className="btn-primary-gradient flex min-h-[48px] w-full items-center justify-center rounded-xl px-4 py-3 text-center font-bold text-on-primary shadow-md transition hover:-translate-y-0.5 hover:shadow-ambient"
-                                        >
-                                            {tier.cta.label}
-                                        </a>
-                                    )}
-                                    {tier.cta.variant === "outline-mint" && (
-                                        <a
-                                            href={tier.cta.href}
-                                            className="flex min-h-[48px] w-full items-center justify-center rounded-xl border-2 border-primary-container px-4 py-3 text-center font-semibold text-primary-container transition hover:bg-white/5"
-                                        >
-                                            {tier.cta.label}
-                                        </a>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <p className="mx-auto mt-12 max-w-2xl text-center font-sans text-sm italic leading-relaxed text-[#64748B]">
-                        All shares are fully refundable when you leave — just like a real Berlin Genossenschaft. Zero
-                        risk.
-                    </p>
-                </ScrollReveal>
-            </section>
-
             {/* SECTION 5 — HOW IT WORKS */}
             <section className="relative overflow-hidden bg-hero-dark py-20 md:py-28">
                 <div className="cube-texture-dark pointer-events-none absolute inset-0 z-0 opacity-80" aria-hidden />
@@ -744,70 +442,7 @@ export default function Home() {
                 </ScrollReveal>
             </section>
 
-            {/* SECTION 7 — USE CASES */}
-            <section className="bg-surface-container-low py-20 md:py-28">
-                <ScrollReveal className="mx-auto max-w-screen-xl px-6 md:px-8">
-                    <p className="font-mono text-xs font-semibold uppercase tracking-[0.25em] text-secondary">
-                        Use Cases
-                    </p>
-                    <h2 className="mt-4 font-sans text-3xl font-bold text-on-background md:text-4xl">
-                        Real Scenarios. Real Results.
-                    </h2>
-                    <div className="mt-12 grid gap-6 lg:grid-cols-3">
-                        {useCases.map((u) => (
-                            <div
-                                key={u.scenario}
-                                className={`flex flex-col rounded-2xl border-t-4 bg-surface-container-lowest p-8 shadow-floating ${u.accent}`}
-                            >
-                                <span className="text-3xl">{u.icon}</span>
-                                <p className="mt-4 font-sans text-sm font-semibold text-on-surface/70">{u.scenario}</p>
-                                <p className="mt-2 font-mono text-xl font-semibold text-primary">{u.stat}</p>
-                                <p className="mt-4 flex-1 font-sans text-sm leading-relaxed text-on-surface/80">
-                                    {u.text}
-                                </p>
-                                <p className="mt-6 font-mono text-xs text-on-surface/60">{u.tag}</p>
-                            </div>
-                        ))}
-                    </div>
-                </ScrollReveal>
-            </section>
-
-            {/* SECTION 8 — TESTIMONIALS */}
-            <section className="bg-surface py-20 md:py-28">
-                <ScrollReveal className="mx-auto max-w-screen-xl px-6 md:px-8">
-                    <p className="font-mono text-xs font-semibold uppercase tracking-[0.25em] text-primary">
-                        What People Say
-                    </p>
-                    <h2 className="mt-4 font-sans text-3xl font-bold text-on-background md:text-4xl">
-                        Trusted by Berlin Renters.
-                    </h2>
-                    <div className="mt-12 grid gap-6 md:grid-cols-3">
-                        {testimonials.map((t) => (
-                            <div
-                                key={t.name}
-                                className="rounded-2xl bg-surface-container-low p-8 shadow-ambient"
-                            >
-                                <p className="text-primary-container">⭐⭐⭐⭐⭐</p>
-                                <p className="mt-4 font-sans text-sm italic leading-relaxed text-on-background">
-                                    &ldquo;{t.quote}&rdquo;
-                                </p>
-                                <div className="mt-6 flex items-center gap-3">
-                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary font-mono text-sm font-semibold text-on-primary">
-                                        {t.initials}
-                                    </div>
-                                    <div>
-                                        <p className="font-sans text-sm font-semibold text-on-background">{t.name}</p>
-                                        <p className="font-sans text-xs text-on-surface/70">{t.role}</p>
-                                        <p className="mt-1 font-mono text-xs text-primary">{t.tag}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </ScrollReveal>
-            </section>
-
-            {/* SECTION 9 — TEAM */}
+            {/* SECTION 7 — TEAM */}
             <section className="relative overflow-hidden bg-hero-dark py-20 md:py-28">
                 <div className="cube-texture-dark pointer-events-none absolute inset-0 z-0" aria-hidden />
                 <ScrollReveal className="relative z-10 mx-auto max-w-screen-xl px-6 text-center md:px-8">
@@ -839,7 +474,7 @@ export default function Home() {
                 </ScrollReveal>
             </section>
 
-            {/* SECTION 10 — WAITLIST */}
+            {/* SECTION 8 — WAITLIST */}
             <section id="waitlist" className="scroll-mt-20 bg-surface-container-low py-20 md:py-28">
                 <ScrollReveal className="mx-auto max-w-screen-lg px-6 md:px-8">
                     <p className="text-center font-mono text-xs font-semibold uppercase tracking-[0.25em] text-primary">
@@ -849,24 +484,9 @@ export default function Home() {
                         Be First in Berlin.
                     </h2>
                     <p className="mx-auto mt-6 max-w-md text-center font-sans text-base text-on-background/90">
-                        Join the waitlist for early access, shareholder pricing, and priority listing alerts before we
-                        go public.
+                        Join the waitlist for updates and listing alerts before we go public.
                     </p>
-                    <div className="mx-auto mt-12 flex max-w-2xl flex-col items-stretch justify-center gap-10 sm:flex-row sm:gap-16">
-                        <div className="flex flex-1 flex-col items-center text-center">
-                            <span className="font-mono text-4xl font-semibold text-primary">847</span>
-                            <span className="mt-1 font-sans text-sm text-on-surface/80">Early members joined</span>
-                        </div>
-                        <div className="flex flex-1 flex-col items-center text-center">
-                            <span className="font-mono text-4xl font-semibold text-primary">€9.90</span>
-                            <span className="mt-1 font-sans text-sm text-on-surface/80">Shareholder price locked in</span>
-                        </div>
-                        <div className="flex flex-1 flex-col items-center text-center">
-                            <span className="font-mono text-4xl font-semibold text-primary">2 hrs</span>
-                            <span className="mt-1 font-sans text-sm text-on-surface/80">Early listing access advantage</span>
-                        </div>
-                    </div>
-                    <div className="mx-auto mt-14 grid max-w-5xl gap-10 lg:grid-cols-2 lg:gap-12">
+                    <div className="mx-auto mt-10 grid max-w-5xl gap-10 lg:grid-cols-2 lg:gap-12">
                         <div>
                             <WaitlistForm />
                         </div>
@@ -876,7 +496,7 @@ export default function Home() {
                                     Scan to Join
                                 </p>
                                 <div className="mt-6 text-primary">
-                                    <QrPlaceholder />
+                                    <WaitlistQr />
                                 </div>
                                 <p className="mt-4 text-center font-sans text-sm text-on-background">
                                     Scan with your phone camera
@@ -890,7 +510,7 @@ export default function Home() {
                 </ScrollReveal>
             </section>
 
-            {/* SECTION 11 — FINAL CTA (stitch_aimmobilie_landing_page_black_white closing band) */}
+            {/* SECTION 9 — FINAL CTA (stitch_aimmobilie_landing_page_black_white closing band) */}
             <section className="relative overflow-hidden bg-hero-dark py-20 md:py-32">
                 <div className="cube-texture-dark pointer-events-none absolute inset-0 z-0" aria-hidden />
                 <div

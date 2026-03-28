@@ -3,6 +3,7 @@ import type { FastifyInstance } from 'fastify';
 import healthRoutes from './api/health/health.routes';
 import listingsRoutes from './api/listings/listings.routes';
 import scraperRoutes from './api/scraper/scraper.routes';
+import waitlistRoutes from './api/waitlist/waitlist.routes';
 import { scraperSchedulerPlugin } from './features/scraper/scraper-scheduler.plugin';
 import { sharedMiddleware } from './shared/middleware/index';
 
@@ -19,6 +20,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(healthRoutes);
   await app.register(scraperRoutes, { prefix: '/api/v1/scrapers' });
   await app.register(listingsRoutes, { prefix: '/api/v1/listings' });
+  await app.register(waitlistRoutes, { prefix: '/api/v1/waitlist' });
 
   return app;
 }

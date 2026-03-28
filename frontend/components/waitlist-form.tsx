@@ -2,7 +2,13 @@
 
 import { useState, FormEvent } from "react";
 
-export function WaitlistForm() {
+export type WaitlistFormSource = "landing_form" | "qr_landing";
+
+type Props = {
+    source?: WaitlistFormSource;
+};
+
+export function WaitlistForm({ source = "landing_form" }: Props) {
     const [email, setEmail] = useState("");
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -22,7 +28,7 @@ export function WaitlistForm() {
             const res = await fetch("/api/waitlist", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
-                body: JSON.stringify({ email: trimmed }),
+                body: JSON.stringify({ email: trimmed, source }),
             });
             const data = (await res.json()) as { success?: boolean; error?: string };
             if (!res.ok) {
