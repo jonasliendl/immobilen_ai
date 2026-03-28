@@ -1,4 +1,5 @@
 import type { ScraperInterface } from './scraper.types';
+import { DeutscheWohnenScraper } from './scrapers/deutsche-wohnen.scraper';
 import { InBerlinWohnenScraper } from './scrapers/in-berlin-wohnen.scraper';
 import { VonoviaScraper } from './scrapers/vonovia.scraper';
 
@@ -6,4 +7,5 @@ import { VonoviaScraper } from './scrapers/vonovia.scraper';
 export const scraperRegistry: ScraperInterface[] = [
   new InBerlinWohnenScraper(),
   new VonoviaScraper(),
+  new DeutscheWohnenScraper(),
 ];
