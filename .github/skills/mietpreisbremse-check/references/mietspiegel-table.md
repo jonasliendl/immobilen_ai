@@ -1,87 +1,34 @@
-# Berliner Mietspiegel 2024 — Tabelle
+# Berliner Mietspiegel 2024 — Static Data
 
 Source: Berliner Mietspiegel 2024 vom 30. Mai 2024
 PDF: https://mietspiegel.berlin.de/wp-content/uploads/2024/11/mietspiegeltabelle2024.pdf
 
-All values are **Nettokaltmiete in €/m²/month** (net cold rent, excluding all operating costs).
-Format: **unterer Spannenwert – Mittelwert – oberer Spannenwert**
+## Static Data Files (use these instead of web lookups)
 
-## How to Read This Table
+All Mietspiegel data is now embedded as static TypeScript files in the codebase:
 
-- **Rows** = Baualtersklasse (building age / Bezugsfertigkeit)
-- **Columns** = Wohnfläche (apartment size in m²)
-- **Three separate tables** for the three Wohnlagen: einfach, mittel, gut
+- **`frontend/lib/mietspiegel-table.ts`** — All 163 rows of the Mietspiegeltabelle 2024 with exact lower/mid/upper rent values in €/m²/month, plus lookup functions (`lookupMietspiegel`, `getBezugsfertigkeit`, `maxLegalRentPerM2`)
+- **`frontend/lib/mietspiegel-streets.ts`** — 9,771 streets with 13,895 segments from the Straßenverzeichnis, including Wohnlage and Ost/West designation, plus lookup functions (`lookupAddress`, `lookupStreet`)
 
-## Wohnfläche Categories
+## Key Types and Functions
 
-| Column | Size Range |
-|--------|-----------|
-| A | unter 40 m² |
-| B | 40 bis unter 60 m² |
-| C | 60 bis unter 90 m² |
-| D | 90 m² und mehr |
+```typescript
+// Types
+type Wohnlage = "einfach" | "mittel" | "gut";
+type Bezugsfertigkeit = "bis 1918" | "1919 bis 1949" | ... | "2016 bis 2022";
 
-## Important Notes
+// Lookup: street name + house number → Wohnlage + Ost/West
+lookupAddress("Torstraße", 100) → { wohnlage: "gut", gebiet: "O" }
 
-- The actual table values must be looked up from the official PDF or the Abfrage-Service
-- The PDF is available at: https://mietspiegel.berlin.de/wp-content/uploads/2024/11/mietspiegeltabelle2024.pdf
-- Use the `web` tool to fetch the PDF or the Abfrage-Service for exact values
-- The Abfrage-Service URL: https://mietspiegel.berlin.de/berliner-mietspiegel/mietspiegelabfrage/
+// Map construction year → Baualtersklasse
+getBezugsfertigkeit(1905, true) → "bis 1918"
 
-## Approximate Ranges (for estimation when exact lookup is not possible)
+// Lookup: rent values for Wohnlage × Baualtersklasse × area
+lookupMietspiegel("gut", "bis 1918", 65) → { lower: 6.09, mid: 8.45, upper: 12.55 }
 
-These are approximate midpoint values derived from the 2024 Mietspiegel documentation.
-**Always prefer the official Abfrage-Service or PDF over these estimates.**
-
-### Einfache Wohnlage
-
-| Baualtersklasse | <40m² | 40–60m² | 60–90m² | ≥90m² |
-|---|---|---|---|---|
-| bis 1918 | 6.50–8.50 | 5.80–7.80 | 5.50–7.40 | 5.20–7.00 |
-| 1919–1949 | 6.30–8.20 | 5.70–7.60 | 5.40–7.20 | 5.10–6.80 |
-| 1950–1964 | 6.20–8.00 | 5.60–7.50 | 5.30–7.10 | 5.00–6.70 |
-| 1965–1972 | 6.10–7.90 | 5.50–7.40 | 5.20–7.00 | 4.90–6.60 |
-| 1973–1990 Ost | 5.80–7.50 | 5.30–7.10 | 5.00–6.70 | 4.70–6.30 |
-| 1991–2001 | 7.00–9.50 | 6.50–8.80 | 6.00–8.20 | 5.70–7.80 |
-| 2002–2009 | 7.50–10.50 | 7.00–9.80 | 6.50–9.20 | 6.20–8.80 |
-| 2010–2022 | 8.50–13.00 | 8.00–12.00 | 7.50–11.50 | 7.00–11.00 |
-
-### Mittlere Wohnlage
-
-| Baualtersklasse | <40m² | 40–60m² | 60–90m² | ≥90m² |
-|---|---|---|---|---|
-| bis 1918 | 7.50–10.50 | 6.80–9.50 | 6.50–9.00 | 6.20–8.50 |
-| 1919–1949 | 7.30–10.20 | 6.60–9.30 | 6.30–8.80 | 6.00–8.30 |
-| 1950–1964 | 7.00–9.80 | 6.40–9.00 | 6.10–8.50 | 5.80–8.00 |
-| 1965–1972 | 6.80–9.50 | 6.20–8.80 | 5.90–8.30 | 5.60–7.80 |
-| 1973–1985 West | 7.00–9.80 | 6.50–9.20 | 6.00–8.50 | 5.70–8.00 |
-| 1986–1990 West | 7.20–10.00 | 6.70–9.40 | 6.20–8.70 | 5.90–8.20 |
-| 1973–1990 Ost | 6.50–9.00 | 6.00–8.50 | 5.70–8.00 | 5.40–7.50 |
-| 1991–2001 | 8.00–11.50 | 7.50–10.50 | 7.00–10.00 | 6.50–9.50 |
-| 2002–2009 | 8.50–12.50 | 8.00–11.50 | 7.50–11.00 | 7.00–10.50 |
-| 2010–2015 | 9.50–14.00 | 9.00–13.00 | 8.50–12.50 | 8.00–12.00 |
-| 2016–2022 | 10.50–15.50 | 10.00–14.50 | 9.50–14.00 | 9.00–13.50 |
-
-### Gute Wohnlage
-
-| Baualtersklasse | <40m² | 40–60m² | 60–90m² | ≥90m² |
-|---|---|---|---|---|
-| bis 1918 | 8.50–13.00 | 7.80–11.50 | 7.50–11.00 | 7.00–10.50 |
-| 1919–1949 | 8.30–12.50 | 7.60–11.30 | 7.30–10.80 | 6.80–10.20 |
-| 1950–1964 | 8.00–12.00 | 7.30–10.80 | 7.00–10.30 | 6.60–9.80 |
-| 1965–1972 | 7.80–11.50 | 7.10–10.50 | 6.80–10.00 | 6.40–9.50 |
-| 1973–1985 West | 8.00–12.00 | 7.50–11.00 | 7.00–10.50 | 6.50–10.00 |
-| 1986–1990 West | 8.20–12.50 | 7.70–11.30 | 7.20–10.80 | 6.80–10.30 |
-| 1991–2001 | 9.00–14.00 | 8.50–13.00 | 8.00–12.50 | 7.50–12.00 |
-| 2002–2009 | 9.50–15.00 | 9.00–14.00 | 8.50–13.50 | 8.00–13.00 |
-| 2010–2015 | 10.50–16.50 | 10.00–15.50 | 9.50–15.00 | 9.00–14.50 |
-| 2016–2022 | 12.00–18.00 | 11.50–17.00 | 11.00–16.50 | 10.50–16.00 |
-
-## Abschläge (Deductions) for Lower Equipment Standard
-
-For apartments **without Sammelheizung (central heating)** or **without Bad (bathroom)**:
-- Deduct approximately 0.50–1.50 €/m² depending on which features are missing
-- See section 9.4 of the official Mietspiegeltabelle PDF for exact deduction values
+// Calculate max legal rent under Mietpreisbremse
+maxLegalRentPerM2(entry) → 9.30 // Mittelwert × 1.10
+```
 
 ## Mietpreisbremse Calculation
 
@@ -95,10 +42,21 @@ If listing Nettokaltmiete per m² > Max legal rent:
 
 ## Straßenverzeichnis
 
-The official street-level Wohnlage lookup is in the Straßenverzeichnis PDF:
-https://mietspiegel.berlin.de/wp-content/uploads/2024/11/strassenverzeichnis-zum-mietspiegel-2024-1.pdf
+The official street-level Wohnlage lookup is in `frontend/lib/mietspiegel-streets.ts` (9,771 streets, 13,895 segments).
 
-Each entry contains:
-- Street name and house number ranges
-- Wohnlage: **e** (einfach), **m** (mittel), **g** (gut)
-- East/West designation: **O** (Ost) or **W** (West) — relevant for 1973–1990 buildings
+Original PDF: https://mietspiegel.berlin.de/wp-content/uploads/2024/11/strassenverzeichnis-zum-mietspiegel-2024-1.pdf
+
+## Data Generation
+
+The static files were generated from the official PDFs using Python scripts in `scripts/`:
+- `scripts/parse-mietspiegel-pdf.py` — Extracts rent table from Mietspiegeltabelle PDF
+- `scripts/parse-strassenverzeichnis-pdf.py` — Extracts street directory from Straßenverzeichnis PDF
+- `scripts/generate-mietspiegel-ts.py` — Generates the TypeScript files from parsed JSON
+
+To regenerate (e.g., when a new Mietspiegel is published):
+```sh
+cd scripts
+python3 parse-mietspiegel-pdf.py
+python3 parse-strassenverzeichnis-pdf.py
+python3 generate-mietspiegel-ts.py
+```

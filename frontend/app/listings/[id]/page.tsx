@@ -2,9 +2,10 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import type { Listing } from "@/lib/types";
-import { getListingById } from "@/lib/api";
+import type { Listing, MietpreisbremseAssessment } from "@/lib/types";
+import { getListingById, getListingMietpreisbremse } from "@/lib/api";
 import { COMPANY_BASE_URLS } from "@/lib/company-urls";
+import { lookupAddress } from "@/lib/mietspiegel-streets";
 
 interface ListingDetailPageProps {
     params: Promise<{ id: string }>;
@@ -15,6 +16,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
     const { id } = use(params);
 
     const [listing, setListing] = useState<Listing | null>(null);
+    const [mietpreisbremse, setMietpreisbremse] = useState<MietpreisbremseAssessment | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -22,6 +24,39 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
             .then(setListing)
             .catch(() => setError("Listing not found."));
     }, [id]);
+
+    useEffect(() => {
+        if (!listing) return;
+
+        const address = listing.address ?? "";
+        const houseMatch = address.match(/\b(\d+)\b/);
+        const street = houseMatch
+            ? address.slice(0, houseMatch.index).replace(/[,\s]+$/, "")
+            : "";
+        const houseNumber = houseMatch ? Number(houseMatch[1]) : null;
+
+        let wohnlage: "einfach" | "mittel" | "gut" | undefined;
+        let isOst: boolean | undefined;
+
+        if (street && houseNumber !== null) {
+            const hit = lookupAddress(street, houseNumber);
+            if (hit) {
+                wohnlage = hit.wohnlage;
+                isOst = hit.gebiet === "O";
+            }
+        }
+
+        void getListingMietpreisbremse(listing.id, {
+            wohnlage,
+            isOst,
+            buildingYear: listing.yearOfConstruction ?? undefined,
+            areaM2: listing.areaM2 ?? undefined,
+            coldRentAmount: listing.coldRentAmount ?? undefined,
+            warmRentAmount: listing.warmRentAmount ?? undefined,
+        })
+            .then(setMietpreisbremse)
+            .catch(() => setMietpreisbremse(null));
+    }, [listing]);
 
     if (error) {
         return (
@@ -61,7 +96,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                 <div className="lg:col-span-2">
                     <section className="ds-card overflow-hidden">
                         {/* Image Gallery */}
-                        <div className="aspect-video w-full bg-gradient-to-br from-surface-low to-surface-high">
+                        <div className="aspect-video w-full bg-linear-to-br from-surface-low to-surface-high">
                             {listing.imageUrls.length > 0 ? (
                                 <img
                                     src={`${COMPANY_BASE_URLS[listing.source] ?? ''}${listing.imageUrls[0]}`}
@@ -192,6 +227,65 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                                 </div>
                             )}
                         </div>
+                    </section>
+
+                    <section className="ds-card mt-6 p-6">
+                        <h2 className="text-title text-on-background">⚖️ Mietpreisbremse Check</h2>
+                        {!mietpreisbremse ? (
+                            <p className="mt-2 text-sm text-muted">
+                                Not enough data to complete legal-cap check (needs area, building year, and rent).
+                            </p>
+                        ) : (
+                            <div className="mt-4 space-y-4">
+                                <div className="grid gap-4 md:grid-cols-3">
+                                    <div className="rounded-xl bg-surface-low p-4">
+                                        <p className="text-label text-muted">Nettokaltmiete / m²</p>
+                                        <p className="mt-1 text-2xl font-bold text-on-background">
+                                            €{mietpreisbremse.input.coldRentPerM2.toFixed(2)}
+                                        </p>
+                                    </div>
+                                    <div className="rounded-xl bg-surface-low p-4">
+                                        <p className="text-label text-muted">Mietspiegel Mittelwert</p>
+                                        <p className="mt-1 text-2xl font-bold text-on-background">
+                                            €{mietpreisbremse.mietspiegel.mid.toFixed(2)}
+                                        </p>
+                                    </div>
+                                    <div className="rounded-xl bg-surface-low p-4">
+                                        <p className="text-label text-muted">Max legal (+10%)</p>
+                                        <p className="mt-1 text-2xl font-bold text-on-background">
+                                            €{mietpreisbremse.mietspiegel.maxLegalPerM2.toFixed(2)}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="rounded-xl border border-surface-high p-4">
+                                    <p className="text-sm text-muted">Verdict</p>
+                                    <p className="mt-1 text-lg font-semibold text-on-background">
+                                        {mietpreisbremse.result.verdict === "COMPLIANT"
+                                            ? "Compliant"
+                                            : mietpreisbremse.result.verdict === "BORDERLINE"
+                                                ? "Borderline"
+                                                : "Exceeds rent cap"}
+                                    </p>
+                                    {mietpreisbremse.result.overpaymentMonthlyEur > 0 && (
+                                        <p className="mt-1 text-sm text-muted">
+                                            Estimated overpayment: €{mietpreisbremse.result.overpaymentMonthlyEur.toFixed(2)} / month
+                                        </p>
+                                    )}
+                                </div>
+
+                                {mietpreisbremse.assumptions.length > 0 && (
+                                    <div className="rounded-xl bg-surface-low p-4">
+                                        <p className="text-sm font-medium text-on-background">Assumptions</p>
+                                        <ul className="mt-2 list-disc pl-5 text-sm text-muted">
+                                            {mietpreisbremse.assumptions.map((item) => (
+                                                <li key={item}>{item}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </section>
                 </div>
 

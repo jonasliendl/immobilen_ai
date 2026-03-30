@@ -38,6 +38,12 @@ export type Listing = {
     isValid: boolean;
     firstSeenAt: string;
     lastSeenAt: string;
+    mietpreisbremse?: {
+        verdict: "COMPLIANT" | "BORDERLINE" | "EXCEEDS_RENT_CAP";
+        legalCapPerM2: number;
+        listingRentPerM2: number;
+        overpaymentPercent: number;
+    } | null;
 };
 
 export type ListingsQuery = {
@@ -58,6 +64,8 @@ export type ListingsQuery = {
     maxAreaM2?: number;
     isWBSRequired?: boolean;
     features?: string;
+    includeMietpreisbremse?: boolean;
+    mietpreisbremseVerdict?: "COMPLIANT" | "BORDERLINE" | "EXCEEDS_RENT_CAP";
 };
 
 export type ListingsResponse = {
@@ -217,6 +225,32 @@ export type TenantScoreResponse = {
     tenantScore: TenantScoreBreakdown;
     success: SuccessProbability;
     genossenschaftMatch: GenossenschaftMatch | null;
+};
+
+export type MietpreisbremseAssessment = {
+    listingId: string;
+    assumptions: string[];
+    input: {
+        areaM2: number;
+        coldRentEur: number;
+        coldRentPerM2: number;
+        wohnlage: "einfach" | "mittel" | "gut";
+        buildingYear: number;
+        isOst: boolean;
+    };
+    mietspiegel: {
+        zeile: number;
+        lower: number;
+        mid: number;
+        upper: number;
+        maxLegalPerM2: number;
+    };
+    result: {
+        differencePerM2: number;
+        overpaymentMonthlyEur: number;
+        verdict: "COMPLIANT" | "BORDERLINE" | "EXCEEDS_RENT_CAP";
+    };
+    disclaimer: string[];
 };
 
 export type CoverLetterRequest = {

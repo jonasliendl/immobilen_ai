@@ -9,6 +9,7 @@ const ALLOWED_SORT_FIELDS = [
   'areaM2',
   'freeFrom',
   'yearOfConstruction',
+  'mietpreisbremseOverpaymentPercent',
 ] as const;
 
 export const ListingsQuerySchema = z.object({
@@ -72,6 +73,32 @@ export const ListingsQuerySchema = z.object({
     .enum(['true', 'false'])
     .transform((v) => v === 'true')
     .default(true),
+
+  // Optional enrichment: include Mietpreisbremse assessment summary per listing
+  includeMietpreisbremse: z
+    .enum(['true', 'false'])
+    .transform((v) => v === 'true')
+    .default(false),
+
+  // Filter by precomputed Mietpreisbremse verdict
+  mietpreisbremseVerdict: z
+    .enum(['COMPLIANT', 'BORDERLINE', 'EXCEEDS_RENT_CAP'])
+    .optional(),
 });
 
 export type ListingsQuery = z.infer<typeof ListingsQuerySchema>;
+
+export const MietpreisbremseQuerySchema = z.object({
+  wohnlage: z.enum(['einfach', 'mittel', 'gut']).optional(),
+  buildingYear: z.coerce.number().int().min(1800).max(2100).optional(),
+  isOst: z
+    .enum(['true', 'false'])
+    .transform((v) => v === 'true')
+    .optional(),
+  areaM2: z.coerce.number().positive().optional(),
+  coldRentAmount: z.coerce.number().nonnegative().optional(),
+  warmRentAmount: z.coerce.number().nonnegative().optional(),
+  operatingCostsPerM2: z.coerce.number().positive().max(20).optional(),
+});
+
+export type MietpreisbremseQuery = z.infer<typeof MietpreisbremseQuerySchema>;

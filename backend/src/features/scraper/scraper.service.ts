@@ -7,17 +7,44 @@ import type {
   ScraperJobResult,
   StandardListing,
 } from './scraper.types';
+import { processListingAlerts } from '../matcher/listing-matcher.service';
+import { syncListingVerdict } from '../mietpreisbremse/mietpreisbremse-sync.service';
+
+interface ListingAlertCandidate {
+  id: string;
+  title: string;
+  listingUrl: string;
+  coldRentAmount: number | null;
+  warmRentAmount: number | null;
+  rooms: number | null;
+  areaM2: number | null;
+  address: string | null;
+  isWBSRequired: boolean | null;
+}
 
 function toInputJson(data: Record<string, unknown>): Prisma.InputJsonObject {
   return data as Prisma.InputJsonObject;
 }
 
-async function upsertListings(listings: StandardListing[]): Promise<number> {
+async function upsertListings(
+  listings: StandardListing[],
+): Promise<{ upsertedCount: number; newListings: ListingAlertCandidate[] }> {
   const db = getDb();
-  let count = 0;
+  let upsertedCount = 0;
+  const newListings: ListingAlertCandidate[] = [];
 
   for (const listing of listings) {
-    await db.listing.upsert({
+    const existing = await db.listing.findUnique({
+      where: {
+        source_sourceListingId: {
+          source: listing.source,
+          sourceListingId: listing.sourceListingId,
+        },
+      },
+      select: { id: true },
+    });
+
+    const saved = await db.listing.upsert({
       where: {
         source_sourceListingId: {
           source: listing.source,
@@ -77,10 +104,26 @@ async function upsertListings(listings: StandardListing[]): Promise<number> {
         rawData: toInputJson(listing.rawData),
       },
     });
-    count++;
+
+    upsertedCount++;
+    // Recompute persisted Mietpreisbremse verdict for the upserted listing
+    await syncListingVerdict(saved);
+    if (existing === null) {
+      newListings.push({
+        id: saved.id,
+        title: saved.title,
+        listingUrl: saved.listingUrl,
+        coldRentAmount: saved.coldRentAmount === null ? null : Number(saved.coldRentAmount),
+        warmRentAmount: saved.warmRentAmount === null ? null : Number(saved.warmRentAmount),
+        rooms: saved.rooms === null ? null : Number(saved.rooms),
+        areaM2: saved.areaM2 === null ? null : Number(saved.areaM2),
+        address: saved.address,
+        isWBSRequired: saved.isWBSRequired,
+      });
+    }
   }
 
-  return count;
+  return { upsertedCount, newListings };
 }
 
 export async function runScraper(
@@ -99,6 +142,14 @@ export async function runScraper(
   const context: ScrapeContext = { logger };
   let listingsProcessed = 0;
   let listingsUpserted = 0;
+  let listingAlerts = {
+    newListings: 0,
+    matchedTenants: 0,
+    channelsCreated: 0,
+    channelsSent: 0,
+    channelsFailed: 0,
+    channelsSkippedDuplicate: 0,
+  };
   let errorMessage: string | null = null;
 
   try {
@@ -113,7 +164,26 @@ export async function runScraper(
       .map((raw) => scraper.transform(raw))
       .filter((listing) => scraper.validate(listing));
 
-    listingsUpserted = await upsertListings(validListings);
+    const upsertResult = await upsertListings(validListings);
+    listingsUpserted = upsertResult.upsertedCount;
+
+    try {
+      listingAlerts = await processListingAlerts(upsertResult.newListings, logger);
+      logger.info(
+        {
+          sourceId: scraper.sourceId,
+          newListings: listingAlerts.newListings,
+          matchedTenants: listingAlerts.matchedTenants,
+          channelsCreated: listingAlerts.channelsCreated,
+          channelsSent: listingAlerts.channelsSent,
+          channelsFailed: listingAlerts.channelsFailed,
+          channelsSkippedDuplicate: listingAlerts.channelsSkippedDuplicate,
+        },
+        'Listing alert summary',
+      );
+    } catch (matcherError: unknown) {
+      logger.error({ sourceId: scraper.sourceId, error: matcherError }, 'Listing alert processing failed');
+    }
 
     await db.scraperJob.update({
       where: { id: job.id },
@@ -154,6 +224,7 @@ export async function runScraper(
     status: errorMessage === null ? 'SUCCESS' : 'FAILED',
     listingsProcessed,
     listingsUpserted,
+    listingAlerts,
     errorMessage,
     startedAt: job.startedAt,
     finishedAt: new Date(),

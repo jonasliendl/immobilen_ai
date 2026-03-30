@@ -12,7 +12,7 @@ export interface GetListingsResult {
 
 export async function getListings(query: ListingsQuery): Promise<GetListingsResult> {
   const db = getDbRo();
-  const { page, limit, sortBy, sortOrder, q, features, isValid, ...filters } = query;
+  const { page, limit, sortBy, sortOrder, q, features, isValid, includeMietpreisbremse, mietpreisbremseVerdict, ...filters } = query;
   const offset = (page - 1) * limit;
 
   const conditions: Prisma.Sql[] = [Prisma.sql`"isValid" = ${isValid}`];
@@ -104,6 +104,12 @@ export async function getListings(query: ListingsQuery): Promise<GetListingsResu
   if (features !== undefined) {
     const featureParams = Prisma.join(features.map((f) => Prisma.sql`${f}`));
     conditions.push(Prisma.sql`features @> ARRAY[${featureParams}]::text[]`);
+  }
+
+  if (mietpreisbremseVerdict !== undefined) {
+    conditions.push(
+      Prisma.sql`"mietpreisbremseVerdict"::text = ${mietpreisbremseVerdict}`,
+    );
   }
 
   const where = Prisma.sql`WHERE ${Prisma.join(conditions, ' AND ')}`;

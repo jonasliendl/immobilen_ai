@@ -57,16 +57,24 @@ Extract from the listing (database, user input, or listing page):
 
 If the listing only has Warmmiete, note that the Mietspiegel uses Nettokaltmiete. Estimate by subtracting ~2.50–3.50 €/m² for Betriebskosten + heating.
 
-### Step 2: Look Up Wohnlage via Mietspiegel Abfrage-Service
+### Step 2: Look Up Wohnlage via Static Street Directory
 
-Use the `web` tool to fetch the Mietspiegel Abfrage-Service:
+Use the **static Straßenverzeichnis** embedded in the codebase at `frontend/lib/mietspiegel-streets.ts`:
 
+```typescript
+import { lookupAddress } from "@/lib/mietspiegel-streets";
+
+const result = lookupAddress("Torstraße", 100);
+// → { wohnlage: "gut", gebiet: "O" }
 ```
-Fetch https://mietspiegel.berlin.de/berliner-mietspiegel/mietspiegelabfrage/
-with query: "Wohnlage for [street name]"
-```
 
-The form accepts a street name (4+ characters) and returns the Wohnlage classification. If the web tool cannot interact with the form, use the reference data in [./references/mietspiegel-table.md](./references/mietspiegel-table.md) and make a best-effort Wohnlage estimate based on district:
+The `lookupAddress(streetName, houseNumber, bezirk?)` function:
+- Searches 9,771 Berlin streets with 13,895 segments
+- Normalizes street names (e.g., "Torstr." → "Torstraße")
+- Matches by house number range with even/odd awareness
+- Returns `{ wohnlage, gebiet }` where gebiet is "O" (Ost) or "W" (West)
+
+If the street is not found in the directory, fall back to district-based estimates:
 
 | District Pattern | Typical Wohnlage |
 |---|---|
@@ -75,7 +83,7 @@ The form accepts a street name (4+ characters) and returns the Wohnlage classifi
 | Wedding, Moabit, Neukölln, Reinickendorf, Spandau | einfach to mittel |
 | Marzahn, Hellersdorf, Lichtenberg (Plattenbau areas) | einfach |
 
-**Important**: These are rough defaults. The actual Wohnlage is street-level specific and determined by the Straßenverzeichnis. Always try the Abfrage-Service first.
+**Important**: Always use the static street directory first — it contains the official street-level Wohnlage from the Straßenverzeichnis 2024.
 
 ### Step 3: Determine Baualtersklasse
 
@@ -102,15 +110,28 @@ For 1973–1990, the East/West distinction matters:
 
 ### Step 4: Look Up Mietspiegel Value
 
-Use the Mietspiegel table from [./references/mietspiegel-table.md](./references/mietspiegel-table.md) to find the rent range for the combination of:
-- Wohnlage (einfach / mittel / gut)
-- Baualtersklasse
-- Wohnfläche category
+Use the **static Mietspiegeltabelle** embedded in the codebase at `frontend/lib/mietspiegel-table.ts`:
 
-If the exact table is not available, use the `web` tool to fetch the Abfrage-Service result or the Mietspiegeltabelle PDF:
+```typescript
+import { getBezugsfertigkeit, lookupMietspiegel, maxLegalRentPerM2 } from "@/lib/mietspiegel-table";
+import { lookupAddress } from "@/lib/mietspiegel-streets";
+
+// 1. Get Wohnlage + Ost/West from address
+const addr = lookupAddress("Torstraße", 100);
+const isOst = addr?.gebiet === "O";
+
+// 2. Map building year to Baualtersklasse
+const bezug = getBezugsfertigkeit(1905, isOst); // → "bis 1918"
+
+// 3. Look up rent value
+const entry = lookupMietspiegel(addr.wohnlage, bezug, 65);
+// → { mid: 8.45, lower: 6.09, upper: 12.55 } (€/m²/month)
+
+// 4. Calculate Mietpreisbremse max
+const maxRent = maxLegalRentPerM2(entry); // → 9.30 (Mittelwert × 1.10)
 ```
-https://mietspiegel.berlin.de/wp-content/uploads/2024/11/mietspiegeltabelle2024.pdf
-```
+
+The static table contains **all 163 official rows** (Zeilen) from the Berliner Mietspiegeltabelle 2024 with exact lower/mid/upper values. No web calls needed.
 
 ### Step 5: Calculate and Assess
 

@@ -5,7 +5,8 @@ import { FeaturePageIntro } from "@/components/feature-page-intro";
 import type { Listing, ListingsResponse } from "@/lib/types";
 import { getListings } from "@/lib/api";
 import { COMPANY_BASE_URLS } from "@/lib/company-urls";
-import Image from "next/image";
+
+type MietpreisbremseVerdict = "" | "COMPLIANT" | "BORDERLINE" | "EXCEEDS_RENT_CAP";
 
 type Filters = {
     city: string;
@@ -17,9 +18,17 @@ type Filters = {
     source: string;
     q: string;
     isWBSRequired: string;
+    mietpreisbremseVerdict: MietpreisbremseVerdict;
 };
 
-type SortOption = "newest" | "price_asc" | "price_desc" | "size_desc" | "rooms_desc";
+type SortOption =
+    | "newest"
+    | "price_asc"
+    | "price_desc"
+    | "size_desc"
+    | "rooms_desc"
+    | "legal_safest"
+    | "legal_riskiest";
 
 const SORT_MAP: Record<SortOption, { sortBy: string; sortOrder: "asc" | "desc" }> = {
     newest: { sortBy: "firstSeenAt", sortOrder: "desc" },
@@ -27,7 +36,33 @@ const SORT_MAP: Record<SortOption, { sortBy: string; sortOrder: "asc" | "desc" }
     price_desc: { sortBy: "warmRentAmount", sortOrder: "desc" },
     size_desc: { sortBy: "areaM2", sortOrder: "desc" },
     rooms_desc: { sortBy: "rooms", sortOrder: "desc" },
+    legal_safest: { sortBy: "mietpreisbremseOverpaymentPercent", sortOrder: "asc" },
+    legal_riskiest: { sortBy: "mietpreisbremseOverpaymentPercent", sortOrder: "desc" },
 };
+
+function verdictBadgeProps(listing: Listing): { label: string; className: string } | null {
+    const verdict = listing.mietpreisbremse?.verdict;
+    if (!verdict) return null;
+
+    if (verdict === "COMPLIANT") {
+        return {
+            label: "Legal cap: compliant",
+            className: "rounded bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700",
+        };
+    }
+
+    if (verdict === "BORDERLINE") {
+        return {
+            label: "Legal cap: borderline",
+            className: "rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700",
+        };
+    }
+
+    return {
+        label: "Legal cap: exceeds",
+        className: "rounded bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-700",
+    };
+}
 
 export default function SearchPage() {
     const [filters, setFilters] = useState<Filters>({
@@ -40,6 +75,7 @@ export default function SearchPage() {
         source: "",
         q: "",
         isWBSRequired: "",
+        mietpreisbremseVerdict: "",
     });
 
     const [sortBy, setSortBy] = useState<SortOption>("newest");
@@ -57,6 +93,7 @@ export default function SearchPage() {
                 limit: 24,
                 sortBy: sort.sortBy,
                 sortOrder: sort.sortOrder,
+                includeMietpreisbremse: true,
                 ...(filters.q && { q: filters.q }),
                 ...(filters.source && { source: filters.source }),
                 ...(filters.city && { city: filters.city }),
@@ -66,7 +103,9 @@ export default function SearchPage() {
                 ...(filters.maxSize && { maxAreaM2: Number(filters.maxSize) }),
                 ...(filters.rooms && { minRooms: Number(filters.rooms) }),
                 ...(filters.isWBSRequired && { isWBSRequired: filters.isWBSRequired === "true" }),
+                ...(filters.mietpreisbremseVerdict && { mietpreisbremseVerdict: filters.mietpreisbremseVerdict }),
             });
+
             setListings(res.data);
             setTotal(res.meta.total);
         } catch {
@@ -93,12 +132,13 @@ export default function SearchPage() {
             source: "",
             q: "",
             isWBSRequired: "",
+            mietpreisbremseVerdict: "",
         });
     }
 
     function displayRent(listing: Listing): string {
-        if (listing.warmRentAmount != null) return `€${parseFloat(Number(listing.warmRentAmount).toFixed(2))}`;
-        if (listing.coldRentAmount != null) return `€${parseFloat(Number(listing.coldRentAmount).toFixed(2))}`;
+        if (listing.warmRentAmount != null) return `EUR ${listing.warmRentAmount}`;
+        if (listing.coldRentAmount != null) return `EUR ${listing.coldRentAmount}`;
         return "N/A";
     }
 
@@ -109,11 +149,11 @@ export default function SearchPage() {
             <FeaturePageIntro
                 eyebrow="Search"
                 title="Find Berlin flats in one place"
-                description="This page is your unified listing browser. Lucid Intelligence aggregates signals from multiple Berlin sources (including Genossenschaft-friendly filters), applies Mietpreisbremse-style checks where data allows, and lets you slice by city, rent, size, rooms, and WBS — so cooperative members and budget hunters see the cheapest legal options first."
+                description="This page is your unified listing browser. Lucid Intelligence aggregates signals from multiple Berlin sources (including Genossenschaft-friendly filters), applies Mietpreisbremse-style checks where data allows, and lets you slice by city, rent, size, rooms, and WBS - so cooperative members and budget hunters see the cheapest legal options first."
                 howItWorks={[
-                    "Set filters on the left: city, price band, square metres, rooms, source, WBS requirement, and text search.",
-                    "We query the backend listing database — each card links to detail and apply flows.",
-                    "Switch sort order (price, size, newest) to stress-test affordability against your shareholder or personal budget.",
+                    "Set filters on the left: city, price band, square metres, rooms, source, WBS requirement, legal-cap status, and text search.",
+                    "We query the backend listing database - each card links to detail and apply flows.",
+                    "Switch sort order (price, size, newest, legal safety) to stress-test affordability against your shareholder or personal budget.",
                     "Shortlist favourites and continue in Application Tracker or Chat if you need wording or eligibility help.",
                 ]}
             />
@@ -124,7 +164,6 @@ export default function SearchPage() {
                 </p>
             </section>
 
-            {/* Filters */}
             <section className="ds-section">
                 <div className="mb-4 flex items-center justify-between">
                     <h2 className="text-title text-on-background">Filters</h2>
@@ -137,19 +176,17 @@ export default function SearchPage() {
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    {/* Text search */}
                     <div>
                         <label className="text-label mb-1 block text-muted">Search</label>
                         <input
                             type="text"
                             value={filters.q}
                             onChange={(e) => setFilters({ ...filters, q: e.target.value })}
-                            placeholder="Title or address…"
+                            placeholder="Title or address..."
                             className="ds-input w-full"
                         />
                     </div>
 
-                    {/* City */}
                     <div>
                         <label className="text-label mb-1 block text-muted">City</label>
                         <input
@@ -161,7 +198,6 @@ export default function SearchPage() {
                         />
                     </div>
 
-                    {/* Price Range */}
                     <div>
                         <label className="text-label mb-1 block text-muted">Warm Rent (EUR)</label>
                         <div className="flex gap-2">
@@ -182,9 +218,8 @@ export default function SearchPage() {
                         </div>
                     </div>
 
-                    {/* Size Range */}
                     <div>
-                        <label className="text-label mb-1 block text-muted">Size (m²)</label>
+                        <label className="text-label mb-1 block text-muted">Size (m2)</label>
                         <div className="flex gap-2">
                             <input
                                 type="number"
@@ -203,12 +238,12 @@ export default function SearchPage() {
                         </div>
                     </div>
 
-                    {/* Rooms */}
                     <div>
                         <label className="text-label mb-1 block text-muted">Rooms</label>
                         <select
                             value={filters.rooms}
                             onChange={(e) => setFilters({ ...filters, rooms: e.target.value })}
+                            title="Rooms"
                             className="ds-input w-full"
                         >
                             <option value="">Any</option>
@@ -219,7 +254,6 @@ export default function SearchPage() {
                         </select>
                     </div>
 
-                    {/* Source */}
                     <div>
                         <label className="text-label mb-1 block text-muted">Source</label>
                         <input
@@ -231,12 +265,12 @@ export default function SearchPage() {
                         />
                     </div>
 
-                    {/* WBS */}
                     <div>
                         <label className="text-label mb-1 block text-muted">WBS Required</label>
                         <select
                             value={filters.isWBSRequired}
                             onChange={(e) => setFilters({ ...filters, isWBSRequired: e.target.value })}
+                            title="WBS required"
                             className="ds-input w-full"
                         >
                             <option value="">Any</option>
@@ -245,12 +279,32 @@ export default function SearchPage() {
                         </select>
                     </div>
 
-                    {/* Sort */}
+                    <div>
+                        <label className="text-label mb-1 block text-muted">Legal-cap status</label>
+                        <select
+                            value={filters.mietpreisbremseVerdict}
+                            onChange={(e) =>
+                                setFilters({
+                                    ...filters,
+                                    mietpreisbremseVerdict: e.target.value as MietpreisbremseVerdict,
+                                })
+                            }
+                            title="Legal-cap status"
+                            className="ds-input w-full"
+                        >
+                            <option value="">Any</option>
+                            <option value="COMPLIANT">Compliant</option>
+                            <option value="BORDERLINE">Borderline</option>
+                            <option value="EXCEEDS_RENT_CAP">Exceeds cap</option>
+                        </select>
+                    </div>
+
                     <div>
                         <label className="text-label mb-1 block text-muted">Sort by</label>
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value as SortOption)}
+                            title="Sort by"
                             className="ds-input w-full"
                         >
                             <option value="newest">Newest first</option>
@@ -258,18 +312,19 @@ export default function SearchPage() {
                             <option value="price_desc">Price: High to Low</option>
                             <option value="size_desc">Size: Largest first</option>
                             <option value="rooms_desc">Rooms: Most first</option>
+                            <option value="legal_safest">Legal safety: best first</option>
+                            <option value="legal_riskiest">Legal risk: highest first</option>
                         </select>
                     </div>
                 </div>
             </section>
 
-            {/* Results */}
             <section className="ds-card p-6">
                 <h2 className="text-title mb-4 text-on-background">Search Results</h2>
 
                 {loading ? (
                     <div className="flex items-center justify-center py-12">
-                        <p className="text-muted">Loading listings…</p>
+                        <p className="text-muted">Loading listings...</p>
                     </div>
                 ) : listings.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -283,67 +338,78 @@ export default function SearchPage() {
                     </div>
                 ) : (
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {listings.map((listing) => (
-                            <a
-                                key={listing.id}
-                                href={`/listings/${listing.id}`}
-                                className="ds-card group p-4"
-                            >
-                                <div className="aspect-video w-full overflow-hidden rounded-xl bg-surface-low">
-                                    {listing.imageUrls.length > 0 ? (
-                                        <img
-                                            src={`${COMPANY_BASE_URLS[listing.source] ?? ''}${listing.imageUrls[0]}`}
-                                            alt={listing.title}
-                                            className="h-full w-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="flex h-full items-center justify-center text-4xl">
-                                            🏠
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="mt-3">
-                                    <div className="flex items-start justify-between">
-                                        <h3 className="font-semibold group-hover:underline">{listing.title}</h3>
-                                        {listing.isWBSRequired && (
-                                            <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                                                WBS
-                                            </span>
+                        {listings.map((listing) => {
+                            const badge = verdictBadgeProps(listing);
+                            return (
+                                <a
+                                    key={listing.id}
+                                    href={`/listings/${listing.id}`}
+                                    className="ds-card group p-4"
+                                >
+                                    <div className="aspect-video w-full overflow-hidden rounded-xl bg-surface-low">
+                                        {listing.imageUrls.length > 0 && COMPANY_BASE_URLS[listing.source] ? (
+                                            <img
+                                                src={`${COMPANY_BASE_URLS[listing.source] ?? ""}${listing.imageUrls[0]}`}
+                                                alt={listing.title}
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="flex h-full items-center justify-center text-sm text-muted">
+                                                No image
+                                            </div>
                                         )}
                                     </div>
-                                    <p className="mt-1 text-sm text-muted">{listing.address ?? listing.city}</p>
-                                    <div className="mt-2 flex items-center justify-between">
-                                        <span className="text-lg font-bold text-on-background">{displayRent(listing)}</span>
-                                        <span className="text-sm text-muted">
-                                            {listing.areaM2 != null ? `${parseFloat(Number(listing.areaM2).toFixed(2))}m²` : ""}
-                                            {listing.rooms != null ? ` · ${listing.rooms} rooms` : ""}
-                                        </span>
-                                    </div>
-                                    {listing.features.length > 0 && (
-                                        <div className="mt-2 flex flex-wrap gap-1">
-                                            {listing.features.slice(0, 3).map((feat) => (
-                                                <span
-                                                    key={feat}
-                                                    className="rounded-full bg-surface-low px-2 py-0.5 text-xs text-muted"
-                                                >
-                                                    {feat}
-                                                </span>
-                                            ))}
+                                    <div className="mt-3">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <h3 className="font-semibold group-hover:underline">{listing.title}</h3>
+                                            <div className="flex flex-col items-end gap-1">
+                                                {listing.isWBSRequired && (
+                                                    <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                                                        WBS
+                                                    </span>
+                                                )}
+                                                {badge && (
+                                                    <span className={badge.className}>{badge.label}</span>
+                                                )}
+                                            </div>
                                         </div>
-                                    )}
-                                </div>
-                            </a>
-                        ))}
+                                        <p className="mt-1 text-sm text-muted">{listing.address ?? listing.city}</p>
+                                        <div className="mt-2 flex items-center justify-between">
+                                            <span className="text-lg font-bold text-on-background">{displayRent(listing)}</span>
+                                            <span className="text-sm text-muted">
+                                                {listing.areaM2 != null ? `${listing.areaM2}m2` : ""}
+                                                {listing.rooms != null ? ` · ${listing.rooms} rooms` : ""}
+                                            </span>
+                                        </div>
+                                        {listing.features.length > 0 && (
+                                            <div className="mt-2 flex flex-wrap gap-1">
+                                                {listing.features.slice(0, 3).map((feat) => (
+                                                    <span
+                                                        key={feat}
+                                                        className="rounded-full bg-surface-low px-2 py-0.5 text-xs text-muted"
+                                                    >
+                                                        {feat}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </a>
+                            );
+                        })}
                     </div>
                 )}
 
-                {/* Pagination */}
                 {totalPages > 1 && (
                     <div className="mt-6 flex items-center justify-center gap-3">
                         <button
                             disabled={page <= 1}
-                            onClick={() => { const p = page - 1; setPage(p); fetchListings(p); }}
-                            className="btn-secondary !h-auto !py-1.5 !px-3 text-sm disabled:opacity-40"
+                            onClick={() => {
+                                const p = page - 1;
+                                setPage(p);
+                                fetchListings(p);
+                            }}
+                            className="btn-secondary h-auto! px-3! py-1.5! text-sm disabled:opacity-40"
                         >
                             Previous
                         </button>
@@ -352,8 +418,12 @@ export default function SearchPage() {
                         </span>
                         <button
                             disabled={page >= totalPages}
-                            onClick={() => { const p = page + 1; setPage(p); fetchListings(p); }}
-                            className="btn-secondary !h-auto !py-1.5 !px-3 text-sm disabled:opacity-40"
+                            onClick={() => {
+                                const p = page + 1;
+                                setPage(p);
+                                fetchListings(p);
+                            }}
+                            className="btn-secondary h-auto! px-3! py-1.5! text-sm disabled:opacity-40"
                         >
                             Next
                         </button>
