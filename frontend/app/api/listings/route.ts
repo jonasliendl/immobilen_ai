@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
+import { ListingsQuerySchema } from "@/lib/services/listings.types";
+import { getListings } from "@/lib/services/listings.service";
 
 export async function GET(request: NextRequest) {
-    const params = request.nextUrl.searchParams.toString();
-    const upstream = await fetch(`${BACKEND_URL}/api/v1/listings?${params}`);
-    const data = await upstream.json();
-    return NextResponse.json(data, { status: upstream.status });
+    const params = Object.fromEntries(request.nextUrl.searchParams.entries());
+    const parsed = ListingsQuerySchema.safeParse(params);
+    if (!parsed.success) {
+        return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
+
+    try {
+        const result = await getListings(parsed.data);
+        return NextResponse.json(result);
+    } catch (error) {
+        console.error('GET /api/listings error:', error);
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    }
 }

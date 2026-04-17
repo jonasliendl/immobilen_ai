@@ -1,7 +1,6 @@
-import { getBackendApiBase } from "@/lib/waitlist-config";
 import { NextRequest, NextResponse } from "next/server";
-
-const sources = new Set(["landing_form", "qr_landing"]);
+import { WaitlistSignupBodySchema } from "@/lib/services/waitlist.types";
+import { createWaitlistSignup } from "@/lib/services/waitlist.service";
 
 export async function POST(request: NextRequest) {
     let body: unknown;
@@ -11,35 +10,19 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
 
-    const obj = body && typeof body === "object" ? (body as Record<string, unknown>) : {};
-    const email = typeof obj.email === "string" ? obj.email.trim() : "";
-    const sourceRaw = typeof obj.source === "string" ? obj.source : "landing_form";
-    const source = sources.has(sourceRaw) ? sourceRaw : "landing_form";
-
-    if (!email) {
-        return NextResponse.json({ error: "Email is required" }, { status: 400 });
-    }
-
-    const basic = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    if (!basic) {
-        return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+    const parsed = WaitlistSignupBodySchema.safeParse(body);
+    if (!parsed.success) {
+        return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
 
     try {
-        const res = await fetch(`${getBackendApiBase()}/api/v1/waitlist`, {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({ email, source }),
-        });
-        const data = (await res.json().catch(() => ({}))) as { error?: unknown; success?: boolean };
-        if (!res.ok) {
-            return NextResponse.json(
-                { error: typeof data.error === "string" ? data.error : "Upstream error" },
-                { status: res.status >= 500 ? 502 : res.status },
-            );
+        const result = await createWaitlistSignup(parsed.data);
+        return NextResponse.json({ success: true, created: result.created });
+    } catch (error) {
+        if (error instanceof Error && error.message === 'INVALID_EMAIL') {
+            return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
         }
-        return NextResponse.json({ success: data.success !== false });
-    } catch {
-        return NextResponse.json({ error: "Waitlist service unavailable" }, { status: 502 });
+        console.error('POST /api/waitlist error:', error);
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

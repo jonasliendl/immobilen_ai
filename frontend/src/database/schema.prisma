@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ScraperJobStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+enum MietpreisbremseVerdict {
+  COMPLIANT
+  BORDERLINE
+  EXCEEDS_RENT_CAP
+}
+
+model Listing {
+  id                          String    @id @default(cuid())
+  source                      String
+  sourceListingId             String
+  title                       String
+  coldRentAmount              Decimal?
+  warmRentAmount              Decimal?
+  priceCurrency               String?
+  freeFrom                    DateTime?
+  insertedAt                  DateTime?
+  isWBSRequired               Boolean?
+  floor                       Int?
+  maxFloor                    Int?
+  yearOfConstruction          Int?
+  heatingType                 String?
+  energyType                  String?
+  energyEfficiencyClass       String?
+  energyConsumptionKWhPerYear Decimal?
+  address                     String?
+  city                        String?
+  country                     String?
+  areaM2                      Decimal?
+  rooms                       Decimal?
+  listingUrl                  String
+  imageUrls                   String[]
+  features                    String[]
+  rawData                     Json
+  isValid                     Boolean   @default(true)
+  firstSeenAt                 DateTime  @default(now())
+  lastSeenAt                  DateTime  @updatedAt
+
+  // Precomputed Mietpreisbremse assessment
+  mietpreisbremseVerdict              MietpreisbremseVerdict?
+  mietpreisbremseMaxLegalPerM2        Decimal?
+  mietpreisbremseListingRentPerM2     Decimal?
+  mietpreisbremseOverpaymentPercent   Decimal?
+
+  @@unique([source, sourceListingId])
+  @@index([mietpreisbremseVerdict])
+}
+
+model ScraperJob {
+  id                String           @id @default(cuid())
+  sourceId          String
+  status            ScraperJobStatus
+  startedAt         DateTime         @default(now())
+  finishedAt        DateTime?
+  listingsProcessed Int              @default(0)
+  listingsUpserted  Int              @default(0)
+  errorMessage      String?
+}
+
+model Tenant {
+  id                  String              @id @default(cuid())
+  email               String              @unique
+  phone               String?
+  whatsappNumber      String?
+  name                String
+  monthlyNetIncomeEur Int?
+  householdSize       Int                 @default(1)
+  hasPets             Boolean             @default(false)
+  hasSchufa           Boolean             @default(false)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  preferences         TenantPreference?
+  documents           TenantDocument[]
+  applications        Application[]
+  notifications       Notification[]
+}
+
+model TenantPreference {
+  id                 String   @id @default(cuid())
+  tenantId           String   @unique
+  tenant             Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  minRooms           Decimal?
+  maxRooms           Decimal?
+  maxColdRent        Decimal?
+  maxWarmRent        Decimal?
+  minAreaM2          Decimal?
+  preferredDistricts String[]
+  wbsRequired        Boolean?
+  autoApplyEnabled   Boolean  @default(false)
+}
+
+model TenantDocument {
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  type       String
+  fileName   String
+  storageUrl String
+  uploadedAt DateTime @default(now())
+}
+
+enum ApplicationStatus {
+  PENDING
+  SUBMITTED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+model Application {
+  id              String            @id @default(cuid())
+  tenantId        String
+  tenant          Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  listingId       String
+  coverLetter     String?
+  status          ApplicationStatus @default(PENDING)
+  submittedAt     DateTime?
+  responseAt      DateTime?
+  responseContent String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  type      String
+  channel   String
+  payload   Json
+  status    String   @default("pending")
+  sentAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([status])
+}
+
+/// Email waitlist signups (web form or after QR landing).
+model WaitlistSignup {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([source])
+  @@index([createdAt])
+}
+
+/// One row per QR landing (phone opened /join?via=qr). Count rows to monitor scans.
+model WaitlistQrOpen {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

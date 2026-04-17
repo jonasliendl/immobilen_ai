@@ -1,11 +1,7 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import type { FastifyInstance } from 'fastify';
-import healthRoutes from './api/health/health.routes';
-import listingsRoutes from './api/listings/listings.routes';
 import scraperRoutes from './api/scraper/scraper.routes';
-import waitlistRoutes from './api/waitlist/waitlist.routes';
-import tenantsRoutes from './api/tenants/tenants.routes';
 import { scraperSchedulerPlugin } from './features/scraper/scraper-scheduler.plugin';
 import { sharedMiddleware } from './shared/middleware/index';
 
@@ -21,12 +17,8 @@ export async function buildApp(): Promise<FastifyInstance> {
   // Scheduler plugin: registers @fastify/schedule + wires up cron jobs for all scrapers
   await app.register(scraperSchedulerPlugin);
 
-  // API routes
-  await app.register(healthRoutes);
+  // API routes — scraper trigger only; all other endpoints are served by the Next.js frontend
   await app.register(scraperRoutes, { prefix: '/api/v1/scrapers' });
-  await app.register(listingsRoutes, { prefix: '/api/v1/listings' });
-  await app.register(waitlistRoutes, { prefix: '/api/v1/waitlist' });
-  await app.register(tenantsRoutes, { prefix: '/api/v1/tenants' });
 
   return app;
 }

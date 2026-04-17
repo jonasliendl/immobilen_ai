@@ -5,7 +5,7 @@ import type {
     MietpreisbremseAssessment,
 } from "./types";
 
-const BASE = "/api/v1";
+const BASE = "/api";
 
 function toSearchParams(query: ListingsQuery): URLSearchParams {
     const params = new URLSearchParams();
