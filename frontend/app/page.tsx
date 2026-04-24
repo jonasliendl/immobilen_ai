@@ -67,19 +67,19 @@ const howItWorks = [
         step: "04",
         title: "Upgrade for Alerts",
         desc: "Daily or weekly email digests of the cheapest new listings matching your profile.",
-        tier: "Mid",
+        tier: "Premium",
     },
     {
         step: "05",
         title: "Let AI Apply for You",
         desc: "Upload SCHUFA, income proof, and ID once. AI generates a cover letter and auto-applies.",
-        tier: "Pro",
+        tier: "Premium",
     },
     {
         step: "06",
         title: "Track Everything",
         desc: "Full application timeline, reminders, and rejection analysis in one dashboard.",
-        tier: "Pro",
+        tier: "Premium",
     },
 ];
 
@@ -128,36 +128,30 @@ const pricingTiers = [
         ],
         cta: "Get Started Free",
         highlighted: false,
+        billingOptions: null as null | { price: string; note: string }[],
     },
     {
-        name: "Mid",
-        price: "€5",
-        sub: "per month",
-        tagline: "Daily alerts so you never miss a deal.",
+        name: "Premium",
+        price: "€10",
+        sub: "per month · 6-month plan",
+        tagline: "Every tool to find and win your flat.",
         features: [
             "Everything in Free",
             "Daily / weekly email alerts",
             "Mietpreisbremse alerts",
             "Advanced filters",
-        ],
-        cta: "Start Alerts",
-        highlighted: true,
-    },
-    {
-        name: "Pro",
-        price: "€15",
-        sub: "per month",
-        tagline: "Let AI handle the hard part.",
-        features: [
-            "Everything in Mid",
             "AI auto-apply",
             "AI cover letter",
             "Application tracker",
             "Rejection analysis",
             "Tenant profile score",
         ],
-        cta: "Let AI Apply",
-        highlighted: false,
+        cta: "Get Premium",
+        highlighted: true,
+        billingOptions: [
+            { price: "€9.99 / mo", note: "6-month commitment" },
+            { price: "€14.99 / mo", note: "Month-to-month" },
+        ] as { price: string; note: string }[],
     },
 ];
 
@@ -397,11 +391,7 @@ export default function HomePage() {
                                     >
                                         {s.tier && (
                                             <span
-                                                className={`absolute top-4 right-4 font-mono text-[9px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full ${
-                                                    s.tier === "Pro"
-                                                        ? "bg-black text-white"
-                                                        : "bg-gray-100 text-gray-500"
-                                                }`}
+                                                className="absolute top-4 right-4 font-mono text-[9px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full bg-black text-white"
                                             >
                                                 {s.tier}
                                             </span>
@@ -523,7 +513,7 @@ export default function HomePage() {
                                 Start free. Upgrade when you need more firepower.
                             </p>
 
-                            <div className="mt-8 md:mt-10 grid border-t border-l border-white/15 md:grid-cols-3">
+                            <div className="mt-8 md:mt-10 grid border-t border-l border-white/15 md:grid-cols-2">
                                 {pricingTiers.map((tier) => (
                                     <div
                                         key={tier.name}
@@ -547,20 +537,40 @@ export default function HomePage() {
                                             >
                                                 {tier.name}
                                             </p>
-                                            <p
-                                                className={`mt-2 text-4xl font-black tracking-tight transition-transform duration-300 group-hover:scale-[1.03] origin-left md:text-5xl ${
-                                                    tier.highlighted ? "text-black" : "text-white"
-                                                }`}
-                                            >
-                                                {tier.price}
-                                            </p>
-                                            <p
-                                                className={`mt-1 text-xs ${
-                                                    tier.highlighted ? "text-gray-400" : "text-gray-500"
-                                                }`}
-                                            >
-                                                {tier.sub}
-                                            </p>
+
+                                            {tier.billingOptions ? (
+                                                <div className="mt-3 grid grid-cols-2 gap-3">
+                                                    {tier.billingOptions.map((opt, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className="rounded-md border border-gray-200 px-4 py-3"
+                                                        >
+                                                            <p className="text-2xl font-black tracking-tight text-black">
+                                                                {opt.price}
+                                                            </p>
+                                                            <p className="mt-0.5 text-xs text-gray-400">{opt.note}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <p
+                                                        className={`mt-2 text-4xl font-black tracking-tight transition-transform duration-300 group-hover:scale-[1.03] origin-left md:text-5xl ${
+                                                            tier.highlighted ? "text-black" : "text-white"
+                                                        }`}
+                                                    >
+                                                        {tier.price}
+                                                    </p>
+                                                    <p
+                                                        className={`mt-1 text-xs ${
+                                                            tier.highlighted ? "text-gray-400" : "text-gray-500"
+                                                        }`}
+                                                    >
+                                                        {tier.sub}
+                                                    </p>
+                                                </>
+                                            )}
+
                                             <p
                                                 className={`mt-3 text-sm ${
                                                     tier.highlighted ? "text-gray-600" : "text-gray-300"
