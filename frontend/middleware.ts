@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 const APP_ENABLED = process.env.NEXT_PUBLIC_APP_ENABLED === "true";
 
 // Paths that are always accessible (landing page + static assets)
-const PUBLIC_PATHS = ["/", "/api/waitlist"];
+const PUBLIC_PATHS = ["/", "/api/waitlist", "/leave-waitlist"];
 
 export function middleware(request: NextRequest) {
     if (APP_ENABLED) return NextResponse.next();

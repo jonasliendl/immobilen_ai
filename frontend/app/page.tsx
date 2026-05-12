@@ -8,39 +8,9 @@ import { ListingFeedAnimation } from "@/components/listing-feed-animation";
 
 const whatWeDo = [
     {
-        icon: "travel_explore",
-        problem: "Listings scattered across 15+ portals",
-        solution: "AI scraper aggregates all Berlin portals into 1 unified real-time feed",
-    },
-    {
-        icon: "schedule",
-        problem: "Students waste 10–20 hrs/week searching",
-        solution: "Personalised questionnaire matches listings instantly",
-    },
-    {
-        icon: "translate",
-        problem: "Non-German speakers face language barriers",
-        solution: "English-first, multilingual UX built for expats",
-    },
-    {
-        icon: "description",
-        problem: "Complex paperwork: SCHUFA, cover letters",
-        solution: "Upload once — AI auto-applies everywhere",
-    },
-    {
         icon: "groups",
-        problem: "~250 applicants compete per listing",
-        solution: "1-click AI auto-apply gives you a head start",
-    },
-    {
-        icon: "gavel",
-        problem: "Mietpreisbremse violations go undetected",
-        solution: "Automated rent-cap compliance checker on every listing",
-    },
-    {
-        icon: "security",
-        problem: "Scam listings waste your time and money",
-        solution: "ML fraud detection flags suspicious listings instantly",
+        problem: "Finding a flat in Berlin is a full-time job — 15+ portals to monitor, 250 applicants competing per listing, paperwork in a foreign language, and scams at every turn.",
+        solution: "Flat4U aggregates every portal into one AI-ranked feed, auto-applies with a personalised German cover letter, and flags scams and rent-cap violations before you waste a single minute.",
     },
 ];
 
@@ -162,7 +132,7 @@ const personas = [
         detail: "Master's student · Arrived from Spain",
         meta: "Ages 18–28 · International student",
         quote:
-            "I arrived in Berlin for uni and needed a flat within two weeks. Budenfinder found me three options before I'd even unpacked.",
+            "I arrived in Berlin for uni and needed a flat within two weeks. Flat4U found me three options before I'd even unpacked.",
         avatar: { initials: "SA", bgClass: "bg-blue-50", textClass: "text-blue-600", ringClass: "ring-blue-100" },
         stars: 5,
     },
@@ -196,7 +166,7 @@ function LandingNav() {
     return (
         <header className="fixed top-0 left-0 right-0 z-50 h-16 border-b border-gray-200 bg-white">
             <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6 md:px-10">
-                <span className="text-lg font-bold tracking-tighter text-black">Budenfinder</span>
+                <span className="text-lg font-bold tracking-tighter text-black">Flat4U</span>
 
                 <nav className="hidden items-center gap-8 md:flex">
                     {[
@@ -319,9 +289,8 @@ export default function HomePage() {
                                 We fix it.
                             </h2>
 
-                            {/* Two-column problem / solution table */}
+                            {/* Single problem / solution block */}
                             <div className="mt-8 md:mt-10 border-t border-l border-white/15">
-                                {/* Header row */}
                                 <div className="grid grid-cols-2 border-b border-r border-white/15">
                                     <div className="border-r border-white/15 px-6 py-3 md:px-8">
                                         <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-gray-500">
@@ -334,29 +303,28 @@ export default function HomePage() {
                                         </span>
                                     </div>
                                 </div>
-                                {/* Data rows */}
                                 {whatWeDo.map((row, i) => (
                                     <div
                                         key={i}
                                         className="group grid grid-cols-2 border-b border-r border-white/15 transition-colors duration-150 hover:bg-zinc-900"
                                     >
-                                        <div className="border-r border-white/15 px-6 py-4 md:px-8 flex items-center gap-3">
+                                        <div className="border-r border-white/15 px-6 py-6 md:px-8 flex items-start gap-3">
                                             <span
-                                                className="material-symbols-outlined shrink-0 text-gray-600 transition-colors duration-200 group-hover:text-gray-400"
-                                                style={{ fontSize: "18px", fontVariationSettings: '"FILL" 0, "wght" 300, "GRAD" 0, "opsz" 20' }}
+                                                className="material-symbols-outlined shrink-0 text-gray-600 transition-colors duration-200 group-hover:text-gray-400 mt-0.5"
+                                                style={{ fontSize: "20px", fontVariationSettings: '"FILL" 0, "wght" 300, "GRAD" 0, "opsz" 20' }}
                                             >
                                                 {row.icon}
                                             </span>
-                                            <p className="text-sm leading-snug text-gray-400">{row.problem}</p>
+                                            <p className="text-sm leading-relaxed text-gray-400">{row.problem}</p>
                                         </div>
-                                        <div className="px-6 py-4 md:px-8 flex items-center gap-3">
+                                        <div className="px-6 py-6 md:px-8 flex items-start gap-3">
                                             <span
-                                                className="material-symbols-outlined shrink-0 text-white/30 transition-all duration-300 group-hover:text-white group-hover:scale-110"
-                                                style={{ fontSize: "18px", fontVariationSettings: '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 20' }}
+                                                className="material-symbols-outlined shrink-0 text-white/30 transition-all duration-300 group-hover:text-white group-hover:scale-110 mt-0.5"
+                                                style={{ fontSize: "20px", fontVariationSettings: '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 20' }}
                                             >
                                                 check_circle
                                             </span>
-                                            <p className="text-sm leading-snug text-white transition-colors duration-200 group-hover:text-white">
+                                            <p className="text-sm leading-relaxed text-white">
                                                 {row.solution}
                                             </p>
                                         </div>
@@ -456,7 +424,7 @@ export default function HomePage() {
                                             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">Feature</span>
                                         </div>
                                         <div className="border-r border-white/15 px-3 py-2 text-center">
-                                            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white">Budenfinder</span>
+                                            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white">Flat4U</span>
                                         </div>
                                         <div className="border-r border-white/15 px-3 py-2 text-center">
                                             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">ImmoScout24</span>
@@ -512,6 +480,16 @@ export default function HomePage() {
                             <p className="mt-4 text-base text-gray-400">
                                 Start free. Upgrade when you need more firepower.
                             </p>
+
+                            {/* Agent cost comparison callout */}
+                            <div className="mt-6 border border-white/15 rounded-md px-6 py-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                                <p className="text-sm text-gray-400">
+                                    A Berlin flat-hunting agent typically charges <span className="text-white font-semibold">€500–€2,000</span> (2–3 months&apos; cold rent) to do what we automate.
+                                </p>
+                                <p className="mt-2 sm:mt-0 shrink-0 font-mono text-xs uppercase tracking-widest text-gray-500">
+                                    Flat4U Premium · from <span className="text-white">€9.99 / mo</span>
+                                </p>
+                            </div>
 
                             <div className="mt-8 md:mt-10 grid border-t border-l border-white/15 md:grid-cols-2">
                                 {pricingTiers.map((tier) => (
@@ -708,7 +686,7 @@ export default function HomePage() {
                     <footer className="border-t border-gray-100 px-6 py-6 md:px-10">
                         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 text-sm text-gray-400 md:flex-row">
                             <span className="font-bold tracking-tighter text-black">
-                                Budenfinder
+                                Flat4U
                             </span>
 
                             <div className="flex flex-wrap justify-center gap-x-6 gap-y-1">
@@ -717,7 +695,7 @@ export default function HomePage() {
                                     { href: "#pricing", label: "Pricing" },
                                     { href: "/legal", label: "Legal (DSGVO/GDPR)" },
                                     { href: "/blog", label: "Blog" },
-                                    { href: "mailto:hello@budenfinder.de", label: "Contact" },
+                                    { href: "mailto:hello@flat4u.de", label: "Contact" },
                                     { href: "/impressum", label: "Impressum" },
                                 ].map((link) => (
                                     <a
@@ -730,7 +708,7 @@ export default function HomePage() {
                                 ))}
                             </div>
 
-                            <span className="text-xs">© 2026 Budenfinder</span>
+                            <span className="text-xs">© 2026 Flat4U</span>
                         </div>
                     </footer>
                 </section>
